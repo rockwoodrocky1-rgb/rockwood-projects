@@ -1,0 +1,36 @@
+{
+  "name": "rockwood-projects",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 8792",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 8792",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.3",
+    "next": "^16.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "lucide-react": "^0.468.0",
+    "zod": "^4.1.12",
+    "papaparse": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/papaparse": "^5.3.16",
+    "@playwright/test": "^1.56.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0",
+    "@electric-sql/pglite": "^0.5.9"
+  },
+  "engines": {
+    "node": ">=22 <23"
+  }
+}

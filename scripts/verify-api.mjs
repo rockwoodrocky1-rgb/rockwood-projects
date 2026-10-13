@@ -1,0 +1,54 @@
+// Integration smoke test. Uses only a labeled demo project; no outbound messages.
+// PM_TEST_TOKEN_FILE points to private JSON containing access_token. Optional PM_TEST_URL.
+import { readFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+import { createClient } from '@supabase/supabase-js';
+if (process.env.PM_TEST_ENV_FILE) process.loadEnvFile(process.env.PM_TEST_ENV_FILE);
+const tokenFile = process.env.PM_TEST_TOKEN_FILE;
+if (!tokenFile) throw new Error('Set PM_TEST_TOKEN_FILE to a private session JSON file.');
+const token = JSON.parse(readFileSync(tokenFile, 'utf8')).access_token;
+if (!token) throw new Error('The session file needs access_token.');
+const base = process.env.PM_TEST_URL || 'http://127.0.0.1:8792';
+const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, { global: { headers: { Authorization: `Bearer ${token}` }, fetch: (url, options) => fetch(url, { ...options, signal: AbortSignal.timeout(30000) }) }, auth: { persistSession: false, autoRefreshToken: false } });
+async function request(path, method = 'GET', body, expected = 200, auth = true) {
+  const result = await fetch(base + path, { method, signal: AbortSignal.timeout(30000), headers: { ...(auth ? { Authorization: `Bearer ${token}` } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) });
+  const data = await result.json();
+  assert.equal(result.status, expected, `${method} ${path}: ${data.error || 'unexpected status'}`);
+  console.log(`Verified ${method} ${path.split('/').slice(0, 3).join('/')} (${expected}).`);
+  return data;
+}
+await request('/api/bootstrap', 'GET', undefined, 401, false);
+let bootstrap = await request('/api/bootstrap');
+let project = bootstrap.projects.find(p => p.is_demo && p.name === 'Oak Street House · Demo');
+if (!project) ({ project } = await request('/api/projects', 'POST', { name: 'Oak Street House · Demo', address: 'Fictional demonstration property', project_type: 'New construction', status: 'Draft', start_date: '2026-10-13', target_date: '2026-12-18', lead: 'Demo project lead', description: 'Fictional demonstration data only. Do not contact these sample contractors.', locations: ['Kitchen', 'Bathroom', 'Living room'], is_demo: true, template: true }, 201));
+if (project.target_date !== '2026-12-18') ({ project } = await request(`/api/projects/${project.id}`, 'PATCH', { version: project.version, target_date: '2026-12-18' }));
+bootstrap = await request('/api/bootstrap');
+const sourceTasks = bootstrap.records.filter(r => r.project_id === project.id && r.kind === 'task' && r.data.source_id);
+assert.equal(sourceTasks.length, 109, 'All 109 source work items must be preserved.');
+assert.equal(bootstrap.records.filter(r => r.project_id === project.id && r.kind === 'check').length, 44, 'The 35 source inspections are represented by 44 distinct stages.');
+const suffix = new Date().toISOString().slice(0, 19).replaceAll(':', '-');
+const { record: contact } = await request('/api/records', 'POST', { kind: 'contact', project_id: project.id, title: `Demo plumbing contractor ${suffix}`, status: 'Active', data: { company: 'Fictional Plumbing Co.', trade: 'Plumbing', role: 'Contractor', email: 'plumber@example.com', phone: '555-0100', past_jobs: 'Fictional bathroom renovation for demonstration.', notes: 'Sample data — do not contact.' } }, 201);
+const { record: bid } = await request('/api/records', 'POST', { kind: 'bid', project_id: project.id, title: `Demo rough-plumbing price ${suffix}`, status: 'Received', owner_id: contact.id, due_date: '2026-10-20', data: { contractor_id: contact.id, trade: 'Plumbing', scope: 'Kitchen and bathroom rough plumbing — fictional example.', labor_cost: 6000, material_cost: 2200, tax_amount: 154, currency: 'USD', exclusions: 'Permit fees excluded.', payment_terms: 'Demo terms only.' } }, 201);
+const { record: updated } = await request(`/api/records/${bid.id}`, 'PATCH', { version: bid.version, data: { ...bid.data, labor_cost: 6100 } });
+assert.equal(updated.version, 2); assert.equal(updated.data.labor_cost, 6100);
+await request(`/api/records/${bid.id}`, 'PATCH', { version: bid.version, title: 'Stale overwrite must fail' }, 409);
+await request('/api/import', 'POST', { kind: 'bid', project_id: project.id, rows: [{ kind: 'bid', title: bid.title, status: 'Received', data: { labor_cost: 1 } }] }, 409);
+const fileBody = new TextEncoder().encode('ROCKWOOD DEMONSTRATION — FICTIONAL PRICE\nKitchen and bathroom rough plumbing\nLabor: $6,100\nMaterials: $2,200\nTax: $154\nNo real contractor or order.\n');
+const metadata = { name: 'demo-plumbing-price.txt', size: fileBody.byteLength, project_id: project.id, title: `Demo plumbing quote ${suffix}`, category: 'Bid', record_id: bid.id };
+const prepared = await request('/api/files/prepare', 'POST', metadata);
+const upload = await db.storage.from(prepared.bucket).uploadToSignedUrl(prepared.path, prepared.token, fileBody, { contentType: prepared.contentType, upsert: false });
+assert.equal(upload.error, null, upload.error?.message || 'Signed upload failed.');
+console.log('Verified direct private Storage upload.');
+const { record: fileRecord } = await request('/api/files/complete', 'POST', { ...metadata, path: prepared.path }, 201);
+const retry = await request('/api/files/complete', 'POST', { ...metadata, path: prepared.path });
+assert.equal(retry.record.id, fileRecord.id, 'Upload completion must be retry-safe.');
+const download = await request(`/api/files/${fileRecord.id}`);
+const downloaded = await fetch(download.url, { signal: AbortSignal.timeout(30000) });
+assert.equal(downloaded.status, 200); assert.deepEqual(new Uint8Array(await downloaded.arrayBuffer()), fileBody);
+await request(`/api/files/${fileRecord.id}`, 'GET', undefined, 401, false);
+const privateObject = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/pm-documents/${prepared.path}`, { signal: AbortSignal.timeout(30000) });
+assert.notEqual(privateObject.status, 200, 'Private files must not have public download access.');
+const fresh = await request('/api/bootstrap');
+assert.equal(fresh.records.find(r => r.id === bid.id).data.labor_cost, 6100, 'Saved prices persist across reloads.');
+assert(fresh.events.some(event => event.record_id === bid.id && event.action === 'update'), 'Audit history includes the price update.');
+console.log(JSON.stringify({ result: 'passed', demoProjectId: project.id, sourceTasks: sourceTasks.length, checks: 44, verified: ['login-required', 'full-template', 'contact-and-bid-persistence', 'optimistic-conflict', 'duplicate-import-rejected', 'signed-private-upload', 'idempotent-upload-finalize', 'signed-private-download', 'anonymous-download-denied', 'audit-history'] }, null, 2));

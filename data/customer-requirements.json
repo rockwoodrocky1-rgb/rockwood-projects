@@ -1,0 +1,2035 @@
+{
+  "title": "Customer requirements coverage audit",
+  "audit_date": "2026-10-13",
+  "source_photos": [
+    "IMG_4281.HEIC",
+    "IMG_4282.HEIC",
+    "IMG_4283.HEIC",
+    "IMG_4284.HEIC",
+    "IMG_4285.HEIC",
+    "IMG_4286.HEIC",
+    "IMG_4287.HEIC"
+  ],
+  "finding": "All source rows are captured and mapped in this audit. The previous plan covered broad areas but did not explicitly specify every detail. This is not implementation or acceptance evidence.",
+  "counts": {
+    "master_task_rows": 109,
+    "phases": 15,
+    "inspection_list_rows": 35,
+    "tracker_fields": 12
+  },
+  "scope": [
+    {
+      "id": "P1-S01",
+      "page": 1,
+      "source_text": "This template is designed to become a repeatable project-management checklist for a South Florida residential construction project.",
+      "planned_requirement": "Reusable residential project template; project-specific scope and location configuration."
+    },
+    {
+      "id": "P1-S02",
+      "page": 1,
+      "source_text": "It begins when approved/stamped plans are received and continues through bidding, procurement, construction, required inspections, closeout, and issuance of Certificate of Occupancy or Certificate of Completion.",
+      "planned_requirement": "Retain the full approved-plans-to-CO/CC lifecycle. The small demo is a subset, not the full product scope."
+    },
+    {
+      "id": "P1-S03",
+      "page": 1,
+      "source_text": "Municipal requirements vary by jurisdiction and permit scope, so inspection names should be verified against the permit card and local building department for each project.",
+      "planned_requirement": "Project setup must record jurisdiction, permit scope, inspection names/codes, applicability and confirmation. Do not treat the template as a universal inspection list."
+    }
+  ],
+  "tracker_fields": [
+    {
+      "id": "P1-F01",
+      "page": 1,
+      "field": "Address / Project",
+      "source_purpose": "Project address or template name",
+      "planned_view": "New project / Project details",
+      "coverage": "Explicitly discussed"
+    },
+    {
+      "id": "P1-F02",
+      "page": 1,
+      "field": "Phase",
+      "source_purpose": "Bidding, Foundation, Rough MEP, Final, Closeout, etc.",
+      "planned_view": "Project plan / Timeline",
+      "coverage": "Explicitly discussed"
+    },
+    {
+      "id": "P1-F03",
+      "page": 1,
+      "field": "Task",
+      "source_purpose": "Specific action item",
+      "planned_view": "Project plan / Today / Work details",
+      "coverage": "Explicitly discussed"
+    },
+    {
+      "id": "P1-F04",
+      "page": 1,
+      "field": "Trade",
+      "source_purpose": "Roofing, plumbing, electrical, stucco, etc.",
+      "planned_view": "Work details / Bids & contractors",
+      "coverage": "Explicitly discussed"
+    },
+    {
+      "id": "P1-F05",
+      "page": 1,
+      "field": "Owner",
+      "source_purpose": "Responsible person, vendor, or internal assignee",
+      "planned_view": "Work details / People",
+      "coverage": "Explicitly discussed; separate hiring responsibility from performing contractor"
+    },
+    {
+      "id": "P1-F06",
+      "page": 1,
+      "field": "Status",
+      "source_purpose": "Waiting, Working, Blocked, Done",
+      "planned_view": "All work views",
+      "coverage": "Reconcile these exact source statuses with Ready, Planned and Ready to check in mockups"
+    },
+    {
+      "id": "P1-F07",
+      "page": 1,
+      "field": "Priority",
+      "source_purpose": "High, Medium, Low",
+      "planned_view": "Work details / Filters",
+      "coverage": "Mentioned, but control and sorting behavior not designed"
+    },
+    {
+      "id": "P1-F08",
+      "page": 1,
+      "field": "Due Date",
+      "source_purpose": "Target date",
+      "planned_view": "Project plan / Timeline / Work details",
+      "coverage": "Explicitly discussed; preserve source relative timing as well"
+    },
+    {
+      "id": "P1-F09",
+      "page": 1,
+      "field": "Inspection Required",
+      "source_purpose": "Yes / No",
+      "planned_view": "Work details / Checks & approvals",
+      "coverage": "Broadly covered; explicit field and per-project applicability needed"
+    },
+    {
+      "id": "P1-F10",
+      "page": 1,
+      "field": "Inspection Type",
+      "source_purpose": "Building, electrical, plumbing, mechanical, zoning, fire, etc.",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; exact catalogue and permit codes needed"
+    },
+    {
+      "id": "P1-F11",
+      "page": 1,
+      "field": "Notes",
+      "source_purpose": "Scope, dependencies, phone numbers, reminders, exclusions",
+      "planned_view": "Work details / linked contacts and requirements",
+      "coverage": "Retain all source notes; structured links must not discard source wording"
+    },
+    {
+      "id": "P1-F12",
+      "page": 1,
+      "field": "Reminder",
+      "source_purpose": "Due + overdue, overdue only, or off",
+      "planned_view": "Follow-ups settings / Work details",
+      "coverage": "Exact three settings not specified previously; preserve off when enabling agents"
+    }
+  ],
+  "master_tasks": [
+    {
+      "id": "P2-01",
+      "page": 2,
+      "phase": "1. Approved Plans Received",
+      "task": "Receive approved/stamped plans",
+      "owner": "Chris / PM",
+      "status": "Waiting",
+      "due_timing": "Day 0",
+      "notes": "Confirm full plan set is approved and current",
+      "planned_view": "Files / Project plan",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-02",
+      "page": 2,
+      "phase": "1. Approved Plans Received",
+      "task": "Create project folder",
+      "owner": "Admin / VA",
+      "status": "Waiting",
+      "due_timing": "Day 0",
+      "notes": "Plans, permits, bids, contracts, selections, inspections",
+      "planned_view": "Files / New project",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-03",
+      "page": 2,
+      "phase": "1. Approved Plans Received",
+      "task": "Review permit card and required inspections",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Day 1",
+      "notes": "Confirm all required inspection codes per municipality",
+      "planned_view": "Checks & approvals / New project",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-04",
+      "page": 2,
+      "phase": "1. Approved Plans Received",
+      "task": "Build master scope by trade",
+      "owner": "Estimator / PM",
+      "status": "Waiting",
+      "due_timing": "Day 1-2",
+      "notes": "Use plans to separate scopes",
+      "planned_view": "Project plan / New project",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-05",
+      "page": 2,
+      "phase": "1. Approved Plans Received",
+      "task": "Identify long-lead items",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Day 1-2",
+      "notes": "Windows, doors, trusses, cabinets, roofing, appliances",
+      "planned_view": "Materials & deliveries",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-06",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Prepare bid package",
+      "owner": "PM / Estimator",
+      "status": "Waiting",
+      "due_timing": "Day 2",
+      "notes": "Plans, scope, bid due date, labor/material split",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-07",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Send bid invitations to trades",
+      "owner": "Admin / PM",
+      "status": "Waiting",
+      "due_timing": "Day 2-3",
+      "notes": "Include value engineering request",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-08",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Roofing bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Labor and materials separated",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-09",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Framing bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Include lumber/truss coordination",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-10",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Stucco bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Include exterior details",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-11",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Drywall bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Hang, finish, texture level",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-12",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Mechanical/HVAC bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Ductwork, equipment, grilles",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-13",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Electrical bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Service, rough, trim, low voltage if needed",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-14",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Plumbing bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Underground, rough, trim",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-15",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Windows/doors bid follow-up",
+      "owner": "RVS / PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Shop drawings, NOAs, install",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-16",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Cabinets/millwork bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Shop drawings and lead time",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-17",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Flooring bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Material + labor",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-18",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Painting bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Interior/exterior",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-19",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Fence/gate bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Include permits if needed",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-20",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Glass/railing bid follow-up",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Bid deadline",
+      "notes": "Include shop drawings if required",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-21",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Compare bids by trade",
+      "owner": "Estimator / PM",
+      "status": "Waiting",
+      "due_timing": "After bids received",
+      "notes": "Price, scope gaps, exclusions",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-22",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Clarify scope gaps with bidders",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "After comparison",
+      "notes": "Avoid missing line items",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-23",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Recommend trade awards",
+      "owner": "PM / Chris",
+      "status": "Waiting",
+      "due_timing": "After comparison",
+      "notes": "Best value, not just lowest price",
+      "planned_view": "Bids & contractors",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-24",
+      "page": 2,
+      "phase": "2. Bidding",
+      "task": "Execute subcontractor agreements",
+      "owner": "Chris / Admin",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Scope, schedule, delay terms, payment terms",
+      "planned_view": "Bids & contractors / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-25",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Create baseline schedule",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Include inspections and long-lead procurement",
+      "planned_view": "Project plan / Timeline",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-26",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Confirm permit posting and jobsite documents",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Permit card, stamped plans, address visible",
+      "planned_view": "Project plan / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-27",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Hold kickoff meeting",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Superintendent, trades, safety, sequence",
+      "planned_view": "Project plan / Updates",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-28",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Order long-lead materials",
+      "owner": "PM / Trade",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Windows, doors, trusses, cabinets, roofing",
+      "planned_view": "Materials & deliveries",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-29",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Confirm temporary utilities",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before start",
+      "notes": "Water, power, sanitation",
+      "planned_view": "Project plan",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-30",
+      "page": 2,
+      "phase": "3. Preconstruction",
+      "task": "Confirm survey/stakeout",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before site work",
+      "notes": "Foundation layout",
+      "planned_view": "Project plan / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-31",
+      "page": 2,
+      "phase": "4. Sitework/Foundation",
+      "task": "Site prep and demolition",
+      "owner": "Site contractor",
+      "status": "Waiting",
+      "due_timing": "Start",
+      "notes": "Clearing, demo, erosion controls",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-32",
+      "page": 2,
+      "phase": "4. Sitework/Foundation",
+      "task": "Layout/stakeout inspection prep",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before foundation",
+      "notes": "Survey confirmation",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-33",
+      "page": 2,
+      "phase": "4. Sitework/Foundation",
+      "task": "Underground plumbing rough",
+      "owner": "Plumbing",
+      "status": "Waiting",
+      "due_timing": "Before slab",
+      "notes": "Inspection before cover",
+      "planned_view": "Project plan / Today / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P2-34",
+      "page": 2,
+      "phase": "4. Sitework/Foundation",
+      "task": "Underground electrical if applicable",
+      "owner": "Electrical",
+      "status": "Waiting",
+      "due_timing": "Before slab",
+      "notes": "Inspection before cover",
+      "planned_view": "Project plan / Today / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-01",
+      "page": 3,
+      "phase": "4. Sitework/Foundation",
+      "task": "Footing/foundation steel/rebar",
+      "owner": "Shell / Concrete",
+      "status": "Waiting",
+      "due_timing": "Before pour",
+      "notes": "Inspection before concrete",
+      "planned_view": "Project plan / Today / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-02",
+      "page": 3,
+      "phase": "4. Sitework/Foundation",
+      "task": "Foundation/footing inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before pour",
+      "notes": "Required before concealment/cover",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-03",
+      "page": 3,
+      "phase": "4. Sitework/Foundation",
+      "task": "Slab prep inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before slab pour",
+      "notes": "Vapor barrier, steel, termite, plumbing",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-04",
+      "page": 3,
+      "phase": "4. Sitework/Foundation",
+      "task": "Slab pour",
+      "owner": "Concrete",
+      "status": "Waiting",
+      "due_timing": "After approval",
+      "notes": "Document pour",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-05",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Masonry/block walls",
+      "owner": "Shell",
+      "status": "Waiting",
+      "due_timing": "After slab",
+      "notes": "Coordinate inspections",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-06",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Tie beam / lintel steel inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before pour",
+      "notes": "Structural inspection",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-07",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Columns/beams inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before pour",
+      "notes": "As applicable",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-08",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Truss delivery and install",
+      "owner": "Truss / Framing",
+      "status": "Waiting",
+      "due_timing": "After shell",
+      "notes": "Confirm engineering package",
+      "planned_view": "Materials & deliveries / Project plan",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-09",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Roof sheathing / nail pattern inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before dry-in",
+      "notes": "Roofing/sheathing inspection",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-10",
+      "page": 3,
+      "phase": "5. Shell / Structure",
+      "task": "Framing inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Includes structural framing",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-11",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Windows and exterior doors delivery",
+      "owner": "RVS / Supplier",
+      "status": "Waiting",
+      "due_timing": "Per lead time",
+      "notes": "Verify sizes/NOAs",
+      "planned_view": "Materials & deliveries",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-12",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Window/door installation",
+      "owner": "RVS / Installer",
+      "status": "Waiting",
+      "due_timing": "After openings ready",
+      "notes": "Buck, fasteners, sealant",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-13",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Window/door inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "After install",
+      "notes": "NOA/product approval on site",
+      "planned_view": "Checks & approvals / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-14",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Roofing dry-in",
+      "owner": "Roofing",
+      "status": "Waiting",
+      "due_timing": "After sheathing",
+      "notes": "Underlayment",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-15",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Roofing dry-in inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before covering",
+      "notes": "Required before proceeding",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-16",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Final roof installation",
+      "owner": "Roofing",
+      "status": "Waiting",
+      "due_timing": "After dry-in approval",
+      "notes": "Tile/metal/shingle/flat system",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-17",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Roof final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "After completion",
+      "notes": "Roofing closeout",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-18",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Exterior stucco/lath",
+      "owner": "Stucco",
+      "status": "Waiting",
+      "due_timing": "After dry-in",
+      "notes": "Coordinate lath inspections",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-19",
+      "page": 3,
+      "phase": "6. Exterior Envelope",
+      "task": "Lath inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before stucco cover",
+      "notes": "Before concealment",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-20",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "HVAC rough-in",
+      "owner": "Mechanical",
+      "status": "Waiting",
+      "due_timing": "Before insulation/drywall",
+      "notes": "Ductwork, linesets, equipment prep",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-21",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "HVAC rough inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Mechanical rough",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-22",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "Plumbing rough-in",
+      "owner": "Plumbing",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Supply, waste, vents",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-23",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "Plumbing rough inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Pressure tests as required",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-24",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "Electrical rough-in",
+      "owner": "Electrical",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Boxes, wiring, panels",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-25",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "Electrical rough inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before cover",
+      "notes": "Electrical rough",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-26",
+      "page": 3,
+      "phase": "7. Rough MEP",
+      "task": "Low-voltage/security rough",
+      "owner": "Low voltage",
+      "status": "Waiting",
+      "due_timing": "Before drywall",
+      "notes": "Optional/scope dependent",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-27",
+      "page": 3,
+      "phase": "8. Insulation / Drywall",
+      "task": "Energy/insulation installation",
+      "owner": "Insulation",
+      "status": "Waiting",
+      "due_timing": "After rough approvals",
+      "notes": "Walls/ceilings",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-28",
+      "page": 3,
+      "phase": "8. Insulation / Drywall",
+      "task": "Insulation inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before drywall",
+      "notes": "Energy/sound/impact if required",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-29",
+      "page": 3,
+      "phase": "8. Insulation / Drywall",
+      "task": "Drywall hang",
+      "owner": "Drywall",
+      "status": "Waiting",
+      "due_timing": "After insulation approval",
+      "notes": "Board install",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-30",
+      "page": 3,
+      "phase": "8. Insulation / Drywall",
+      "task": "Drywall screw/nail inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Before finish",
+      "notes": "If required",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-31",
+      "page": 3,
+      "phase": "8. Insulation / Drywall",
+      "task": "Drywall finish",
+      "owner": "Drywall",
+      "status": "Waiting",
+      "due_timing": "After board approval",
+      "notes": "Finish/texture",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-32",
+      "page": 3,
+      "phase": "9. Interior Finishes",
+      "task": "Interior doors and trim",
+      "owner": "Finish carpenter",
+      "status": "Waiting",
+      "due_timing": "After drywall",
+      "notes": "Doors, baseboards, casing",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-33",
+      "page": 3,
+      "phase": "9. Interior Finishes",
+      "task": "Cabinets/millwork install",
+      "owner": "Millwork",
+      "status": "Waiting",
+      "due_timing": "After drywall/paint prep",
+      "notes": "Coordinate stone/appliances",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-34",
+      "page": 3,
+      "phase": "9. Interior Finishes",
+      "task": "Countertop templates",
+      "owner": "Stone",
+      "status": "Waiting",
+      "due_timing": "After cabinets",
+      "notes": "Field verify",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P3-35",
+      "page": 3,
+      "phase": "9. Interior Finishes",
+      "task": "Tile installation",
+      "owner": "Tile",
+      "status": "Waiting",
+      "due_timing": "Wet areas/floors",
+      "notes": "Waterproofing inspections if required",
+      "planned_view": "Project plan / Today / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-01",
+      "page": 4,
+      "phase": "9. Interior Finishes",
+      "task": "Interior paint",
+      "owner": "Painter",
+      "status": "Waiting",
+      "due_timing": "After finishes prep",
+      "notes": "Primer/top coats",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-02",
+      "page": 4,
+      "phase": "9. Interior Finishes",
+      "task": "Flooring installation",
+      "owner": "Flooring",
+      "status": "Waiting",
+      "due_timing": "Late-stage",
+      "notes": "Protect after install",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-03",
+      "page": 4,
+      "phase": "9. Interior Finishes",
+      "task": "Stair/railing installation",
+      "owner": "Railing vendor",
+      "status": "Waiting",
+      "due_timing": "Before final",
+      "notes": "Inspection if required",
+      "planned_view": "Project plan / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-04",
+      "page": 4,
+      "phase": "10. Trim-Out",
+      "task": "Electrical trim",
+      "owner": "Electrical",
+      "status": "Waiting",
+      "due_timing": "After finishes",
+      "notes": "Devices, fixtures, panel labels",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-05",
+      "page": 4,
+      "phase": "10. Trim-Out",
+      "task": "Plumbing trim",
+      "owner": "Plumbing",
+      "status": "Waiting",
+      "due_timing": "After finishes",
+      "notes": "Fixtures, toilets, faucets",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-06",
+      "page": 4,
+      "phase": "10. Trim-Out",
+      "task": "HVAC trim/startup",
+      "owner": "Mechanical",
+      "status": "Waiting",
+      "due_timing": "After power",
+      "notes": "Grilles, thermostats, startup",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-07",
+      "page": 4,
+      "phase": "10. Trim-Out",
+      "task": "Appliance installation",
+      "owner": "Appliance vendor",
+      "status": "Waiting",
+      "due_timing": "After cabinets/power/plumbing",
+      "notes": "Verify specs",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-08",
+      "page": 4,
+      "phase": "10. Trim-Out",
+      "task": "Mirrors, accessories, hardware",
+      "owner": "PM / Trades",
+      "status": "Waiting",
+      "due_timing": "Near final",
+      "notes": "Mirrors, towel bars, door stops",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-09",
+      "page": 4,
+      "phase": "11. Exterior / Site Final",
+      "task": "Driveway/walkways",
+      "owner": "Site contractor",
+      "status": "Waiting",
+      "due_timing": "After heavy work",
+      "notes": "Final grading",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-10",
+      "page": 4,
+      "phase": "11. Exterior / Site Final",
+      "task": "Landscaping and irrigation",
+      "owner": "Landscape",
+      "status": "Waiting",
+      "due_timing": "Before final zoning",
+      "notes": "Per approved landscape plan",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-11",
+      "page": 4,
+      "phase": "11. Exterior / Site Final",
+      "task": "Fence/gates",
+      "owner": "Fence vendor",
+      "status": "Waiting",
+      "due_timing": "Before final if required",
+      "notes": "Permit/inspection if applicable",
+      "planned_view": "Project plan / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-12",
+      "page": 4,
+      "phase": "11. Exterior / Site Final",
+      "task": "Final grading/drainage check",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before finals",
+      "notes": "No ponding/slope issues",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-13",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Building final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Required for CO/CC",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-14",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Electrical final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Devices, panels, fixtures",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-15",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Plumbing final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Fixtures, water heater, tests",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-16",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Mechanical final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "HVAC complete",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-17",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Roofing final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "If not already closed",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-18",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Window/door final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "If separate permit",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-19",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Zoning/landscape final inspection",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Often required for CO",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-20",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Fire final inspection, if applicable",
+      "owner": "PM / Fire Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Scope dependent",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-21",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Driveway/public works final, if applicable",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Apron, swale, ROW if applicable",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-22",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Pool final, if applicable",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "Barrier, alarms, equipment",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-23",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Elevator final, if applicable",
+      "owner": "PM / Inspector",
+      "status": "Waiting",
+      "due_timing": "Closeout",
+      "notes": "If home has elevator",
+      "planned_view": "Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-24",
+      "page": 4,
+      "phase": "12. Final Inspections",
+      "task": "Blower door / envelope leakage report",
+      "owner": "PM / Tester",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Energy documentation when applicable",
+      "planned_view": "Checks & approvals / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-25",
+      "page": 4,
+      "phase": "13. Punch List",
+      "task": "Create owner punch list",
+      "owner": "PM / Chris",
+      "status": "Waiting",
+      "due_timing": "Before final clean",
+      "notes": "Walk project room by room",
+      "planned_view": "Walkthroughs & fixes",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-26",
+      "page": 4,
+      "phase": "13. Punch List",
+      "task": "Assign punch items by trade",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Same day",
+      "notes": "Owner, due date, priority",
+      "planned_view": "Walkthroughs & fixes",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-27",
+      "page": 4,
+      "phase": "13. Punch List",
+      "task": "Complete punch list corrections",
+      "owner": "Trades",
+      "status": "Waiting",
+      "due_timing": "Before final clean",
+      "notes": "Track daily",
+      "planned_view": "Walkthroughs & fixes",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-28",
+      "page": 4,
+      "phase": "13. Punch List",
+      "task": "Final cleaning",
+      "owner": "Cleaner",
+      "status": "Waiting",
+      "due_timing": "After punch",
+      "notes": "Interior/exterior windows, debris",
+      "planned_view": "Project plan / Today",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-29",
+      "page": 4,
+      "phase": "13. Punch List",
+      "task": "Final owner walkthrough",
+      "owner": "Chris / Owner",
+      "status": "Waiting",
+      "due_timing": "After clean",
+      "notes": "Confirm acceptance",
+      "planned_view": "Walkthroughs & fixes / Handover",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-30",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Collect subcontractor warranties",
+      "owner": "Admin / PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Trade warranties",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-31",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Collect manufacturer warranties",
+      "owner": "Admin / PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Appliances, HVAC, roofing, windows",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-32",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Collect product approvals / NOAs",
+      "owner": "Admin / PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Windows, doors, roofing, etc.",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-33",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Collect as-built survey",
+      "owner": "Surveyor / PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Often required for zoning/final",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-34",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Collect final inspection approvals",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "All permits closed",
+      "planned_view": "Handover / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-35",
+      "page": 4,
+      "phase": "14. Closeout Package",
+      "task": "Prepare owner handoff binder",
+      "owner": "Admin / PM",
+      "status": "Waiting",
+      "due_timing": "Before turnover",
+      "notes": "Manuals, contacts, warranties, colors",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-36",
+      "page": 4,
+      "phase": "15. CO / Turnover",
+      "task": "Resolve open holds",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "Before CO",
+      "notes": "Fees, failed inspections, documents",
+      "planned_view": "Checks & approvals / Handover",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P4-37",
+      "page": 4,
+      "phase": "15. CO / Turnover",
+      "task": "Apply for Certificate of Occupancy / Completion",
+      "owner": "PM",
+      "status": "Waiting",
+      "due_timing": "After finals",
+      "notes": "CO/CC requires approved inspections and holds cleared",
+      "planned_view": "Handover / Checks & approvals",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P5-01",
+      "page": 5,
+      "phase": "15. CO / Turnover",
+      "task": "Receive CO",
+      "owner": "PM / Chris",
+      "status": "Waiting",
+      "due_timing": "Final",
+      "notes": "Store in project folder",
+      "planned_view": "Handover / Files",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P5-02",
+      "page": 5,
+      "phase": "15. CO / Turnover",
+      "task": "Final payment reconciliation",
+      "owner": "Chris / Admin",
+      "status": "Waiting",
+      "due_timing": "After CO",
+      "notes": "Invoices, retainage, change orders",
+      "planned_view": "Costs / Handover",
+      "coverage": "Broadly covered; details not yet specified"
+    },
+    {
+      "id": "P5-03",
+      "page": 5,
+      "phase": "15. CO / Turnover",
+      "task": "Project closeout review",
+      "owner": "Chris / PM",
+      "status": "Waiting",
+      "due_timing": "After turnover",
+      "notes": "Lessons learned",
+      "planned_view": "Handover / Project review",
+      "coverage": "Broadly covered; details not yet specified"
+    }
+  ],
+  "inspection_list": [
+    {
+      "id": "P6-01",
+      "page": 6,
+      "category": "Site / Preconstruction",
+      "inspection": "Permit card and approved plans on site",
+      "condition": "",
+      "planned_view": "Checks & approvals / Files",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P2-26"
+      ],
+      "mapping_note": "Site-document readiness, not itself proof of an official inspection pass."
+    },
+    {
+      "id": "P6-02",
+      "page": 6,
+      "category": "Site / Preconstruction",
+      "inspection": "Address posted and visible",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P2-26"
+      ],
+      "mapping_note": "Site-readiness check; link to posting task."
+    },
+    {
+      "id": "P6-03",
+      "page": 6,
+      "category": "Survey / Layout",
+      "inspection": "Foundation layout / setback verification",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P2-30",
+        "P2-32"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-04",
+      "page": 6,
+      "category": "Underground",
+      "inspection": "Underground plumbing",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P2-33"
+      ],
+      "mapping_note": "Source work row mentions inspection before cover; create a linked inspection checkpoint."
+    },
+    {
+      "id": "P6-05",
+      "page": 6,
+      "category": "Underground",
+      "inspection": "Underground electrical, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P2-34"
+      ],
+      "mapping_note": "Conditional; source work row mentions inspection before cover."
+    },
+    {
+      "id": "P6-06",
+      "page": 6,
+      "category": "Foundation",
+      "inspection": "Footing / rebar / foundation inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-01",
+        "P3-02"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-07",
+      "page": 6,
+      "category": "Foundation",
+      "inspection": "Slab prep inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-03"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-08",
+      "page": 6,
+      "category": "Foundation",
+      "inspection": "Termite treatment documentation, if required",
+      "condition": "if required",
+      "planned_view": "Checks & approvals / Files",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-03"
+      ],
+      "mapping_note": "Termite documentation is only a note in the master list; give it its own required-document check when applicable."
+    },
+    {
+      "id": "P6-09",
+      "page": 6,
+      "category": "Structure",
+      "inspection": "Masonry wall / tie beam / lintel inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-05",
+        "P3-06"
+      ],
+      "mapping_note": "Combined category; relate masonry and tie-beam/lintel work without assuming one inspection covers every stage."
+    },
+    {
+      "id": "P6-10",
+      "page": 6,
+      "category": "Structure",
+      "inspection": "Column / beam steel inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-07"
+      ],
+      "mapping_note": "Master task notes say As applicable; preserve that condition although this inspection row has no qualifier."
+    },
+    {
+      "id": "P6-11",
+      "page": 6,
+      "category": "Structure",
+      "inspection": "Framing inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-10"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-12",
+      "page": 6,
+      "category": "Roof",
+      "inspection": "Roof sheathing / nail pattern inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-09"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-13",
+      "page": 6,
+      "category": "Roof",
+      "inspection": "Roof dry-in inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-15"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-14",
+      "page": 6,
+      "category": "Roof",
+      "inspection": "Roof final inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-17",
+        "P4-17"
+      ],
+      "mapping_note": "Do not create a duplicate final if the earlier roof final has already been accepted and the permit is closed."
+    },
+    {
+      "id": "P6-15",
+      "page": 6,
+      "category": "Envelope",
+      "inspection": "Window and exterior door inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-13",
+        "P4-18"
+      ],
+      "mapping_note": "Installation inspection and a separate-permit final may be distinct; do not merge by name alone."
+    },
+    {
+      "id": "P6-16",
+      "page": 6,
+      "category": "Envelope",
+      "inspection": "Waterproofing / flashing inspection, if required",
+      "condition": "if required",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-35"
+      ],
+      "mapping_note": "Waterproofing is mentioned under tile; flashing needs explicit scope and checkpoint mapping."
+    },
+    {
+      "id": "P6-17",
+      "page": 6,
+      "category": "Stucco",
+      "inspection": "Lath inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-19"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-18",
+      "page": 6,
+      "category": "MEP Rough",
+      "inspection": "Electrical rough inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-25"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-19",
+      "page": 6,
+      "category": "MEP Rough",
+      "inspection": "Plumbing rough inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-23"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-20",
+      "page": 6,
+      "category": "MEP Rough",
+      "inspection": "Mechanical rough inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-21"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-21",
+      "page": 6,
+      "category": "MEP Rough",
+      "inspection": "Gas rough inspection, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [],
+      "mapping_note": "No separate gas rough inspection row in the master tasks. Add a conditional checkpoint from this source entry."
+    },
+    {
+      "id": "P6-22",
+      "page": 6,
+      "category": "Energy",
+      "inspection": "Insulation inspection",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-28"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-23",
+      "page": 6,
+      "category": "Energy",
+      "inspection": "Blower door / envelope leakage test",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-24"
+      ],
+      "mapping_note": "Test and report evidence are related but separately trackable; master note says when applicable."
+    },
+    {
+      "id": "P6-24",
+      "page": 6,
+      "category": "Drywall",
+      "inspection": "Drywall screw/nail inspection, if required",
+      "condition": "if required",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P3-30"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-25",
+      "page": 6,
+      "category": "Pool",
+      "inspection": "Pool steel / shell / plumbing / electric / barrier / final, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-22"
+      ],
+      "mapping_note": "Expand steel, shell, plumbing, electric, barrier and final into applicable checkpoints; master list names only the final."
+    },
+    {
+      "id": "P6-26",
+      "page": 6,
+      "category": "Site Final",
+      "inspection": "Driveway / approach / right-of-way final, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-21"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-27",
+      "page": 6,
+      "category": "Site Final",
+      "inspection": "Drainage / grading inspection, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-12"
+      ],
+      "mapping_note": "Related grading check is assigned to the PM. Confirm whether a separate official inspection is required; do not equate them."
+    },
+    {
+      "id": "P6-28",
+      "page": 6,
+      "category": "Site Final",
+      "inspection": "Landscape / zoning final",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-19"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-29",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Electrical final",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-14"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-30",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Plumbing final",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-15"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-31",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Mechanical final",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-16"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-32",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Building final",
+      "condition": "",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-13"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-33",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Fire final, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-20"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-34",
+      "page": 6,
+      "category": "Final",
+      "inspection": "Elevator final, if applicable",
+      "condition": "if applicable",
+      "planned_view": "Checks & approvals / Project plan",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-23"
+      ],
+      "mapping_note": "Link to the corresponding project inspection record; retain source wording and applicability."
+    },
+    {
+      "id": "P6-35",
+      "page": 6,
+      "category": "CO",
+      "inspection": "CO/CC application and issuance",
+      "condition": "",
+      "planned_view": "Handover / Checks & approvals",
+      "coverage": "Broadly covered; specific check not yet specified",
+      "related_master_rows": [
+        "P4-37",
+        "P5-01"
+      ],
+      "mapping_note": "Application and issuance must be separate events. Master receipt row says Receive CO; support CC where applicable too."
+    }
+  ],
+  "inspection_notes": [
+    {
+      "id": "P7-N01",
+      "page": 7,
+      "source_text": "Miami-Dade County notes that inspections are required before covering or concealing work, and that approved/stamped plans plus the permit card must be on site.",
+      "planned_requirement": "Explicit before-cover inspection gates and site-document readiness. Preserve the customer note; confirm applicability per project."
+    },
+    {
+      "id": "P7-N02",
+      "page": 7,
+      "source_text": "Required inspections can include Building, Electrical, Mechanical, Plumbing, Zoning, Fire, windows/shutters, landscaping, and other permit-specific inspections.",
+      "planned_requirement": "Allow named and additional permit-specific checks, including shutters where applicable. Do not limit inspection types to the demo."
+    },
+    {
+      "id": "P7-N03",
+      "page": 7,
+      "source_text": "A Certificate of Occupancy or Certificate of Completion validates that the project has been completed in compliance with applicable code.",
+      "planned_requirement": "Store certificate type and issued-document evidence; a completed task or AI statement is not certificate issuance."
+    },
+    {
+      "id": "P7-N04",
+      "page": 7,
+      "source_text": "CO/CC issuance requires approved inspections and completion holds to be cleared.",
+      "planned_requirement": "Track inspection approvals and hold clearance separately from application submission and certificate receipt."
+    }
+  ],
+  "customer_references": [
+    {
+      "id": "P7-R01",
+      "page": 7,
+      "label": "Miami-Dade County Inspections",
+      "url": "https://www.miamidade.gov/global/economy/building/inspections.page"
+    },
+    {
+      "id": "P7-R02",
+      "page": 7,
+      "label": "Miami-Dade County Certificate of Occupancy and Certificate of Use",
+      "url": "https://www.miamidade.gov/global/economy/building/cert-of-occupancy.page"
+    }
+  ],
+  "remaining_design_details": [
+    {
+      "id": "G01",
+      "area": "Status and reminder settings",
+      "source_ids": "P1-F06, P1-F07, P1-F09, P1-F10, P1-F12",
+      "required_detail": "Preserve Waiting / Working / Blocked / Done and High / Medium / Low. Specify how readiness and review states relate to those statuses. Provide Due + overdue / overdue only / off. Do not collapse Waiting and Blocked without a defined mapping.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G02",
+      "area": "Complete bid and contract workflow",
+      "source_ids": "P2-06 to P2-24",
+      "required_detail": "Preserve all 13 trade-specific bid follow-ups, labor/material splits, scope gaps, exclusions, shop drawings, product approvals/NOAs, value engineering requests, comparison, recommendation, and signed scope/schedule/delay/payment terms.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G03",
+      "area": "Baseline and scheduling rules",
+      "source_ids": "P2-25 and Due Timing throughout",
+      "required_detail": "Keep the original baseline separate from revised forecasts and actual dates. Turn clear before/after rules into explicit dependencies. Confirm ambiguous timing, working calendars and durations; do not manufacture dates from broad labels.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G04",
+      "area": "Site readiness and document controls",
+      "source_ids": "P2-01 to P2-04, P2-26 to P2-32, P6-01 to P6-03",
+      "required_detail": "Preserve current approved plan sets, permit/inspection codes, visible address, site documents, kickoff safety/sequence, temporary water/power/sanitation, survey and erosion controls.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G05",
+      "area": "Materials and technical handoffs",
+      "source_ids": "P2-05, P2-28, P3-08, P3-11 to P3-13, P3-33 to P3-35",
+      "required_detail": "Track long-lead items, supplier timing, engineering packages, sizes, product approvals, opening readiness, shop drawings, field measurements and cabinet/stone/appliance coordination.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G06",
+      "area": "Full inspection catalogue and applicability",
+      "source_ids": "All 35 P6 rows; inspection rows/notes on P2 to P4",
+      "required_detail": "Add named checks and conditional gas, termite documentation, waterproofing/flashing, pool stages, fire, elevator, right-of-way and other permit checks. Record applicability; distinguish document checks, official inspections, tests and certificate issuance.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G07",
+      "area": "Correct drywall and finish prerequisites",
+      "source_ids": "P3-20 to P3-31",
+      "required_detail": "The simplified mockup only showed plumbing approval. Preserve applicable mechanical/plumbing/electrical rough approvals, then insulation installation and approval before drywall. Included low-voltage/security rough work also precedes drywall; its source row does not specify an inspection. Preserve the screw/nail inspection before finishing when required.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G08",
+      "area": "Punch timing and owner acceptance",
+      "source_ids": "P4-25 to P4-29",
+      "required_detail": "Room-by-room punch walk, same-day assignment with owner/date/priority, daily correction tracking, final cleaning after punch, and owner acceptance after cleaning.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G09",
+      "area": "Complete handover package",
+      "source_ids": "P4-30 to P4-35",
+      "required_detail": "Separate trade and manufacturer warranties; retain product approvals/NOAs, as-built survey, final inspection approvals and permit closure. Handoff binder must include manuals, contacts, warranties and colors.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G10",
+      "area": "Holds and certificate lifecycle",
+      "source_ids": "P4-36, P4-37, P5-01, P6-35, P7-N04",
+      "required_detail": "Track fees, failed inspections and missing-document holds; record clearance; distinguish application from certificate receipt and preserve the issued document.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G11",
+      "area": "Financial closeout and learning",
+      "source_ids": "P5-02, P5-03",
+      "required_detail": "Include reconciliation of invoices, retainage and change orders after CO, and lessons learned after turnover. Deferring a full accounting system must not remove these customer requirements.",
+      "status": "Detailed specification pending"
+    },
+    {
+      "id": "G12",
+      "area": "Template overlaps and unclear inputs",
+      "source_ids": "P3-35 and cross-references in P6",
+      "required_detail": "Tile Due Timing is Wet areas/floors, which is not a date rule. Pool entry bundles multiple stages. Some inspection rows overlap master tasks and differ in qualifiers. Resolve per project with linked records, preserving every original source reference.",
+      "status": "Detailed specification pending"
+    }
+  ]
+}
