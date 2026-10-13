@@ -21,7 +21,7 @@ The local app opens at `http://127.0.0.1:8792`. There is no local-storage fallba
 
 ## Database and storage
 
-Apply [202610130001_pm.sql](../supabase/migrations/202610130001_pm.sql) with the Supabase SQL editor or authorized migration tooling before first use. The migration creates `pm_` tables, membership and audit records, constrained write functions, row-level security and the private `pm-documents` bucket. These names are separate from the existing walkthrough application's tables.
+Apply the SQL files in `supabase/migrations/` in filename order with the Supabase SQL editor or authorized migration tooling before first use. The initial migration creates `pm_` tables, membership and audit records, constrained write functions, row-level security and the private `pm-documents` bucket. The second migration ensures stale edits return HTTP 409 without a database retry. These names are separate from the existing walkthrough application's tables.
 
 Apply subsequent schema changes as new migrations. Do not assume editing a migration file changes an already deployed database.
 
@@ -64,7 +64,7 @@ Access is currently **workspace-wide**, not restricted to an individual worker's
 
 Connect the private [GitHub repository](https://github.com/rockwoodrocky1-rgb/rockwood-projects) to the intended Vercel project. Use the Next.js build, and configure the two `NEXT_PUBLIC_SUPABASE_*` variables for each environment that should connect to the database. Rebuild after changing public build-time variables. The service-role key is not required by Vercel.
 
-Target production address: `https://rockwood-projects.vercel.app`. This document does not certify that deployment has completed.
+Production address: `https://rockwood-projects.vercel.app`. Initial deployment, authenticated data entry, private uploads/downloads, and hosted access restrictions were verified on October 13, 2026. Recheck after infrastructure or permission changes.
 
 Before customer use, verify the deployed application:
 

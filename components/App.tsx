@@ -285,12 +285,49 @@ function RecordEditor({ kind, record, data, selectedProject, canWrite, onClose, 
 }
 
 function ImportEditor({ kind, projects, projectId: initialProject, onClose, onSaved }: { kind: Kind; projects: Project[]; projectId: string; onClose: () => void; onSaved: (text?: string) => Promise<void> }) {
-  const [projectId, setProjectId] = useState(initialProject === 'all' ? '' : initialProject); const [filename, setFilename] = useState(''); const [parsed, setParsed] = useState<{ rows: RecordInput[]; errors: string[] } | null>(null); const [busy, setBusy] = useState(false); const [error, setError] = useState('');
+  const [projectId, setProjectId] = useState(initialProject === 'all' ? '' : initialProject); const [filename, setFilename] = useState(''); const [parsed, setParsed] = useState<{ rows: RecordInput[]; errors: string[] } | null>(null); const [busy, setBusy] = useState(false); const [reading, setReading] = useState(false); const [error, setError] = useState('');
+  const readSequence = useRef(0); const readerRef = useRef<FileReader | null>(null); const readTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { readSequence.current += 1; if (readTimer.current) clearTimeout(readTimer.current); readerRef.current?.abort(); }, []);
   const config = KIND_CONFIG[kind]; const close = useCallback(() => { if (!busy) onClose(); }, [busy, onClose]);
-  async function read(file?: File) { if (!file) return; setError(''); setFilename(file.name); if (file.size > 5_000_000) { setParsed(null); setError('CSV files must be smaller than 5 MB.'); return; } try { setParsed(parseImport(await file.text(), kind)); } catch (e) { setError(message(e)); } }
-  async function save() { if (!parsed || parsed.errors.length) return; setBusy(true); setError(''); try { const result = await request<{ count: number }>('/api/import', { method: 'POST', body: JSON.stringify({ kind, project_id: projectId || null, rows: parsed.rows.map(row => ({ ...row, project_id: projectId || null })) }) }); await onSaved(`${result.count} ${config.label.toLowerCase()} imported.`); } catch (e) { setError(message(e)); } finally { setBusy(false); } }
+  function read(file?: File) {
+    if (!file) return;
+    const sequence = ++readSequence.current;
+    if (readTimer.current) clearTimeout(readTimer.current);
+    readerRef.current?.abort();
+    setParsed(null); setError(''); setFilename(file.name); setReading(true);
+    if (file.size > 5_000_000) { setError('CSV files must be smaller than 5 MB.'); setReading(false); return; }
+    const reader = new FileReader(); readerRef.current = reader;
+    let settled = false;
+    let timedOut = false;
+    const finish = (result?: { rows: RecordInput[]; errors: string[] }, failure?: string) => {
+      if (settled || sequence !== readSequence.current) return;
+      settled = true;
+      if (readTimer.current) clearTimeout(readTimer.current);
+      readTimer.current = null; readerRef.current = null;
+      setReading(false);
+      if (result) setParsed(result);
+      if (failure) setError(failure);
+    };
+    const timeoutMessage = 'This file could not be read within 15 seconds. Make sure it is downloaded to this device, then choose it again.';
+    reader.onload = () => {
+      if (sequence !== readSequence.current || settled) return;
+      try { finish(parseImport(String(reader.result ?? ''), kind)); }
+      catch (e) { finish(undefined, message(e)); }
+    };
+    reader.onerror = () => finish(undefined, 'This file could not be read. Check that it is downloaded and that your browser can access it, then choose it again.');
+    reader.onabort = () => finish(undefined, timedOut ? timeoutMessage : 'File reading was cancelled. Choose the file again to retry.');
+    readTimer.current = setTimeout(() => {
+      if (sequence !== readSequence.current || settled) return;
+      timedOut = true;
+      reader.abort();
+      finish(undefined, timeoutMessage);
+    }, 15_000);
+    try { reader.readAsText(file, 'UTF-8'); }
+    catch (e) { finish(undefined, message(e)); }
+  }
+  async function save() { if (reading || !parsed || parsed.errors.length) return; setBusy(true); setError(''); try { const result = await request<{ count: number }>('/api/import', { method: 'POST', body: JSON.stringify({ kind, project_id: projectId || null, rows: parsed.rows.map(row => ({ ...row, project_id: projectId || null })) }) }); await onSaved(`${result.count} ${config.label.toLowerCase()} imported.`); } catch (e) { setError(message(e)); } finally { setBusy(false); } }
   const sample = () => { const row: Record<string, unknown> = { title: 'Replace with your item title', status: config.statuses[0], due_date: '' }; config.fields.forEach(f => { row[f.key] = f.type === 'checkbox' ? false : ''; }); downloadCSV(`rockwood-${kind}-import-template.csv`, [row]); };
-  return <Drawer title={`Import ${config.label.toLowerCase()}`} eyebrow="BRING YOUR DATA IN" onClose={close} wide footer={<><button className="button" onClick={close} disabled={busy}>Cancel</button><span className="footer-spacer" /><span className="save-help">{parsed?.rows.length || 0} rows ready</span><button className="button primary" disabled={busy || !parsed?.rows.length || !!parsed.errors.length} onClick={save}>{busy ? <Spinner /> : 'Import records'}</button></>}><div className="info-strip"><FileText size={18} /><span>Start with the CSV template. Up to 500 rows per import. All rows are checked before anything is saved.</span></div><button className="button" onClick={sample}><ArrowDownToLine size={15} />Download CSV template</button><label className="field import-project"><span>Save into project</span><select value={projectId} onChange={e => setProjectId(e.target.value)}><option value="">Workspace-wide</option>{projects.map(p => <option key={p.id} value={p.id}>{projectOptionLabel(p)}</option>)}</select></label><label className="file-drop"><Upload size={27} strokeWidth={1.4} /><strong>{filename || 'Choose a CSV file'}</strong><span>CSV · up to 5 MB</span><input type="file" accept=".csv,text/csv" onChange={e => void read(e.target.files?.[0])} disabled={busy} /></label>{parsed && <><div className="import-summary"><strong>{parsed.rows.length} valid rows</strong><span className={parsed.errors.length ? 'overdue' : 'success-text'}>{parsed.errors.length ? `${parsed.errors.length} issues to fix` : 'Ready to import'}</span></div>{parsed.errors.length > 0 && <div className="alert error import-errors" role="alert"><strong>Nothing will be imported until these are fixed.</strong><ul>{parsed.errors.slice(0, 20).map((e, i) => <li key={i}>{e}</li>)}</ul>{parsed.errors.length > 20 && <span>And {parsed.errors.length - 20} more issues.</span>}</div>}{parsed.rows.length > 0 && <div className="table-scroll import-preview"><table className="records-table"><thead><tr><th>Title</th><th>Status</th><th>Due date</th><th>Details</th></tr></thead><tbody>{parsed.rows.slice(0, 20).map((row, index) => <tr key={index}><td>{row.title}</td><td>{row.status}</td><td>{dateLabel(row.due_date)}</td><td>{Object.entries(row.data || {}).slice(0, 3).map(([key, value]) => `${key.replaceAll('_', ' ')}: ${String(value)}`).join(' · ')}</td></tr>)}</tbody></table>{parsed.rows.length > 20 && <p>Previewing the first 20 of {parsed.rows.length} rows.</p>}</div>}</>}{error && <div className="alert error" role="alert">{error}</div>}</Drawer>;
+  return <Drawer title={`Import ${config.label.toLowerCase()}`} eyebrow="BRING YOUR DATA IN" onClose={close} wide footer={<><button className="button" onClick={close} disabled={busy}>Cancel</button><span className="footer-spacer" /><span className="save-help">{reading ? 'Reading file…' : `${parsed?.rows.length || 0} rows ready`}</span><button className="button primary" disabled={busy || reading || !parsed?.rows.length || !!parsed.errors.length} onClick={save}>{busy ? <Spinner /> : reading ? <><Spinner />Reading file…</> : 'Import records'}</button></>}><div className="info-strip"><FileText size={18} /><span>Start with the CSV template. Up to 500 rows per import. All rows are checked before anything is saved.</span></div><button className="button" onClick={sample}><ArrowDownToLine size={15} />Download CSV template</button><label className="field import-project"><span>Save into project</span><select value={projectId} onChange={e => setProjectId(e.target.value)}><option value="">Workspace-wide</option>{projects.map(p => <option key={p.id} value={p.id}>{projectOptionLabel(p)}</option>)}</select></label><label className="file-drop" aria-busy={reading}>{reading ? <Spinner /> : <Upload size={27} strokeWidth={1.4} />}<strong>{filename || 'Choose a CSV file'}</strong><span aria-live="polite">{reading ? 'Reading and checking your file…' : 'CSV · up to 5 MB'}</span><input type="file" accept=".csv,text/csv" onChange={e => { const selected = e.currentTarget.files?.[0]; e.currentTarget.value = ''; read(selected); }} disabled={busy} /></label>{parsed && <><div className="import-summary"><strong>{parsed.rows.length} valid rows</strong><span className={parsed.errors.length ? 'overdue' : 'success-text'}>{parsed.errors.length ? `${parsed.errors.length} issues to fix` : 'Ready to import'}</span></div>{parsed.errors.length > 0 && <div className="alert error import-errors" role="alert"><strong>Nothing will be imported until these are fixed.</strong><ul>{parsed.errors.slice(0, 20).map((e, i) => <li key={i}>{e}</li>)}</ul>{parsed.errors.length > 20 && <span>And {parsed.errors.length - 20} more issues.</span>}</div>}{parsed.rows.length > 0 && <div className="table-scroll import-preview"><table className="records-table"><thead><tr><th>Title</th><th>Status</th><th>Due date</th><th>Details</th></tr></thead><tbody>{parsed.rows.slice(0, 20).map((row, index) => <tr key={index}><td>{row.title}</td><td>{row.status}</td><td>{dateLabel(row.due_date)}</td><td>{Object.entries(row.data || {}).slice(0, 3).map(([key, value]) => `${key.replaceAll('_', ' ')}: ${String(value)}`).join(' · ')}</td></tr>)}</tbody></table>{parsed.rows.length > 20 && <p>Previewing the first 20 of {parsed.rows.length} rows.</p>}</div>}</>}{error && <div className="alert error" role="alert">{error}</div>}</Drawer>;
 }
 function FileEditor({ projects, projectId: initialProject, onClose, onSaved }: { projects: Project[]; projectId: string; onClose: () => void; onSaved: (text?: string) => Promise<void> }) {
   const [file, setFile] = useState<File | null>(null); const [title, setTitle] = useState(''); const [projectId, setProjectId] = useState(initialProject === 'all' ? '' : initialProject); const [category, setCategory] = useState('Other'); const [busy, setBusy] = useState(false); const [stage, setStage] = useState(''); const [error, setError] = useState('');
