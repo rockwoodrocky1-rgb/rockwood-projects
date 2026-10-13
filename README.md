@@ -4,12 +4,12 @@ A manual project-management workspace for Rockwood Development. Bring in project
 
 The app uses the supplied Rockwood brand and works on desktop and mobile. Project records save to Supabase, and files are private to the workspace.
 
-Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). The intended deployment address is `https://rockwood-projects.vercel.app`; confirm deployment and sign-in before sharing it with users.
+Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). Live app: [rockwood-projects.vercel.app](https://rockwood-projects.vercel.app). Production sign-in, data persistence, private files and conflict handling were verified on October 13, 2026.
 
 ## Start with a real project
 
 1. Select **New project**. Enter the job name, address, lead, planned dates and rooms or areas. Use the scope notes for known permit scope and jurisdiction details.
-2. Choose **Customer checklist** and the applicable phases, or **Start empty**. Leave the demonstration option off for customer work.
+2. Choose **Project checklist** and the applicable phases, or **Start empty**. Leave the demonstration option off for customer work.
 3. Review and create the project. Add the known contacts, bids, materials and documents.
 4. Confirm what applies, assign responsible people, enter dates and connect any additional prerequisites.
 
@@ -36,7 +36,7 @@ For spreadsheet intake, open the relevant view and select **Import**. Download i
 
 ## Move the work forward
 
-**Project plan** offers a list, a status board and a Timeline. The Timeline displays entered start and finish dates. It does not calculate a critical path or automatically reschedule following work.
+**Project plan** offers a list, a status board and a Gantt timeline. The Gantt timeline displays entered start and finish dates. It does not calculate a critical path or automatically reschedule following work.
 
 The usual work sequence is **Waiting → Ready → Working → Ready to check → Done**. Use **Blocked** when work cannot proceed, and record why. A person makes each change.
 
@@ -46,7 +46,7 @@ Save the original planned dates separately from revised dates and actual dates. 
 
 ## Demonstrate without mixing in customer data
 
-Create a project with **This is a demonstration project** selected and use the customer checklist. It contains clearly fictional contacts, a sample bid, delivery issue and rough-work-to-drywall dates. Demo projects are labeled separately from live projects. They are still saved records; use a new demo project when you need a fresh example.
+Create a project with **This is a demonstration project** selected and use the project checklist. It contains clearly fictional contacts, a sample bid, delivery issue and rough-work-to-drywall dates. Demo projects are labeled separately from live projects. They are still saved records; use a new demo project when you need a fresh example.
 
 ## What is not active yet
 
