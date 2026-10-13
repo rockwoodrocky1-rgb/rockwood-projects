@@ -8,12 +8,14 @@ Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodro
 
 ## Show the idea
 
-1. Open the public showcase and choose **Worker view**, **Project manager view**, **Schedule view**, or another area.
+1. Open the public showcase and choose **Worker**, **Project manager**, **Schedule (Gantt)**, or another area.
 2. Explore the fictional Oak Street project. Open work items, change dates or status, compare bids, review a blocker, and inspect the information collected at each step.
-3. Use **Back to views** to choose another starting point, or **Reset demo** to restore the example.
+3. Use **Back to views** to choose another starting point, or **Reset** to restore the example.
 4. Try project setup to demonstrate how a new job will be entered. Projects created in the showcase are always demonstrations.
 
 The product sequence is **showcase now → agent workflows next → v1 with a real project**. The private, authenticated workspace remains available at `/workspace` for later use. Its records and private files save to Supabase; public-showcase records never do.
+
+On a phone, use **Today**, **Plan**, and **More** at the bottom of the screen. Open a work item to update its status, person, or dates. **More details** and the other expandable sections retain the full record, linked checks, files, and original checklist notes. Small-screen lists use cards; the Gantt remains a scrollable schedule.
 
 ## Later: start with a real project in the private workspace
 
