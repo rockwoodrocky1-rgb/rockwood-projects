@@ -1,2 +1,6 @@
-import App from '@/components/App';
-export default function Page(){return <App/>}
+import ShowcaseHome from '@/components/ShowcaseHome';
+import './showcase.css';
+
+export default function Page() {
+  return <ShowcaseHome />;
+}

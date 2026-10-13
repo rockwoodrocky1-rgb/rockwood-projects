@@ -2,6 +2,12 @@
 
 This document is for the person deploying and maintaining Rockwood Projects. The everyday workflow is in the [README](../README.md). API and storage details are also documented in [BACKEND.md](BACKEND.md).
 
+## Public showcase and private workspace
+
+`/` is the public view chooser; `/showcase/[view]` loads an isolated, fictional project without login. Each showcase instance keeps its own in-memory data, local file references and activity. Refreshing or resetting restores the fixture. Showcase pages must never load a Supabase session, call the private APIs, use a service key, or publish a real workspace's records. They remain isolated even for an already signed-in visitor.
+
+`/workspace` retains the authenticated application. All `/api/*` endpoints continue to require authorization and enforce workspace membership. No anonymous database or Storage policy was added for the showcase. The product is currently for presentation; agent workflows and the first real-project v1 rollout are later phases.
+
 ## Local setup
 
 The application uses Next.js App Router, React, TypeScript and Supabase. The development environment uses Node.js 22. Install the lockfile's dependencies and configure the two application variables:
@@ -75,7 +81,7 @@ Before customer use, verify the deployed application:
 5. Verify that unresolved checks block completion and that a reader cannot write.
 6. Confirm that live projects are distinct from demo records and that automation remains inactive.
 
-The app does not contain a demo-reset or record-deletion UI. Rehearse in a labeled demo; any later database cleanup requires an administrator and a deliberate plan for its related records and files.
+The private workspace does not contain a persisted demo-reset or record-deletion UI. For presentations, use the public showcase and its **Reset demo** button. Any later database cleanup requires an administrator and a deliberate plan for its related records and files.
 
 ## Validation commands
 

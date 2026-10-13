@@ -1,12 +1,21 @@
 # Rockwood Projects
 
-A manual project-management workspace for Rockwood Development. Bring in project details, contractors, bids, prices and past-job records; organize the work; and move it forward with clear responsibilities and recorded checks.
+A public, interactive showcase of the Rockwood project-management workspace. The first page asks which view to explore, then opens a fictional project with working forms, status changes, schedules and linked records. No login is required for the showcase.
 
-The app uses the supplied Rockwood brand and works on desktop and mobile. Project records save to Supabase, and files are private to the workspace.
+The app uses the supplied Rockwood brand and works on desktop and mobile. Showcase changes live only in the current browser page and reset on refresh or **Reset demo**. They never read or change Supabase data, including when the visitor has an existing private-workspace session. Sample file downloads and selected files stay local to that browser session.
 
-Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). Live app: [rockwood-projects.vercel.app](https://rockwood-projects.vercel.app). Production sign-in, data persistence, private files and conflict handling were verified on October 13, 2026.
+Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). Showcase: [rockwood-projects.vercel.app](https://rockwood-projects.vercel.app).
 
-## Start with a real project
+## Show the idea
+
+1. Open the public showcase and choose **Worker view**, **Project manager view**, **Schedule view**, or another area.
+2. Explore the fictional Oak Street project. Open work items, change dates or status, compare bids, review a blocker, and inspect the information collected at each step.
+3. Use **Back to views** to choose another starting point, or **Reset demo** to restore the example.
+4. Try project setup to demonstrate how a new job will be entered. Projects created in the showcase are always demonstrations.
+
+The product sequence is **showcase now → agent workflows next → v1 with a real project**. The private, authenticated workspace remains available at `/workspace` for later use. Its records and private files save to Supabase; public-showcase records never do.
+
+## Later: start with a real project in the private workspace
 
 1. Select **New project**. Enter the job name, address, lead, planned dates and rooms or areas. Use the scope notes for known permit scope and jurisdiction details.
 2. Choose **Project checklist** and the applicable phases, or **Start empty**. Leave the demonstration option off for customer work.
@@ -44,9 +53,9 @@ Prerequisites control release. Required checks need a recorded pass, or confirme
 
 Save the original planned dates separately from revised dates and actual dates. If another person has changed an item while it was open, refresh and review the newer version before saving.
 
-## Demonstrate without mixing in customer data
+## Private workspace demo records
 
-Create a project with **This is a demonstration project** selected and use the project checklist. It contains clearly fictional contacts, a sample bid, delivery issue and rough-work-to-drywall dates. Demo projects are labeled separately from live projects. They are still saved records; use a new demo project when you need a fresh example.
+The public showcase is the presentation entry point. Separately, `/workspace` supports persisted demo projects: create a project with **This is a demonstration project** selected and use the project checklist. These authenticated demo records are saved to Supabase and labeled separately from live projects. They do not appear in the public showcase.
 
 ## What is not active yet
 
