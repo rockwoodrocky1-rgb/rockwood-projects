@@ -1,4 +1,8 @@
 import { allRows, context, endpoint, findRecord, jsonBody, recordInput, response, saveRecord, transition, validateRelationships, version } from '@/lib/server';
+export async function GET(request: Request, args: { params: Promise<{ id: string }> }) { return endpoint(async () => {
+  const ctx = await context(request), { id } = await args.params;
+  return response({ record: await findRecord(ctx, id) });
+}); }
 export async function PATCH(request: Request, args: { params: Promise<{ id: string }> }) { return endpoint(async () => {
   const ctx = await context(request, true), { id } = await args.params, raw = await jsonBody(request), expectedVersion = version(raw.version), previous = await findRecord(ctx, id);
   const input = recordInput({ ...previous, ...raw, id });

@@ -9,6 +9,7 @@
     "start": "next start --hostname 127.0.0.1 --port 8792",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "agent": "node scripts/agent.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

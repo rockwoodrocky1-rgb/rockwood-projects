@@ -2,9 +2,17 @@
 
 A public, interactive showcase of the Rockwood project-management workspace. The first page asks which view to explore, then opens a fictional project with working forms, status changes, schedules and linked records. No login is required for the showcase.
 
-The app uses the supplied Rockwood brand and works on desktop and mobile. Showcase changes live only in the current browser page and reset on refresh or **Reset demo**. They never read or change Supabase data, including when the visitor has an existing private-workspace session. Sample file downloads and selected files stay local to that browser session.
+The app uses the supplied Rockwood brand and works on desktop and mobile. Showcase changes live only in the current browser page and reset on refresh or **Reset**. They never read or change Supabase data, including when the visitor has an existing private-workspace session. Sample file downloads and selected files stay local to that browser session.
 
 Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). Showcase: [rockwood-projects.vercel.app](https://rockwood-projects.vercel.app).
+
+## For agents and developers
+
+Start with [AGENTS.md](AGENTS.md) and the [documentation map](docs/README.md). The repository includes a [product guide](docs/product/README.md), [architecture map](docs/architecture/README.md), [operations guide](docs/operations/README.md) and instructions in each major code folder.
+
+Authorized external AI agents can operate the private workspace through a [model-independent client and CLI](agents/README.md), using the same records, permissions, workflow checks, edit versions and audit trail as humans. [Tool schemas](agents/tools.json) describe the actions; authenticated `GET /api/capabilities` exposes current fields/statuses and availability. Use `npm run agent -- --help` to start. Credentials and an explicit workspace are required for live calls; repository access alone grants neither.
+
+The client supports reads, project/record creation and updates, imports and private files. It stops on stale edits and does not retry uncertain writes. Humans retain the UI for corrections and continuation; see [Human handoff](docs/operations/HUMAN-HANDOFF.md). No hosted AI runner, background reminders or messaging service is activated. Those remaining connections are tracked in [the agent roadmap](agents/ROADMAP.md).
 
 ## Show the idea
 
@@ -13,7 +21,7 @@ Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodro
 3. Use **Back to views** to choose another starting point, or **Reset** to restore the example.
 4. Try project setup to demonstrate how a new job will be entered. Projects created in the showcase are always demonstrations.
 
-The product sequence is **showcase now → agent workflows next → v1 with a real project**. The private, authenticated workspace remains available at `/workspace` for later use. Its records and private files save to Supabase; public-showcase records never do.
+The product sequence is **showcase → connected agent workflows → v1 with a real project**. The authenticated agent interface is implemented; connecting an external worker and its automation rules is the next setup step. The private workspace at `/workspace` saves records and private files to Supabase; public-showcase records never do.
 
 On a phone, use **Today**, **Plan**, and **More** at the bottom of the screen. Open a work item to update its status, person, or dates. **More details** and the other expandable sections retain the full record, linked checks, files, and original checklist notes. Small-screen lists use cards; the Gantt remains a scrollable schedule.
 
@@ -39,17 +47,17 @@ Template dates are not guessed. Local inspection applicability starts as **Needs
 | **Checks** | Applicability, permit and inspection codes, scheduling, findings, reviewer and result evidence |
 | **Files** | Plans, permits, bids, contracts, photos, warranties, manuals, certificates and other supporting files |
 | **Closeout** | Decisions and changes, contracts, payments, holds and reviews / lessons learned |
-| **Activity** | Recent saved changes and who made them |
+| **Activity** | Recent saved-change summaries; authenticated actor IDs are retained in the API/database audit |
 
 For a **past job**, create a project with status **Past job** and choose **Start empty**. Add its contractors, prices and supporting documents, then capture actual cost, finish dates and lessons in **Reviews**. This collects information for later evaluation; it does not automatically evaluate the records with AI.
 
-For spreadsheet intake, open the relevant view and select **Import**. Download its CSV template, fill in the columns, select the destination project and review the preview. Fix all reported issues before saving. Imports support up to 500 rows; duplicates in an import or matching existing record titles are rejected. Dates use `YYYY-MM-DD`. An uploaded Excel workbook is stored as a file; use CSV to create structured records.
+For spreadsheet intake, open the relevant view and select **Import CSV**. Download its CSV template, fill in the columns, select the destination project and review the preview. Fix all reported issues before saving. Imports support up to 500 rows; duplicates in an import or matching existing record titles are rejected. Dates use `YYYY-MM-DD`. An uploaded Excel workbook is stored as a file; use CSV to create structured records.
 
 ## Move the work forward
 
 **Project plan** offers a list, a status board and a Gantt timeline. The Gantt timeline displays entered start and finish dates. It does not calculate a critical path or automatically reschedule following work.
 
-The usual work sequence is **Waiting → Ready → Working → Ready to check → Done**. Use **Blocked** when work cannot proceed, and record why. A person makes each change.
+The usual work sequence is **Waiting → Ready → Working → Ready to check → Done**. Use **Blocked** when work cannot proceed, and record why. A person or an authorized external agent makes each change through the same validated API.
 
 Prerequisites control release. Required checks need a recorded pass, or confirmed non-applicability with a reason. A pass requires the result date, inspector or reviewer, and evidence. Marking an inspection's work item done cannot substitute for its linked check result. Corrections, open holds and certificate prerequisites also have completion checks.
 
@@ -65,4 +73,4 @@ Reminder preferences can be saved, but **no automatic reminders, emails or texts
 
 The existing walkthrough app remains a separate application. Its reports can be uploaded as supporting files; automatic synchronization, voice extraction and duplicate matching are not implemented here. This version also requires an internet connection to save live data.
 
-For setup, access management, deployment and recovery, see [Operations](docs/OPERATIONS.md). The original coverage reference is in [the customer audit](docs/customer-requirements-audit.html) and [requirements data](data/customer-requirements.json).
+For setup, access management, deployment and recovery, see [Operations](docs/operations/README.md). The original coverage reference is in [the customer audit](docs/customer-requirements-audit.html) and [requirements data](data/customer-requirements.json).

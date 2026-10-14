@@ -1,5 +1,7 @@
 # Backend setup
 
+For current tool inputs and endpoints, use [the shared API reference](../agents/API.md). For connection setup and version-safe operations, use [the agent guide](../agents/README.md). This page covers the underlying database/bootstrap setup.
+
 1. Apply all SQL files in `supabase/migrations/` in filename order using the Supabase SQL editor or migration tooling as the database administrator. The `pm_` tables and `pm-documents` bucket are independent of the walkthrough application's tables.
 2. Provision the first administrator with `scripts/provision-admin.mjs`. Read its environment variable names, load secrets privately and do not commit them. It creates a confirmed Auth user if absent; an existing user's password stays unchanged unless `PM_RESET_PASSWORD=true` is explicitly set. There is no public signup or automatic workspace membership.
 3. Configure only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for the app. Never configure a service role key in the application runtime. The admin provisioning script is the only consumer of an elevated key.

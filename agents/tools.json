@@ -1,0 +1,563 @@
+[
+  {
+    "name": "capabilities",
+    "description": "Read live fields, statuses, available operations and limits.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "snapshot",
+    "description": "Read the explicitly selected workspace, all projects/records and latest 250 activity summaries.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "get_record",
+    "description": "Read a record, including the version needed for an update.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "get_project",
+    "description": "Read a project, including the version needed for an update.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "create_record",
+    "description": "Create one validated record; do not retry an uncertain result without reconciliation.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "task",
+                "contact",
+                "bid",
+                "material",
+                "check",
+                "document",
+                "decision",
+                "contract",
+                "payment",
+                "hold",
+                "review"
+              ]
+            },
+            "project_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string"
+            },
+            "owner_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "due_date": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "YYYY-MM-DD, or null to clear."
+            },
+            "data": {
+              "type": "object",
+              "description": "Kind-specific values. See live recordKinds. For updates these keys are merged into existing data; arrays replace as a whole."
+            }
+          },
+          "required": [
+            "kind",
+            "title"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "record"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "update_record",
+    "description": "Update an explicitly versioned record. Merges data keys, preserves original source metadata and rejects stale versions.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "changes": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string"
+            },
+            "owner_id": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "due_date": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "description": "YYYY-MM-DD, or null to clear."
+            },
+            "data": {
+              "type": "object",
+              "description": "Kind-specific values. See live recordKinds. For updates these keys are merged into existing data; arrays replace as a whole."
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "changes"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "create_project",
+    "description": "Create a project and optionally its source checklist atomically.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "project": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "address": {
+              "type": "string"
+            },
+            "project_type": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "start_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "target_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "lead": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "is_demo": {
+              "type": "boolean"
+            },
+            "template": {
+              "type": "boolean"
+            },
+            "selected_phases": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 15
+              }
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "update_project",
+    "description": "Update project fields using the version already reviewed by the agent.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "changes": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "address": {
+              "type": "string"
+            },
+            "project_type": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "start_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "target_date": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "lead": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "is_demo": {
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "changes"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "import_records",
+    "description": "Import 1\u2013500 same-kind records atomically. Duplicate titles in the selected project/kind are rejected.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "task",
+            "contact",
+            "bid",
+            "material",
+            "check",
+            "document",
+            "decision",
+            "contract",
+            "payment",
+            "hold",
+            "review"
+          ]
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "task",
+                  "contact",
+                  "bid",
+                  "material",
+                  "check",
+                  "document",
+                  "decision",
+                  "contract",
+                  "payment",
+                  "hold",
+                  "review"
+                ]
+              },
+              "project_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string"
+              },
+              "owner_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "due_date": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "YYYY-MM-DD, or null to clear."
+              },
+              "data": {
+                "type": "object",
+                "description": "Kind-specific values. See live recordKinds. For updates these keys are merged into existing data; arrays replace as a whole."
+              }
+            },
+            "required": [
+              "kind",
+              "title"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "project_id",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "get_file_url",
+    "description": "Obtain a private download URL valid for 60 seconds. Treat it as sensitive and retain the record ID for future access.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "upload_file",
+    "description": "Upload an authorized local file through prepare, private Storage upload and validated finalization; requires Supabase public configuration.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "type": "string",
+          "description": "Explicitly authorized local file path on the agent's machine."
+        },
+        "project_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "filePath",
+        "project_id",
+        "title",
+        "category"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": false,
+      "idempotentHint": false
+    }
+  }
+]
