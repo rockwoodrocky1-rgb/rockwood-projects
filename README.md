@@ -69,3 +69,7 @@ Reminder preferences can be saved, but **no automatic reminders, emails or texts
 The existing walkthrough app remains a separate application. Its reports can be uploaded as supporting files; automatic synchronization, voice extraction and duplicate matching are not implemented here. This version also requires an internet connection to save live data.
 
 For setup, access management, deployment and recovery, see [Operations](docs/operations/README.md). The original coverage reference is in [the customer audit](docs/customer-requirements-audit.html) and [requirements data](data/customer-requirements.json).
+
+## Permit monitoring
+
+The authenticated workspace includes **Permits**: master/subpermit hierarchy, linked inspections, source evidence, upcoming dates, monitoring controls and check history. Rocky can discover due real properties and save atomic observations through the permit queue API. [Worker contract and hourly activation](agents/PERMITS.md). The hourly runner and municipal portal access are configured separately on the office Mac.

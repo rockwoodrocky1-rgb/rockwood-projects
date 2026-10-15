@@ -2,7 +2,7 @@
 
 The implemented boundary is an authenticated, model-independent client/CLI using the same project API as the UI. This is enough for an externally hosted, authorized agent to perform individual data operations. It is not unattended end-to-end project management.
 
-Before enabling an ongoing worker, define and implement:
+The permit workflow has the specific implemented contract below. Before enabling broader project-management automation, define and implement:
 
 | Connection | Required result |
 |---|---|
@@ -17,3 +17,7 @@ Before enabling an ongoing worker, define and implement:
 | Evaluation | Test fixtures for delays, failed inspections, duplicate replies, stale edits and correct human handoff |
 
 Do not advertise an item as connected merely because its preferences or notes can be stored. Each implemented connection should update capabilities, documentation and meaningful tests, and retain manual operation.
+
+## Implemented: permit worker contract
+
+The queue, per-property pause, master/subpermit and inspection data, atomic observations, check history, idempotent claim/completion, and visual workspace are available. [PERMITS.md](PERMITS.md) defines the contract. External scheduling and jurisdiction-specific browsing remain host responsibilities; general creates still lack idempotency keys.

@@ -148,6 +148,13 @@ function seed(): { state: Bootstrap; files: Map<string, Blob> } {
   }
   const lastWorkDate = records.filter(record => record.kind === 'task').map(record => record.due_date).filter((date): date is string => !!date).sort().at(-1);
   if (lastWorkDate && lastWorkDate > project.target_date!) project.target_date = lastWorkDate;
+  // Fictional permit fixtures stay inside this isolated test runtime.
+  const masterPermit = add('permit', 'Fictional building permit', 'Issued', { permit_number:'DEMO-BLD-100', jurisdiction:'Example City (fictional)', permit_type:'Master', source_url:'https://example.com/permits/demo', evidence:'SIMULATED RESULT for local UI tests only.', issued_date:day(-30), expiry_date:day(60), last_verified_at:now(), last_permit_run_id:crypto.randomUUID() });
+  const subPermit = add('permit', 'Fictional plumbing subpermit', 'Corrections required', { permit_number:'DEMO-PLB-101', jurisdiction:'Example City (fictional)', permit_type:'Subpermit', parent_permit_id:masterPermit.id, trade:'Plumbing', raw_status:'Corrections pending (simulated)', source_url:'https://example.com/permits/demo', evidence:'SIMULATED RESULT for local UI tests only.', corrections:'Example correction: clarify fixture count.', next_action:'Submit revised fixture schedule (example)', next_action_date:day(2), last_verified_at:now() });
+  const permitCheck = records.find(r => r.kind === 'check' && /plumbing/i.test(r.title));
+  if (permitCheck) permitCheck.data.permit_id = subPermit.id;
+  const permitTask = records.find(r => r.kind === 'task' && r.status === 'Waiting');
+  if (permitTask) permitTask.data.prerequisite_ids = [...(permitTask.data.prerequisite_ids || []), subPermit.id];
   const events: Activity[] = [
     { title: 'Plumbing marked blocked: sample fittings delivery moved', record: source('P3-22') },
     { title: 'Electrical rough-in started in the kitchen and living room', record: source('P3-24') },

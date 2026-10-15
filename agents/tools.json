@@ -89,6 +89,7 @@
                 "contact",
                 "bid",
                 "material",
+                "permit",
                 "check",
                 "document",
                 "decision",
@@ -387,6 +388,7 @@
             "contact",
             "bid",
             "material",
+            "permit",
             "check",
             "document",
             "decision",
@@ -421,6 +423,7 @@
                   "contact",
                   "bid",
                   "material",
+                  "permit",
                   "check",
                   "document",
                   "decision",
@@ -558,6 +561,223 @@
       "readOnlyHint": false,
       "destructiveHint": false,
       "idempotentHint": false
+    }
+  },
+  {
+    "name": "permit_dashboard",
+    "description": "Read monitoring settings and the latest 100 check runs, plus all running checks.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "permit_queue",
+    "description": "Discover all due, incomplete real properties, including newly added properties with no known permits.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "get_permit_check",
+    "description": "Read a check and its saved result to reconcile an uncertain completion.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "configure_permit_monitor",
+    "description": "Save property source/settings or request a check on the next worker run. This does not start a scheduler.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "settings": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "jurisdiction": {
+              "type": "string"
+            },
+            "source_url": {
+              "type": "string"
+            },
+            "check_now": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "project_id",
+        "version",
+        "settings"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": false
+    }
+  },
+  {
+    "name": "claim_permit_check",
+    "description": "Claim a 30-minute property lease. Reuse the same request_key only to recover this exact claim.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "request_key": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "project_id",
+        "request_key"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true
+    }
+  },
+  {
+    "name": "complete_permit_check",
+    "description": "Atomically save verified permit/inspection observations and a check outcome. Existing IDs require reviewed versions; supplied data keys merge. Read agents/PERMITS.md first.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "success",
+            "no_permits",
+            "partial",
+            "blocked",
+            "error"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "source_url": {
+          "type": "string"
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "version": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "permit",
+                  "check"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string"
+              },
+              "owner_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "due_date": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "data": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "data"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "outcome",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "annotations": {
+      "readOnlyHint": false,
+      "destructiveHint": true,
+      "idempotentHint": true
     }
   }
 ]

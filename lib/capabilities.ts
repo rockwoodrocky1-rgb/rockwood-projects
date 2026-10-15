@@ -5,7 +5,7 @@ import tools from '../agents/tools.json';
 export function agentCapabilities(workspace: { id: string; name: string; role: string }) {
   const canWrite = ['admin', 'manager'].includes(workspace.role);
   return {
-    schemaVersion: '1.0',
+    schemaVersion: '1.1',
     workspace,
     recordKinds: KIND_CONFIG,
     tools: tools.map(tool => ({ ...tool, available: tool.annotations.readOnlyHint || canWrite })),
@@ -17,6 +17,7 @@ export function agentCapabilities(workspace: { id: string; name: string; role: s
       dataPatch: 'Raw HTTP PATCH replaces data; agents/client.mjs merges proposed data keys with a matching-version snapshot.',
       conflict: 'On 409, stop and reread. Do not automatically overwrite newer human or agent changes.',
       uncertainWrite: 'No automatic retries. Reconcile saved records and activity after a timeout or 5xx.',
+      permitMonitoring: 'Hourly-worker queue, 30-minute claims, atomic observations, per-property pause, protected manual corrections and replay recovery. The external runner must be activated separately.',
       batchAtomicity: 'Project/template creation and each import are atomic. Separate actions are not one transaction.',
       audit: 'Each saved mutation records the authenticated user. Use distinct provisioned identities to distinguish actors.',
       inspectionEvidence: 'Record real authorized results; never infer a pass from a photo, task completion or elapsed time.',
@@ -31,7 +32,7 @@ export function agentCapabilities(workspace: { id: string; name: string; role: s
     notImplemented: [
       'Hosted agent runner or MCP server', 'Background scheduling or event subscriptions',
       'Email/SMS delivery and inbound replies', 'Automatic critical-path scheduling',
-      'Agent-specific policy approval queue or pause button', 'General create idempotency keys',
+      'Agent-specific policy approval queue', 'General create idempotency keys',
       'Project-scoped permissions', 'Payment execution', 'Walkthrough synchronization',
     ],
   };

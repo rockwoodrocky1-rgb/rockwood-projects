@@ -57,7 +57,7 @@ export async function context(request: Request, write = false): Promise<Context>
   if (workspaceError) databaseError(workspaceError);
   return { db, userId: auth.user.id, workspace: { id: workspace.id, name: workspace.name, role: membership.role } };
 }
-export async function allRows(ctx: Context, table: 'pm_records' | 'pm_projects'): Promise<any[]> {
+export async function allRows(ctx: Context, table: 'pm_records' | 'pm_projects' | 'pm_permit_monitors'): Promise<any[]> {
   const rows: any[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await ctx.db.from(table).select('*').eq('workspace_id', ctx.workspace.id).order('created_at', { ascending: true }).order('id', { ascending: true }).range(from, from + 999);
@@ -105,6 +105,7 @@ export function validateRelationships(input: RecordInput, records: RecordRow[], 
     if (!Array.isArray(d[key])) throw new ApiError(400, `${key} must be a list.`);
     for (const id of d[key]) linked(id, key, !['document_ids', 'related_record_ids'].includes(key), key === 'check_ids' ? 'check' : key === 'document_ids' ? 'document' : undefined);
   }
+  for (const key of ['parent_permit_id', 'permit_id']) linked(d[key], key, true, 'permit');
   if (d.storage_path != null && !safeStoragePath(d.storage_path, workspaceId, projectId)) throw new ApiError(400, 'Invalid document storage path.');
 }
 export function transition(previous: RecordRow, next: RecordInput, records: RecordRow[]): void { try { validateTransition(previous, next, records); } catch (error) { throw new ApiError(400, (error as Error).message); } }

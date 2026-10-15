@@ -24,6 +24,7 @@ describe('database security and atomic work operations', () => {
       grant usage on schema storage to authenticated; grant select,insert,delete on storage.objects to authenticated;`);
     await db.exec(readFileSync(new URL('../supabase/migrations/202610130001_pm.sql', import.meta.url), 'utf8'));
     await db.exec(readFileSync(new URL('../supabase/migrations/202610130002_conflict_http_status.sql', import.meta.url), 'utf8'));
+    await db.exec(readFileSync(new URL('../supabase/migrations/202610150001_permit_monitoring.sql', import.meta.url), 'utf8'));
     await db.query('insert into auth.users values($1),($2),($3)', [ids.admin, ids.reader, ids.outsider]);
     await db.query('insert into public.pm_workspaces(id,name) values($1,$2),($3,$4)', [ids.workspace, 'Main', ids.otherWorkspace, 'Other']);
     await db.query("insert into public.pm_members(workspace_id,user_id,role) values($1,$2,'admin'),($1,$3,'reader'),($4,$5,'admin')", [ids.workspace, ids.admin, ids.reader, ids.otherWorkspace, ids.outsider]);

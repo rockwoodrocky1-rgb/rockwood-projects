@@ -8,6 +8,7 @@ Start at [root AGENTS.md](../AGENTS.md). These guides describe the implemented a
 | How UI, API, database and source checklist fit together | [Architecture](architecture/README.md) |
 | Connect any authorized agent or call its tools | [Agent guide](../agents/README.md) |
 | Install the office OpenClaw agent and retire the test property | [Office setup](../agents/OFFICE-SETUP.md) |
+| Hourly permit discovery, observations and recovery | [Permit worker](../agents/PERMITS.md) |
 | Exact HTTP actions and response behavior | [API reference](../agents/API.md) |
 | New project, intake, delays, checks, reconciliation | [Agent playbooks](../agents/WORKFLOWS.md) |
 | Set up, test, deploy or recover the application | [Operations](operations/README.md) |

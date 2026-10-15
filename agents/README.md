@@ -90,3 +90,7 @@ On a conflict, stop and read the human's newer values; do not automatically reap
 The UI remains fully usable. A person can open the affected item and correct its status, dates, owner or details, subject to the same workflow checks. If an external agent keeps writing, stop that runner in its own host first. There is no built-in pause-agent button or one-click undo. Use [the handoff guide](../docs/operations/HUMAN-HANDOFF.md).
 
 Report the workspace/project, affected IDs, before/after values, successful actions, failed actions and the exact next step needed. Never report “reminder sent” when you only saved a reminder preference or a draft.
+
+## Hourly permit worker
+
+Use the implemented permit tools and [PERMITS.md](PERMITS.md) for dynamic property discovery, leases, source evidence, protected corrections and recovery. The app does not install or activate the external hourly scheduler.

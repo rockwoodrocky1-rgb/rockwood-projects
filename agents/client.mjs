@@ -1,5 +1,5 @@
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const WRITE_OPERATIONS = new Set(['create_record', 'update_record', 'create_project', 'update_project', 'import_records', 'upload_file']);
+const WRITE_OPERATIONS = new Set(['create_record', 'update_record', 'create_project', 'update_project', 'import_records', 'upload_file', 'configure_permit_monitor', 'claim_permit_check', 'complete_permit_check']);
 const RECORD_FIELDS = ['kind', 'project_id', 'title', 'status', 'owner_id', 'due_date', 'data'];
 const PROJECT_FIELDS = ['name', 'address', 'project_type', 'status', 'start_date', 'target_date', 'lead', 'description', 'locations', 'is_demo'];
 
@@ -88,6 +88,22 @@ export class RockwoodClient {
       case 'get_record': fields(args, ['id'], 'args'); return this.#request(`/api/records/${id(args.id)}`);
       case 'get_project': fields(args, ['id'], 'args'); return this.#request(`/api/projects/${id(args.id)}`);
       case 'get_file_url': fields(args, ['id'], 'args'); return this.#request(`/api/files/${id(args.id)}`);
+      case 'permit_dashboard': fields(args, [], 'args'); return this.#request('/api/permits');
+      case 'permit_queue': fields(args, [], 'args'); return this.#request('/api/permits/queue');
+      case 'get_permit_check': fields(args, ['id'], 'args'); return this.#request(`/api/permits/checks/${id(args.id)}`);
+      case 'configure_permit_monitor':
+        fields(args, ['project_id', 'version', 'settings'], 'args'); id(args.project_id);
+        if (!Number.isInteger(args.version) || args.version < 0) invalid('Use the monitoring version or 0 when no monitor exists.');
+        fields(args.settings, ['enabled','jurisdiction','source_url','check_now'], 'settings');
+        return this.#request('/api/permits/monitor', 'PATCH', args);
+      case 'claim_permit_check':
+        fields(args, ['project_id', 'request_key'], 'args'); id(args.project_id); id(args.request_key);
+        return this.#request('/api/permits/checks', 'POST', args);
+      case 'complete_permit_check': {
+        fields(args, ['id', 'outcome', 'summary', 'source_url', 'records'], 'args'); id(args.id);
+        const { id: runId, ...payload } = args;
+        return this.#request(`/api/permits/checks/${runId}`, 'PATCH', payload);
+      }
       case 'create_record':
         fields(args, ['record'], 'args'); fields(args.record, RECORD_FIELDS, 'record');
         return this.#request('/api/records', 'POST', args.record);

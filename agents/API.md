@@ -20,6 +20,12 @@ Every response is JSON with `Cache-Control: no-store`. Error bodies use `{ "erro
 | `POST /api/files/prepare` | first part of `upload_file` | private upload path/token/MIME/bucket |
 | Supabase signed Storage upload | second part of `upload_file` | upload confirmation |
 | `POST /api/files/complete` | final part of `upload_file` | `{ record }`, HTTP 201 or 200 for an existing completed upload |
+| `GET /api/permits` | `permit_dashboard` | `{ monitors, runs }` (latest 100 + active) |
+| `GET /api/permits/queue` | `permit_queue` | `{ queue, generated_at, lease_minutes, interval_minutes }` |
+| `PATCH /api/permits/monitor` | `configure_permit_monitor` | `{ monitor }`; settings version 0 if absent |
+| `POST /api/permits/checks` | `claim_permit_check` | `{ run }`; stable request UUID, 30-minute lease |
+| `GET /api/permits/checks/:id` | `get_permit_check` | `{ run }`, including saved observation results |
+| `PATCH /api/permits/checks/:id` | `complete_permit_check` | `{ run }`; atomic observations and replay recovery |
 | `GET /api/files/:id` | `get_file_url` | `{ url }`, valid 60 seconds |
 
 There is no HTTP tool-dispatch route: the CLI/client dispatches tool names to these normal routes. There are no production delete, message-send, schedule-recalculate or payment-transfer endpoints. The legacy multipart `POST /api/files` remains available for files up to 4 MB; use the three-step flow for files up to 20 MB.
@@ -57,3 +63,5 @@ The adapter never automatically retries mutations. A file upload may leave an un
 Readers can read; managers/admins can create and update. Access is workspace-wide. UI and agents use the same narrow RPCs, validation and immutable database audit. Each audit entry records the authenticated user; distinct agent identities are the current way to distinguish their actions. The recent Activity list is not the full audit snapshot API.
 
 Official inspection evidence and financial/contract decisions come from the authorized source. These endpoints record facts and decisions; they do not grant an AI inspector authority, sign a contract, send money or contact a contractor.
+
+Permit payloads, outcomes, discovery, source requirements and recovery are specified in [PERMITS.md](PERMITS.md). Permit completion merges supplied data keys, preserves existing values, requires current versions and supports stable IDs for new records. This specialized contract does not change generic record PATCH semantics.

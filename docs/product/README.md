@@ -221,3 +221,7 @@ Agent reminders, outbound email/SMS, incoming contractor replies, event-triggere
 Also absent are a formal weekly commitment/PPC system, pull/takt planning, a CPM engine, resource calendars, nested work packages, automatic purchase orders, financial processing, e-signatures, multi-step commercial approvals, generated closeout binders, offline synchronization and project-scoped worker permissions. Project Complete is a manual label, not an automatic certification that every task and document is accepted.
 
 Before real-project v1, confirm the actual template/permit scope, responsibilities, dates, access roles, file/backup process and intended approval rules with the team. Before ongoing autonomous work, configure the agent identity and host, agree allowed actions, and implement triggers, message channels, retry/deduplication behavior, delivery history and handoff/escalation rules. The authenticated action client is ready; those remaining connections are not switches in the current Settings screen.
+
+## Permits
+
+Each property can hold master, subpermit and standalone permit records, linked inspection checks and official evidence. The Permits view shows current statuses, next actions, deadlines, last successful verification and failed check history. New incomplete real properties automatically appear in the worker queue. Pause controls and protected manual corrections remain available to humans. Tasks can use permits as prerequisites; Gantt shows permit dates and blocked-work warnings. See [permit workflow](../../agents/PERMITS.md).

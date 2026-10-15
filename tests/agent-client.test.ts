@@ -28,7 +28,7 @@ describe('agent client uses the shared application boundary', () => {
   });
   it('does not write or read files unless writes are explicitly enabled', async () => {
     const fetch = vi.fn(); const client = new RockwoodClient({ ...config, fetch });
-    for (const operation of ['create_record', 'update_record', 'create_project', 'update_project', 'import_records', 'upload_file']) {
+    for (const operation of ['create_record', 'update_record', 'create_project', 'update_project', 'import_records', 'upload_file', 'configure_permit_monitor', 'claim_permit_check', 'complete_permit_check']) {
       await expect(client.execute({ operation, args: {} })).rejects.toMatchObject({ status: 403, code: 'WRITE_DISABLED', outcome: 'not_sent' });
     }
     expect(fetch).not.toHaveBeenCalled();
@@ -94,6 +94,14 @@ describe('agent client uses the shared application boundary', () => {
     await expect(client.execute({ operation: 'update_record', args: { id: recordId, version: 4, changes: { project_id: workspaceId } } })).rejects.toMatchObject({ code: 'INVALID_INPUT' });
     await expect(client.execute({ operation: 'send_reminder', args: {} })).rejects.toMatchObject({ code: 'INVALID_INPUT' });
     expect(fetch).not.toHaveBeenCalled();
+  });
+  it('preserves claim keys and never retries an uncertain permit completion', async () => {
+    const fetch = vi.fn().mockResolvedValueOnce(json({run:{id:recordId}})).mockRejectedValueOnce(Error('timeout'));
+    const client = new RockwoodClient({...config,fetch,allowWrites:true});
+    await client.execute({operation:'claim_permit_check',args:{project_id:projectId,request_key:recordId}});
+    expect(JSON.parse(fetch.mock.calls[0][1].body).request_key).toBe(recordId);
+    await expect(client.execute({operation:'complete_permit_check',args:{id:recordId,outcome:'blocked',summary:'Portal unavailable',records:[]}})).rejects.toMatchObject({outcome:'unknown'});
+    expect(fetch).toHaveBeenCalledTimes(2);
   });
   it('uploads through prepare, direct private Storage and complete without exposing the signing token', async () => {
     const filePath = join(directory, 'quote.txt'); writeFileSync(filePath, 'Fictional quote');

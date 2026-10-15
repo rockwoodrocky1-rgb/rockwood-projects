@@ -4,8 +4,10 @@ import { join, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const args = process.argv.slice(2);
+const upgrade = args.includes('--upgrade');
+if (upgrade) args.splice(args.indexOf('--upgrade'), 1);
 if (args.includes('--help')) {
-  console.log('Usage: npm run agent:install -- --workspace /absolute/path/to/the/active/openclaw/workspace\nInstalls the Rockwood skill only in that workspace. Does not edit OpenClaw configuration or credentials.');
+  console.log('Usage: npm run agent:install -- --workspace /absolute/path/to/the/active/openclaw/workspace [--upgrade]\nInstalls the Rockwood skill only in that workspace. Does not edit OpenClaw configuration or credentials.');
 } else {
   try {
     if (args.length !== 2 || args[0] !== '--workspace' || !isAbsolute(args[1])) throw Error('Supply --workspace with the exact active OpenClaw workspace path. See --help.');
@@ -19,7 +21,13 @@ if (args.includes('--help')) {
     await mkdir(directory, { recursive: true });
     try { await writeFile(target, text, { flag: 'wx' }); }
     catch (error) {
-      if (error.code !== 'EEXIST' || await readFile(target, 'utf8') !== text) throw Error('An existing skill differs. Review it before replacing it; it was left unchanged.');
+      if (error.code !== 'EEXIST') throw error;
+      const previous = await readFile(target, 'utf8');
+      if (previous !== text) {
+        if (!upgrade) throw Error('An existing skill differs. Review it, then use --upgrade to replace it with a backup.');
+        await writeFile(target + '.backup-' + Date.now(), previous, { flag: 'wx', mode: 0o600 });
+        await writeFile(target, text);
+      }
     }
     console.log(JSON.stringify({ ok: true, skill: target, message: 'Verify skill eligibility and any existing per-agent allowlist with OpenClaw. Then start a fresh conversation or refresh skills. Authentication still requires agent:login.' }));
   } catch (error) { console.error(error.message); process.exitCode = 1; }
