@@ -58,7 +58,7 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 
 Inside `App.tsx`, `WorkspaceApp` owns the selected project/view, filters, loaded snapshot and active editor. `Overview`, `Today`, `WorkBoard`, `Timeline`, `RecordTable`, `BidSummary`, `ContactGrid`, `ActivityFeed` and `Settings` render views. `ProjectEditor`, `RecordEditor`, `ImportEditor` and `FileEditor` perform entry through the runtime. `FormField` renders `KIND_CONFIG` fields; the record editor partitions all fields into essential and expandable sections. Preserve its native-invalid and server-error section reveal behavior when rearranging forms.
 
-The view names are presentation state, not separate permissions. Worker and manager showcase cards open different views of the same app. The private UI has no per-project access control or workspace switcher; the API selects the oldest membership unless an allowed `x-workspace-id` is supplied.
+The view names are presentation state, not separate permissions. Worker and manager showcase cards open different views of the same app. The private UI has no per-project access control or workspace switcher; the API selects the oldest membership unless an allowed `x-workspace-id` is supplied. Cam links preserve the explicit `workspace` query parameter, which the browser client forwards as that header.
 
 ## Data model
 

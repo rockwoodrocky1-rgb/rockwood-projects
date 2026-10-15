@@ -502,7 +502,7 @@ export default function App({
                 : leaveParticipant?.()
             }
           >
-            {t("Change person")}
+            {t("Sign out")}
           </button>
         </div>
       )}
@@ -567,7 +567,7 @@ export default function App({
         <main className="page projects-page">
           <div className="page-heading home-heading">
             <h1>{t("Choose project")}</h1>
-            <a className="text-button" href="/workspace?view=cam">Workspace</a>
+            <a className="text-button" href={`/workspace?view=cam&workspace=${cloud?.workspaceId ?? ""}`}>Workspace</a>
           </div>
           <div className="project-grid">
             {projects.filter(p => p.stage !== "Archived").map((p) => (
@@ -605,7 +605,7 @@ export default function App({
           <Back onClick={() => navigate("projects")}>{t("All projects")}</Back>
           <div className="project-overview field-project">
             <div>
-              <h1>{project.name}</h1>{project.address && <p>{project.address}</p>}<a className="text-button" href={`/workspace?view=cam&project=${project.id}`}>Open in workspace</a>
+              <h1>{project.name}</h1>{project.address && <p>{project.address}</p>}<a className="text-button" href={`/workspace?view=cam&workspace=${cloud?.workspaceId ?? ""}&project=${project.id}`}>Open in workspace</a>
               <div className="project-actions">
 
                 <button
