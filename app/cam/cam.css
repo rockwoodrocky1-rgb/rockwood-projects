@@ -1,15 +1,14 @@
-/* First three tokens sampled approximately from the supplied Rockwood screenshot.
-   Remaining tokens are proposed UI colors, not an official brand standards guide. */
+/* Rockwood identity kit, 2026-10-15. Shared brand colors are defined in brand.css. */
 .rockwood-cam {
-  --rockwood-ivory: #F1EEE7;
-  --rockwood-burgundy: #7A464E;
-  --rockwood-ink: #342E2B;
-  --rockwood-paper: #FAF8F4;
-  --rockwood-border: #D8D0C7;
-  --rockwood-muted: #777067;
-  --rockwood-burgundy-hover: #653941;
-  --font-heading: Georgia, "Times New Roman", serif;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --rockwood-ivory: var(--brand-cream);
+  --rockwood-burgundy: var(--brand-burgundy);
+  --rockwood-ink: var(--brand-ink);
+  --rockwood-paper: #fbfaf7;
+  --rockwood-border: #ddd9d1;
+  --rockwood-muted: #66635e;
+  --rockwood-burgundy-hover: #541b2b;
+  --font-heading: var(--font-garamond), Georgia, serif;
+  --font-ui: var(--font-inter), Arial, sans-serif;
 }
 
 .rockwood-cam {
@@ -2261,32 +2260,30 @@
 
 /* Rockwood Cam: field controls first, report detail stays in the document. */
 @media screen {
-  .rockwood-cam { --burgundy: #891c38; --muted: #59564f; --ink: #20211f; --ivory: #f5f3ee; --line: #d3d0c8; }
+  .rockwood-cam { --burgundy: var(--brand-burgundy); --muted: #66635e; --ink: var(--brand-ink); --ivory: var(--brand-cream); --line: #ddd9d1; }
   .rockwood-cam { font-size: 16px; line-height: 1.5; }
   .rockwood-cam h1, .rockwood-cam h2, .rockwood-cam h3 { font-family: var(--font-ui); font-weight: 650; letter-spacing: -0.035em; }
   .rockwood-cam h1 { font-size: clamp(28px, 3.5vw, 38px); }
   .rockwood-cam .button, .rockwood-cam .button.large, .rockwood-cam .text-button, .rockwood-cam summary { min-height: 56px; font-size: 16px; font-weight: 650; }
   .rockwood-cam .button { border-radius: 12px; padding: 14px 20px; border-color: #bcb8af; background: #fff; gap: 10px; }
   .rockwood-cam .button.primary { background: var(--burgundy); border-color: var(--burgundy); color: #fff; }
-  .rockwood-cam .button.primary:hover { background: #6d122b; }
+  .rockwood-cam .button.primary:hover { background: var(--rockwood-burgundy-hover); }
   .rockwood-cam .text-button { padding: 10px 12px; }
   .rockwood-cam .button svg, .rockwood-cam .text-button svg { min-width: 22px; min-height: 22px; }
   .rockwood-cam .icon-button { width: 56px; height: 56px; border: 1px solid var(--line); border-radius: 12px; flex-shrink: 0; }
   .rockwood-cam button, .rockwood-cam .button, .rockwood-cam summary, .rockwood-cam select, .rockwood-cam .upload-zone { touch-action: manipulation; }
-  .rockwood-cam button:focus-visible, .rockwood-cam a:focus-visible, .rockwood-cam input:focus-visible, .rockwood-cam textarea:focus-visible, .rockwood-cam select:focus-visible, .rockwood-cam summary:focus-visible { outline: 3px solid #c04361; outline-offset: 3px; }
+  .rockwood-cam button:focus-visible, .rockwood-cam a:focus-visible, .rockwood-cam input:focus-visible, .rockwood-cam textarea:focus-visible, .rockwood-cam select:focus-visible, .rockwood-cam summary:focus-visible { outline: 3px solid var(--burgundy); outline-offset: 3px; }
   .rockwood-cam input:not([type="checkbox"]):not([type="file"]), .rockwood-cam select { min-height: 60px; font-size: 17px; border-radius: 10px; }
   .rockwood-cam textarea { font-size: 17px; border-radius: 10px; padding: 14px; }
   .rockwood-cam small, .rockwood-cam .small { font-size: 14px; }
   .rockwood-cam label { font-size: 16px; font-weight: 650; }
-  .rockwood-cam .app-header { background: #141414; color: #fff; padding: 12px max(24px, calc((100vw - 1136px) / 2)); max-width: none; min-height: 88px; gap: 24px; }
+  .rockwood-cam .app-header { background: var(--ivory); color: var(--ink); padding: 12px max(24px, calc((100vw - 1136px) / 2)); max-width: none; min-height: 88px; gap: 24px; }
   .rockwood-cam .brand-button { min-height: 56px; display: flex; align-items: center; }
   .rockwood-cam .cam-brand { display: flex; align-items: center; gap: 12px; }
-  .rockwood-cam .cam-brand img { width: 60px; height: 60px; object-fit: contain; }
-  .rockwood-cam .cam-wordmark { display: grid; font-family: Georgia, serif; font-size: 28px; font-weight: 400; line-height: 1; letter-spacing: -1.2px; text-align: center; }
-  .rockwood-cam .cam-wordmark > span { font: 600 12px/1.2 var(--font-ui); letter-spacing: 7px; padding-left: 7px; margin-top: 6px; }
-  .rockwood-cam .language-toggle { margin-left: auto; border-color: #666; border-radius: 10px; gap: 2px; padding: 3px; }
-  .rockwood-cam .language-toggle button { min-width: 64px; min-height: 48px; font-size: 14px; border-radius: 7px; padding: 0 10px; color: #fff; }
-  .rockwood-cam .language-toggle button[aria-pressed="true"] { background: #fff; color: #141414; }
+  .rockwood-cam .cam-brand img { display: block; width: 310px; max-width: 100%; height: auto; }
+  .rockwood-cam .language-toggle { margin-left: auto; border-color: var(--line); border-radius: 10px; gap: 2px; padding: 3px; }
+  .rockwood-cam .language-toggle button { min-width: 64px; min-height: 48px; font-size: 14px; border-radius: 7px; padding: 0 10px; color: var(--muted); }
+  .rockwood-cam .language-toggle button[aria-pressed="true"] { background: var(--burgundy); color: #fff; }
   .rockwood-cam .workspace-bar { background: #fff; min-height: 64px; font-size: 15px; padding: 4px max(24px, calc((100vw - 1136px) / 2)); justify-content: space-between; }
   .rockwood-cam .workspace-bar .text-button { flex-shrink: 0; min-height: 48px; }
   .rockwood-cam .page, .rockwood-cam .capture-page { padding: 28px 24px 40px; max-width: 1184px; min-height: auto; }
@@ -2398,9 +2395,7 @@
   .rockwood-cam .app-header { padding: 10px 12px; gap: 8px; flex-wrap: nowrap; min-height: 76px; }
   .rockwood-cam .app-header .brand-button { flex: 0 1 auto; min-width: 0; }
   .rockwood-cam .cam-brand { gap: 5px; }
-  .rockwood-cam .cam-brand img { width: 42px; height: 48px; }
-  .rockwood-cam .cam-wordmark { font-size: 20px; letter-spacing: -1px; }
-  .rockwood-cam .cam-wordmark > span { font-size: 14px; letter-spacing: 5px; padding-left: 5px; margin-top: 5px; }
+  .rockwood-cam .cam-brand img { width: min(54vw, 260px); height: auto; }
   .rockwood-cam .language-toggle { margin-left: auto; }
   .rockwood-cam .language-toggle button { min-width: 54px; padding: 0 7px; font-size: 14px; }
   .rockwood-cam .workspace-bar { padding: 4px 12px; gap: 10px; min-height: 56px; }
@@ -2478,3 +2473,44 @@
 .rockwood-cam .cam-property-mark {display:flex;align-items:center;justify-content:center;background:#eee6e1;color:#6e4148;height:110px;}
 
 .rockwood-cam button, .rockwood-cam input, .rockwood-cam select { min-height: 48px; }
+
+/* Identity kit: calm cream surfaces, the original vector marks, and readable UI. */
+.rockwood-cam .app-header { border-bottom: 1px solid var(--line); }
+.rockwood-cam .logo { height: auto; mix-blend-mode: normal; }
+.rockwood-cam .report-header { background: var(--ivory); }
+.rockwood-cam .cam-property-mark { background: #eae6dd; color: var(--burgundy); }
+.rockwood-cam .round-arrow { background: var(--ivory); color: var(--burgundy); }
+.rockwood-cam .home-heading h1, .rockwood-cam .field-project h1,
+.rockwood-cam .cam-connection h1 {
+  font-family: var(--font-heading); font-weight: 500; letter-spacing: -.025em;
+  font-size: clamp(34px, 4vw, 46px); line-height: 1.15;
+}
+.rockwood-cam .cam-entry { min-height: 100svh; display: flex; flex-direction: column; background: var(--paper); }
+.rockwood-cam .cam-entry-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 24px max(24px, calc((100vw - 1136px) / 2));
+  background: var(--ivory); border-bottom: 1px solid var(--line);
+}
+.rockwood-cam .cam-entry-header a { display: inline-flex; align-items: center; min-height: 48px; font-size: 14px; font-weight: 600; }
+.rockwood-cam .cam-entry-header .cam-brand img { width: 340px; max-width: 100%; height: auto; margin: 0; }
+.rockwood-cam .cam-connection {
+  width: calc(100% - 48px); max-width: 520px; margin: 56px auto;
+  padding: 36px; background: #fff; border: 1px solid var(--line);
+  border-top: 3px solid var(--burgundy); border-radius: 12px;
+  box-shadow: 0 8px 32px #25232105;
+}
+.rockwood-cam .cam-connection > p { color: var(--muted); margin: 16px 0; font-size: 16px; line-height: 1.65; }
+.rockwood-cam .cam-connection .eyebrow { font-size: 14px; color: var(--burgundy); margin-bottom: 16px; letter-spacing: .08em; }
+.rockwood-cam .cam-connection form { gap: 22px; margin: 28px 0 22px; }
+.rockwood-cam .cam-connection label { gap: 8px; margin: 0; font-weight: 500; }
+.rockwood-cam .cam-connection input { width: 100%; border: 1px solid #bcb7ae; background: #fff; min-height: 56px; }
+.rockwood-cam .cam-connection .button { width: 100%; min-height: 56px; }
+.rockwood-cam .cam-connection [role="alert"] { color: #913d35; background: #f9eae7; padding: 12px; border-radius: 8px; }
+.rockwood-cam .cam-entry-footer { margin-top: auto; padding: 24px; text-align: center; color: var(--muted); font-size: 14px; }
+@media (max-width: 700px) {
+  .rockwood-cam .cam-entry-header { padding: 18px 20px; gap: 12px; flex-wrap: wrap; }
+  .rockwood-cam .cam-entry-header .cam-brand img { width: min(70vw, 300px); }
+  .rockwood-cam .cam-entry-header a { min-height: 48px; }
+  .rockwood-cam .cam-connection { width: calc(100% - 32px); margin: 28px auto; padding: 28px 20px; }
+  .rockwood-cam .cam-connection h1 { font-size: 36px; }
+}

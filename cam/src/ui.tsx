@@ -27,10 +27,10 @@ export function Logo({ available = true }: { available?: boolean }) {
   return available ? (
     <img
       className="logo"
-      src="/brand/rockwood-logo.png"
+      src="/brand/rockwood-development.svg"
       alt="Rockwood Development"
-      width="578"
-      height="158"
+      width="1031"
+      height="172"
     />
   ) : (
     <div className="logo-missing">
@@ -40,9 +40,8 @@ export function Logo({ available = true }: { available?: boolean }) {
 }
 export function CamBrand() {
   return (
-    <span className="cam-brand" aria-label="Rockwood Cam">
-      <img src="/brand/rockwood-cam-mark.png" width="64" height="64" alt="" />
-      <span className="cam-wordmark">ROCKWOOD<span>CAM</span></span>
+    <span className="cam-brand">
+      <img src="/brand/rockwood-cam.svg" width="1280" height="172" alt="Rockwood Cam" />
     </span>
   );
 }

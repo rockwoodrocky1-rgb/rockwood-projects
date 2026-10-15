@@ -22,7 +22,7 @@ export default function ShowcaseHome() {
     <div className="rwsc-shell">
       <header className="rwsc-header">
         <Link href="/" aria-label="Rockwood Projects home" className="rwsc-brand">
-          <img src="/brand/rockwood-logo.png" width="280" height="77" alt="Rockwood Development" />
+          <img src="/brand/rockwood-development.svg" width="280" height="44" alt="Rockwood Development" />
         </Link>
       </header>
 

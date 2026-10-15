@@ -1,0 +1,83 @@
+/* Official Rockwood identity, 15 October 2026. Keep supplied SVG masters unchanged.
+   Stone is decorative; secondary text uses a darker tone for legibility. */
+:root {
+  --brand-cream: #f3f0e8;
+  --brand-burgundy: #6b2438;
+  --brand-ink: #252321;
+  --brand-stone: #898680;
+  --ivory: var(--brand-cream);
+  --paper: #fbfaf7;
+  --ink: var(--brand-ink);
+  --burgundy: var(--brand-burgundy);
+  --burgundy-light: #f1e7e9;
+  --muted: #66635e;
+  --line: #ddd9d1;
+  --font: var(--font-inter), Arial, sans-serif;
+  --font-heading: var(--font-garamond), Georgia, serif;
+}
+body { font-family: var(--font); }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline-color: var(--burgundy); }
+input:focus, select:focus, textarea:focus { border-color: var(--burgundy) !important; box-shadow: 0 0 0 3px #6b243815; }
+.button.primary:hover { background: #541b2b; }
+.button:hover { border-color: #bcb7ae; }
+.brand img, .login-story > img { mix-blend-mode: normal; height: auto; }
+.sidebar { background: var(--ivory); border-color: var(--line); }
+.brand { padding: 10px 0 27px; border-color: var(--line); }
+.brand img { width: 100%; max-width: 268px; margin-inline: auto; }
+.workspace-label { padding: 24px 12px; }
+.workspace-label strong { white-space: normal; overflow: visible; line-height: 1.4; font-size: 15px; }
+.workspace-label small { margin-top: 5px; }
+.nav-item { border: 1px solid transparent; }
+.nav-item:hover { background: #eae6dd; }
+.nav-item.active { background: #e8dde0; border-color: #dfcdd2; color: var(--burgundy); }
+.nav-item b { background: #ddc7cd; }
+.account { border-color: var(--line); }
+.avatar { background: #e8dde0; color: var(--burgundy); }
+.topbar { background: #fff; }
+.page-heading h1, .login-copy h1, .connection-error h1 {
+  font-family: var(--font-heading); font-size: clamp(36px, 3.5vw, 46px);
+  font-weight: 500; line-height: 1.1; letter-spacing: -.025em;
+}
+.page-content { padding-top: 36px; }
+.page-heading { margin-bottom: 30px; }
+.panel, .metric, .project-card, .work-card { border-color: var(--line); }
+.project-icon, .empty-icon, .quick-actions > button > span { background: var(--ivory); color: var(--burgundy); }
+.project-card:hover, .metric:hover { border-color: #bca9af; background: #fdfbf9; }
+.progress-track { background: #eae6dd; }
+.progress-track span { background: var(--burgundy); }
+.project-progress-label strong, .panel-bottom-link { color: var(--burgundy); }
+.project-select { color: var(--muted); }
+.login-story { background: var(--ivory); }
+.login-story > img { width: 340px; max-width: 100%; }
+.login-copy h1 { color: var(--ink); font-size: clamp(48px, 5vw, 76px); }
+.login-copy .eyebrow { color: var(--burgundy); }
+.login-copy p { font-size: 17px; color: var(--muted); }
+.architectural-lines { opacity: .2; }
+.architectural-lines div { border-color: var(--brand-stone); }
+.login-form-side { background: var(--paper); }
+.login-form-wrap h2 { font-family: var(--font-heading); font-size: 36px; font-weight: 500; letter-spacing: -.025em; }
+.login-form-wrap input { border-color: #bcb7ae; }
+/* Permit monitoring shares the office palette; status indicators retain meaning. */
+.permit-stat, .permit-stats > div { border-color: var(--line); }
+.permit-stats span, .permit-results, .permit-property-counts { color: var(--muted); }
+.permit-filters input, .permit-filters select { border-color: #bcb7ae; }
+.permit-property-stage { background: var(--ivory); color: var(--ink); }
+.permit-guide, .permit-summary, .permit-empty-note { background: var(--ivory); border-color: var(--line); }
+.permit-intro p, .permit-property p, .permit-guide p { color: var(--muted); }
+.permit-title { color: var(--ink); }
+.permit-card, .permit-inspections button { border-color: var(--line); }
+.permit-actions { background: var(--ivory); border-color: var(--line); }
+.permit-row { border-color: var(--line); }
+.permit-type, .permit-monitoring-note { color: var(--muted); }
+@media (min-width: 1101px) {
+  .sidebar { width: 288px; padding-inline: 22px; }
+  .main-shell { margin-left: 288px; }
+}
+@media (max-width: 700px) {
+  .page-content { padding-top: 24px; }
+  .page-heading h1 { font-size: 36px; }
+  .brand { padding-top: 4px; padding-bottom: 20px; }
+  .login-story > img { width: 280px; }
+  .login-form-wrap h2 { font-size: 32px; }
+  .workspace-label { padding-block: 18px; }
+}

@@ -9,6 +9,7 @@ import { configureStorage } from './storage';
 import { LanguageProvider } from './i18n';
 import { participantSchema, type Participant } from '../shared/participant';
 import App from './App';
+import { CamBrand } from './ui';
 import type { Project } from '../shared/model';
 
 type Connection = { workspace: { id: string; name: string; role: WorkspaceAccess['role'] }; projects: Project[]; live: boolean; participant: Participant | null };
@@ -104,8 +105,9 @@ export default function WorkspaceCam() {
 
   if (access && access.projects.length) return <LanguageProvider><App logoAvailable initialLiveAiEnabled={live} cloud={access}
     requestParticipant={() => { setAccess(undefined); setName(''); setPhone(''); }} /></LanguageProvider>;
-  return <main className="cam-connection"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" />
-    <h1>Rockwood Cam</h1>
+  return <div className="cam-entry"><header className="cam-entry-header"><CamBrand /><a href="/workspace">Office workspace</a></header><main className="cam-connection">
+    <span className="eyebrow">PROPERTY WALKTHROUGHS</span>
+    <h1>Start your walkthrough.</h1>
     {access ? <><p>No properties are available for walkthroughs yet. Ask the office to add the property, then refresh.</p><button className="button primary" onClick={() => location.reload()}>Refresh properties</button></> : <>
       <p>Enter your name and phone number, then choose the property you’re walking through.</p>
       <form onSubmit={enter}>
@@ -116,6 +118,5 @@ export default function WorkspaceCam() {
       <p>No account or password needed.</p>
     </>}
     {error && <p role="alert">{error}</p>}
-    <a href="/workspace">Office workspace</a>
-  </main>;
+  </main><footer className="cam-entry-footer">Rockwood Development</footer></div>;
 }

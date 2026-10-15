@@ -57,7 +57,7 @@ export default function AuthScreen({ recovery = false, hasSession = false, onRec
     } catch (e) { setError(authMessage(e)); } finally { setBusy(false); }
   }
   return <div className="login-page">
-    <section className="login-story"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><div className="login-copy"><span className="eyebrow">THE PROJECT WORKSPACE</span><h1>Your projects.<br />One place.</h1><p>Properties, permits, schedules and next steps.<br />Keep the whole team up to date.</p></div><div className="architectural-lines" aria-hidden="true"><div /><div /><div /><div /></div></section>
+    <section className="login-story"><img src="/brand/rockwood-development.svg" alt="Rockwood Development" /><div className="login-copy"><span className="eyebrow">THE PROJECT WORKSPACE</span><h1>Your projects.<br />One place.</h1><p>Properties, permits, schedules and next steps.<br />Keep the whole team up to date.</p></div><div className="architectural-lines" aria-hidden="true"><div /><div /><div /><div /></div></section>
     <section className="login-form-side"><div className="login-form-wrap">
       <span className="login-mark"><Building2 size={27} strokeWidth={1.3} /></span><h2>{title}</h2>
       <p>{mode === 'signup' ? 'Use your email and a password to join the shared Rockwood workspace. You’ll be able to view and edit all properties.' : mode === 'signin' ? 'Sign in to keep the work moving.' : mode === 'forgot' ? 'We’ll email you a link to set a new password.' : 'Save your password and continue to your projects.'}</p>

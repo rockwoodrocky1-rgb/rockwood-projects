@@ -134,14 +134,14 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
   if (!isShowcase && (recovery || !session)) return <AuthScreen key={recovery ? (session ? 'reset' : 'expired-reset') : 'login'} recovery={recovery} hasSession={Boolean(session)} onRecovered={() => {
     window.history.replaceState(null, '', '/workspace'); setRecovery(false); setNotice('You’re signed in.');
   }} />;
-  if (!data && loading) return <div className="full-loading"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><Spinner /><span>Loading your projects…</span></div>;
-  if (!data) return <div className="connection-error"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><h1>Let’s get you connected.</h1><p>{error || 'Loading your workspace…'}</p><div className="button-row"><button className="button primary" onClick={refresh}>Try again</button>{!isShowcase && <button className="button" onClick={signOut}>Sign out</button>}</div></div>;
+  if (!data && loading) return <div className="full-loading"><img src="/brand/rockwood-development.svg" alt="Rockwood Development" /><Spinner /><span>Loading your projects…</span></div>;
+  if (!data) return <div className="connection-error"><img src="/brand/rockwood-development.svg" alt="Rockwood Development" /><h1>Let’s get you connected.</h1><p>{error || 'Loading your workspace…'}</p><div className="button-row"><button className="button primary" onClick={refresh}>Try again</button>{!isShowcase && <button className="button" onClick={signOut}>Sign out</button>}</div></div>;
 
   return <div className="app-shell">
     {navOpen && <button className="nav-backdrop" aria-label="Close navigation" onClick={() => setNavOpen(false)} />}
     <aside className={`sidebar ${navOpen ? 'open' : ''}`}>
-      <button className="brand" onClick={() => changeView('overview')} aria-label="Rockwood Projects home"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /></button>
-      {!isShowcase && <div className="workspace-label"><span className="workspace-avatar">R</span><div><strong>{data.workspace.name}</strong><small>Project management</small></div></div>}
+      <button className="brand" onClick={() => changeView('overview')} aria-label="Rockwood Projects home"><img src="/brand/rockwood-development.svg" alt="Rockwood Development" /></button>
+      {!isShowcase && <div className="workspace-label"><div><strong>{data.workspace.name}</strong><small>Project management</small></div></div>}
       <button className="sidebar-close" onClick={() => setNavOpen(false)} aria-label="Close navigation"><X size={22} /></button>
       <nav aria-label="Main navigation">{NAV.map(({ id, label, icon: Icon }) => <button key={id} className={`nav-item ${view === id ? 'active' : ''}`} onClick={() => changeView(id)}><Icon size={19} strokeWidth={1.7} /><span>{label}</span>{id === 'check' && records.filter(r => r.kind === 'check' && r.status === 'Scheduled').length > 0 && <b>{records.filter(r => r.kind === 'check' && r.status === 'Scheduled').length}</b>}</button>)}</nav>
       <div className="sidebar-bottom"><button className={`nav-item ${view === 'activity' ? 'active' : ''}`} onClick={() => changeView('activity')}><Clock3 size={18} />Activity</button><button className={`nav-item ${view === 'settings' ? 'active' : ''}`} onClick={() => changeView('settings')}><Settings2 size={18} />Settings</button>{!isShowcase && <div className="account"><span className="avatar">{identityInitial}</span><div><strong>{isShowcase ? 'Demo visitor' : session?.user.email?.split('@')[0]}</strong><small>{isShowcase ? 'Explore every view' : data.workspace.role}</small></div>{!isShowcase && <IconButton label="Sign out" onClick={signOut}><LogOut size={17} /></IconButton>}</div>}</div>
