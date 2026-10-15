@@ -6,7 +6,7 @@ Before enabling an ongoing worker, define and implement:
 
 | Connection | Required result |
 |---|---|
-| Agent identity and host | Provisioned identity, token lifecycle, intended workspace, model tool adapter and accountable owner |
+| Agent identity and host | OpenClaw skill installer and renewable host login are implemented in [Office setup](OFFICE-SETUP.md). Installation, a provisioned identity/workspace and a verified live update are still required on the office Mac. |
 | Action policy | Which changes the worker may make, which decisions need review, and how approvals are recorded |
 | Durable runs | Trigger/scheduler, run state, retries with idempotency, reconciliation after unknown outcomes and per-workspace stop control |
 | Human control | Visible pending/running/failed work, pause/cancel behavior and protection against overwriting a human correction |

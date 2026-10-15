@@ -6,7 +6,7 @@ Use this guide to run, deploy, and recover the application. For field work and f
 
 | Location | Data and access |
 |---|---|
-| `/` and `/showcase/*` | Public fictional example. Each mounted page owns its data in browser memory. **Reset**, reload, or leaving the page discards changes and selected files. No live API, Supabase session, or messaging access. |
+| `/` and known `/showcase/*` links | Redirect to the private `/workspace`; the fictional public property is retired. |
 | `/workspace` | Supabase sign-in and workspace membership required. Records and private files persist. |
 | A demo project inside `/workspace` | Persisted Supabase records marked as demonstrations. This is separate from the public showcase and has no Reset button. |
 
@@ -22,7 +22,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://127.0.0.1:8792`. The public showcase works without database credentials. For `/workspace`, fill in the two values from [.env.example](../../.env.example) before starting the server:
+Open `http://127.0.0.1:8792`. The app opens the private workspace. Fill in the two values from [.env.example](../../.env.example) before starting the server:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
@@ -54,7 +54,7 @@ The repository includes a model-independent [client and connection guide](../../
 
 Configure a provisioned user identity and an explicit workspace in the host, following the agent guide. Keep tokens outside model arguments and use a distinct identity if audit history needs to distinguish the agent from a person. The client defaults to read-only; the host must deliberately enable writes, and the CLI requires `--write`. Neither option overrides server permissions or workflow gates.
 
-For the CLI, load `PM_AGENT_BASE_URL` (the HTTPS app origin), `PM_AGENT_WORKSPACE_ID`, and exactly one of `PM_AGENT_ACCESS_TOKEN` or `PM_AGENT_TOKEN_FILE` into its process. A token file contains `access_token` and must have private permissions (`600` on POSIX). The client does not sign in or refresh tokens; the host handles token renewal. File uploads also need the matching public Supabase URL and anon key.
+For the CLI, load `PM_AGENT_BASE_URL` (the HTTPS app origin), `PM_AGENT_WORKSPACE_ID`, and exactly one of `PM_AGENT_ACCESS_TOKEN` or `PM_AGENT_TOKEN_FILE` into its process. A token file contains `access_token` and must have private permissions (`600` on POSIX). In explicit-token mode the client does not renew tokens. [Office setup](../../agents/OFFICE-SETUP.md) provides `agent:login` and automatic host-side renewal through a private saved connection. File uploads also need the matching public Supabase URL and anon key.
 
 With those values loaded, a read-only discovery call is:
 
@@ -86,8 +86,8 @@ Perform these browser checks on desktop and a narrow phone viewport. Use fiction
 
 | Check | Expected result |
 |---|---|
-| Open the public chooser without signing in; try Today, Plan, and a form | Working sample data with no private `/api/*` or Supabase requests. Repeat while signed in to `/workspace` in another tab. |
-| Save a showcase change, then Reset/reload | The fixture is restored; live records are unchanged. |
+| Open `/` and a known old `/showcase/overview` link | Redirect to `/workspace`; sign-in required, no fictional property shown. |
+| Run local showcase fixture tests | Isolated in-memory fixture behavior remains tested; it is not a public route. |
 | Sign into `/workspace`, create a checklist demo, save an edit, then reload | Saved project and records persist. Full checklist: 109 work items and 44 checks. |
 | Open a work item on a phone | Essentials, expandable details, Save, and Today/Plan/More navigation remain usable. |
 | Call capabilities and single-record/project reads through the agent client | The selected workspace and roles match. A read-only client rejects writes; a reader remains unable to write even with host opt-in. |

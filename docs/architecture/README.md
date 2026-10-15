@@ -2,20 +2,20 @@
 
 This is a map of the implemented application, reviewed against the repository on October 14, 2026. Read [AGENTS.md](../../AGENTS.md) before changing it. Use [Product and workflows](../product/README.md) for the meaning of the records and [Operations](../operations/README.md) for environment setup, deployment, accounts and recovery. Historical implementation notes in [BUILD_CONTRACT.md](../BUILD_CONTRACT.md) are context; the current source and migrations define behavior.
 
-## Two runtimes, one interface
+## Private workspace and retained test runtime
 
 Rockwood Projects is a Next.js App Router application using React, TypeScript, Supabase Auth, Postgres and private Supabase Storage. `package.json` requires Node 22; use the committed lockfile for dependency versions.
 
 | Entry | Runtime | Data lifetime | Authentication |
 |---|---|---|---|
-| `/` | Public view chooser | No project state | None |
-| `/showcase/[view]` | Shared UI with `showcase=true` | An isolated in-memory client per mounted showcase; reset/reload discards records, files and edits | None; does not load a live session |
+| `/` | Redirect to `/workspace` | No project state | Destination requires login |
+| `/showcase/[view]` | Known legacy links redirect to `/workspace`; unknown views are 404 | No public demo records | Destination requires login |
 | `/workspace` | Shared UI with the live client | Supabase database and private Storage | Email/password login; API verifies the bearer token and membership |
 
 ```mermaid
 flowchart TD
-  Home[Public view chooser] --> Demo[App with showcase runtime]
-  Demo --> Memory[Isolated records and local file blobs]
+  Home[Home and legacy showcase links] --> Private
+  Tests[Local fixture tests] --> Memory[Isolated records and local file blobs]
   Private[Private workspace] --> Live[App with live runtime]
   Live --> API[Authenticated Next.js APIs]
   Agent[External agent client / CLI] --> API
@@ -33,8 +33,8 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 
 | Path | Responsibility |
 |---|---|
-| `app/page.tsx`, `components/ShowcaseHome.tsx`, `app/showcase.css` | Public landing page, 13 view links and scoped landing styles |
-| `app/showcase/[view]/page.tsx` | Allowlisted showcase routes; awaits route params and calls `notFound()` for unknown views |
+| `app/page.tsx` | Redirect to the live workspace; old ShowcaseHome component/styles retained but unmounted |
+| `app/showcase/[view]/page.tsx` | Allowlisted showcase routes; awaits route params, redirects known views to `/workspace` and calls `notFound()` for unknown views |
 | `app/workspace/page.tsx` | Private UI entry point |
 | `app/layout.tsx`, `app/globals.css` | Shared metadata, global styles, responsive application layouts |
 | `components/App.tsx` | Main client UI, auth screen, navigation, project selector, all views, drawers and CSV/file entry |
@@ -44,7 +44,7 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 | `lib/showcase.ts` | Fictional fixture, disposable request adapter, local files, reset and isolated activity |
 | `lib/client.ts` | Browser Supabase client, bearer-authenticated fetch, error presentation and CSV download |
 | `lib/server.ts` | API context, membership, input validation, relationship checks, database errors, file restrictions and RPC calls |
-| `agents/client.mjs`, `scripts/agent.mjs` | Model-independent authenticated agent actions and JSON CLI; explicit workspace, write opt-in, current versions and no automatic retries |
+| `agents/client.mjs`, `agents/session.mjs`, `scripts/agent.mjs` | Model-independent actions, renewable private host connection and JSON CLI; explicit workspace, write opt-in, current versions and no automatic retries |
 | `agents/tools.json`, `lib/capabilities.ts` | Tool schemas and live field/status/role discovery |
 | `lib/files.ts` | Validate file metadata and create its document record |
 | `app/api/` | Small route handlers composing those helpers |

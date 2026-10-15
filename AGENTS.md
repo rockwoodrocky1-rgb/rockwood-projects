@@ -22,7 +22,7 @@ This repository is the shared project office for workers, project managers and a
 
 ## Runtime boundaries
 
-- `/` and `/showcase/[view]`: public no-login demonstration, isolated browser-memory records and files. Never load real workspace data or sessions here. Refresh/reset discards edits.
+- `/` and known `/showcase/[view]` links redirect to `/workspace`. The public fictional property has been retired. The isolated showcase runtime/fixtures remain for local tests; do not restore them as the production entry point.
 - `/workspace` and `/api/*`: authenticated Supabase persistence, workspace membership/RLS and private Storage. Never fall back to local storage for real customer data.
 - `agents/`: model-independent client, tool descriptions and operating instructions. It is not a hosted AI model, MCP server, scheduler or messaging service.
 

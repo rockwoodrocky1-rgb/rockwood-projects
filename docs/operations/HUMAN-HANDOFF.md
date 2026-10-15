@@ -5,7 +5,7 @@ People use the UI; authorized agents can use the [client/CLI](../../agents/READM
 ## Open the right place
 
 - **Real saved work:** sign into `/workspace`, then select the project. On a phone, use **Today**, **Plan**, and **More**. On desktop, use the sidebar.
-- **Presentation:** the public showcase is fictional. Its changes disappear on Reset, reload, or leaving the page. It cannot update a real project or send a reminder.
+- **Old showcase links:** redirect to the authenticated workspace. The fictional example is retained only in local test fixtures.
 - **Today** shows released work, blocked work, near-term waiting work, and work ready to check. Use **Plan → List** to find other work; clear status, phase, person, or search filters if an item appears missing.
 
 ## Take over an unfinished action

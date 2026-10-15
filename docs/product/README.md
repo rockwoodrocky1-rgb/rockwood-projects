@@ -8,13 +8,13 @@ This describes the implementation reviewed on October 14, 2026. Start with [the 
 
 | Environment | Use it for | What is saved |
 |---|---|---|
-| Public `/` and `/showcase/...` | Demonstrating the tool without an account | Fictional records, imports and files in this browser page only. Reload or Reset discards them. |
+| `/` and known `/showcase/...` links | Open the real workspace | Redirect to `/workspace`; sign-in is required. |
 | Private `/workspace`, demonstration project | Authenticated testing with clearly labeled sample data | Persistent Supabase records and private files; no demo-reset UI |
 | Private `/workspace`, real project | Authorized customer data entry | Persistent Supabase records and private files |
 
-The product sequence is showcase, then agent workflows, then the first real-project v1 rollout. A presentation is not acceptance of a real construction schedule. Public demonstrations never read the private workspace, even if the visitor is signed in elsewhere.
+The public showcase is retired. The office agent can be installed through [Office setup](../../agents/OFFICE-SETUP.md); host authentication and a saved update still need verification. A presentation is not acceptance of a real construction schedule. Public demonstrations never read the private workspace, even if the visitor is signed in elsewhere.
 
-Public **Worker**, **Project manager** and **Schedule (Gantt)** are view choices. They are not security roles. Private `admin` and `manager` members can create/update workspace data; `reader` members can inspect it. Access is workspace-wide, including other projects. A contact or task assignee does not automatically get a login. An administrator provisions accounts; there is no signup or member-management screen.
+The retained local demo fixture has **Worker**, **Project manager** and **Schedule (Gantt)** view choices. They are not security roles. Private `admin` and `manager` members can create/update workspace data; `reader` members can inspect it. Access is workspace-wide, including other projects. A contact or task assignee does not automatically get a login. An administrator provisions accounts; there is no signup or member-management screen.
 
 ## Where people find things
 

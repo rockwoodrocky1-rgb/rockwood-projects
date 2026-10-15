@@ -1,6 +1,5 @@
-import ShowcaseHome from '@/components/ShowcaseHome';
-import './showcase.css';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <ShowcaseHome />;
+  redirect('/workspace');
 }

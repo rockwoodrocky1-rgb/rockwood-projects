@@ -1,5 +1,4 @@
-import { notFound } from 'next/navigation';
-import App from '@/components/App';
+import { notFound, redirect } from 'next/navigation';
 
 const routes = {
   today: { initialView: 'today' },
@@ -24,5 +23,5 @@ export function generateStaticParams() {
 export default async function ShowcasePage({ params }: { params: Promise<{ view: string }> }) {
   const { view } = await params;
   if (!Object.hasOwn(routes, view)) notFound();
-  return <App showcase {...routes[view as keyof typeof routes]} />;
+  redirect('/workspace');
 }

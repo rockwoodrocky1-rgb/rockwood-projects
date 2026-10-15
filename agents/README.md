@@ -19,13 +19,15 @@ No automatic reminders, text/email delivery, automatic date propagation, financi
 
 ## Configure access
 
+For the office Mac Mini / WhatsApp OpenClaw agent, follow [Office setup](OFFICE-SETUP.md). `npm run agent:install -- --workspace /absolute/workspace` installs a scoped operating skill. `npm run agent:login` verifies an existing manager/admin account and saves a private renewable connection outside Git. With no explicit token variables, `npm run agent` uses that connection and renews an expiring user session before dispatch. It does not retry project mutations. The lower-level client and explicit-token mode below still leave token renewal to their caller.
+
 1. Install the repository's dependencies with Node 22 and `npm ci`.
 2. Have the workspace administrator provision an ordinary Supabase Auth identity and `pm_members` membership. Prefer a distinct identity for each operating agent so audit actor IDs distinguish its changes from human changes. `reader` reads; `manager` and `admin` can write. The repo does not grant access or create this identity automatically.
 3. The host obtains a valid user access token through the normal Supabase sign-in flow and manages session expiry. Supply the token from a secret store/environment or a private JSON file containing `access_token`. Do not use a service-role key, commit session JSON or put tokens into tool arguments, logs or prompts.
 4. Set `PM_AGENT_BASE_URL` to the intended deployment origin, `PM_AGENT_WORKSPACE_ID` to the exact workspace UUID, and either `PM_AGENT_ACCESS_TOKEN` or `PM_AGENT_TOKEN_FILE`. Use HTTPS; loopback HTTP is allowed for local development. Obtain the workspace ID from the administrator or an authenticated bootstrap response. The adapter will not choose the oldest membership implicitly.
 5. For private uploads also supply `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` for the same deployment. These are the app's public project configuration, not elevated credentials.
 
-See [.env.example](.env.example) for variable names. Keep the filled copy outside Git, and have your host load it before running commands. CLI startup does not sign in, provision members or renew expired sessions. A 401 requires the host's normal reauthentication flow.
+See [.env.example](.env.example) for variable names. Keep the filled copy outside Git, and have your host load it before running commands. Explicit-token mode does not sign in, provision members or renew expired sessions. A 401 requires the host's normal reauthentication flow.
 
 ## Start read-only
 

@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "agent": "node scripts/agent.mjs",
+    "agent:login": "node scripts/agent-login.mjs",
+    "agent:install": "node scripts/install-openclaw.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

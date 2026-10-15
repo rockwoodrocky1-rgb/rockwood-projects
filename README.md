@@ -1,10 +1,10 @@
 # Rockwood Projects
 
-A public, interactive showcase of the Rockwood project-management workspace. The first page asks which view to explore, then opens a fictional project with working forms, status changes, schedules and linked records. No login is required for the showcase.
+The shared Rockwood property and project workspace for the team and its authorized office agent. Add real properties, track tasks and statuses, and keep supporting records in one authenticated workspace.
 
-The app uses the supplied Rockwood brand and works on desktop and mobile. Showcase changes live only in the current browser page and reset on refresh or **Reset**. They never read or change Supabase data, including when the visitor has an existing private-workspace session. Sample file downloads and selected files stay local to that browser session.
+Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). App: [rockwood-projects.vercel.app/workspace](https://rockwood-projects.vercel.app/workspace).
 
-Repository: [rockwoodrocky1-rgb/rockwood-projects](https://github.com/rockwoodrocky1-rgb/rockwood-projects). Showcase: [rockwood-projects.vercel.app](https://rockwood-projects.vercel.app).
+The home page and old showcase links now redirect to the private workspace. The fictional public Oak Street example is retired. Local demonstration fixtures remain for automated tests. Any older persisted demonstration is a separate database record; archive the verified test property through the API as described in [Office setup](agents/OFFICE-SETUP.md).
 
 ## For agents and developers
 
@@ -14,18 +14,13 @@ Authorized external AI agents can operate the private workspace through a [model
 
 The client supports reads, project/record creation and updates, imports and private files. It stops on stale edits and does not retry uncertain writes. Humans retain the UI for corrections and continuation; see [Human handoff](docs/operations/HUMAN-HANDOFF.md). No hosted AI runner, background reminders or messaging service is activated. Those remaining connections are tracked in [the agent roadmap](agents/ROADMAP.md).
 
-## Show the idea
+## Connect the office agent
 
-1. Open the public showcase and choose **Worker**, **Project manager**, **Schedule (Gantt)**, or another area.
-2. Explore the fictional Oak Street project. Open work items, change dates or status, compare bids, review a blocker, and inspect the information collected at each step.
-3. Use **Back to views** to choose another starting point, or **Reset** to restore the example.
-4. Try project setup to demonstrate how a new job will be entered. Projects created in the showcase are always demonstrations.
+Follow [Office setup](agents/OFFICE-SETUP.md) on the Rockwood Mac Mini. Install the OpenClaw skill in the active agent's workspace with `npm run agent:install -- --workspace /absolute/workspace`, then use `npm run agent:login` with a privately supplied, provisioned user identity and explicit workspace. The CLI stores a renewable session outside Git and refreshes it before an operation when needed. It never retries uncertain data writes.
 
-The product sequence is **showcase → connected agent workflows → v1 with a real project**. The authenticated agent interface is implemented; connecting an external worker and its automation rules is the next setup step. The private workspace at `/workspace` saves records and private files to Supabase; public-showcase records never do.
+Property updates use the same database/API as the app. Git holds the software and operating instructions, not the live property list. Installation on a Mac alone is not evidence that WhatsApp routing, authentication or a saved update works; verify those on the actual agent host.
 
-On a phone, use **Today**, **Plan**, and **More** at the bottom of the screen. Open a work item to update its status, person, or dates. **More details** and the other expandable sections retain the full record, linked checks, files, and original checklist notes. Small-screen lists use cards; the Gantt remains a scrollable schedule.
-
-## Later: start with a real project in the private workspace
+## Start with a real project in the private workspace
 
 1. Select **New project**. Enter the job name, address, lead, planned dates and rooms or areas. Use the scope notes for known permit scope and jurisdiction details.
 2. Choose **Project checklist** and the applicable phases, or **Start empty**. Leave the demonstration option off for customer work.
@@ -65,7 +60,7 @@ Save the original planned dates separately from revised dates and actual dates. 
 
 ## Private workspace demo records
 
-The public showcase is the presentation entry point. Separately, `/workspace` supports persisted demo projects: create a project with **This is a demonstration project** selected and use the project checklist. These authenticated demo records are saved to Supabase and labeled separately from live projects. They do not appear in the public showcase.
+`/workspace` supports explicitly labeled persisted demo projects for operator testing: create a project with **This is a demonstration project** selected and use the project checklist. These authenticated demo records are saved to Supabase and labeled separately from live projects. They do not appear in the public showcase.
 
 ## What is not active yet
 
