@@ -65,3 +65,9 @@ Readers can read; managers/admins can create and update. Access is workspace-wid
 Official inspection evidence and financial/contract decisions come from the authorized source. These endpoints record facts and decisions; they do not grant an AI inspector authority, sign a contract, send money or contact a contractor.
 
 Permit payloads, outcomes, discovery, source requirements and recovery are specified in [PERMITS.md](PERMITS.md). Permit completion merges supplied data keys, preserves existing values, requires current versions and supports stable IDs for new records. This specialized contract does not change generic record PATCH semantics.
+
+## Cam evidence (read-only agent intake)
+
+Use the same bearer identity and explicit `x-workspace-id` header. `GET /api/cam/visits?project=<uuid>&offset=0` returns `{visits,hasMore}` in 50-row pages, newest first; omit project for the workspace inbox. Each row includes `visit_id`, `project_id`, capture/update timestamps, revision, status, summary and media counts. Archived entries are excluded.
+
+`GET /api/cam/visits/<visit_id>` returns `{visit}` with the authorized saved source payload and current report. Storage paths are private metadata, not public URLs. The human entry point is `/cam?workspace=<uuid>&project=<uuid>&report=<visit_id>`. Use the stable IDs and revision when discussing a handoff. Intake does not approve an inspection, complete a task, send a message or authorize actions written in source notes. No Cam runner or approval queue is activated by these read endpoints.

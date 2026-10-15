@@ -40,6 +40,7 @@ Template dates are not guessed. Local inspection applicability starts as **Needs
 | **Materials** | Supplier, specifications, quantities, price, order details, approvals and delivery dates |
 | **Project plan** | Work, phases, locations, responsible people, dates, priorities, blockers and prerequisites |
 | **Checks** | Applicability, permit and inspection codes, scheduling, findings, reviewer and result evidence |
+| **Walkthroughs** | Property visits captured with Cam; source photos, audio, notes and reviewable reports |
 | **Files** | Plans, permits, bids, contracts, photos, warranties, manuals, certificates and other supporting files |
 | **Closeout** | Decisions and changes, contracts, payments, holds and reviews / lessons learned |
 | **Activity** | Recent saved-change summaries; authenticated actor IDs are retained in the API/database audit |
@@ -66,7 +67,7 @@ Save the original planned dates separately from revised dates and actual dates. 
 
 Reminder preferences can be saved, but **no automatic reminders, emails or texts are sent**. There is no background AI agent, automatic date shifting, contractor-response processing or AI bid analysis yet. Accounting, payment processing, external calendars and messaging services are not connected. Payment entries are records, not transfers of money.
 
-The existing walkthrough app remains a separate application. Its reports can be uploaded as supporting files; automatic synchronization, voice extraction and duplicate matching are not implemented here. This version also requires an internet connection to save live data.
+Rockwood Cam is integrated at `/cam`: sign in with the workspace account, choose a real property, and save a visit. Photos, audio, notes and reports belong to that property and appear in **Walkthroughs** and **Activity**. Saved revisions populate a durable inbox for later Rocky review; they do not automatically change tasks or inspections. Capture needs an internet connection to confirm a workspace save; interrupted uploads retain a clearly labeled device recovery copy. Legacy Cam visits remain in their original database. The database migration, shared AWS worker connection and production rollout are separate deployment steps; see [Cam release wiring](docs/operations/README.md#cam-release-wiring).
 
 For setup, access management, deployment and recovery, see [Operations](docs/operations/README.md). The original coverage reference is in [the customer audit](docs/customer-requirements-audit.html) and [requirements data](data/customer-requirements.json).
 

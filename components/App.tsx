@@ -2,21 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, Bell, Building2, CalendarDays, Check, CheckCheck, ChevronDown, ChevronRight, CircleAlert, CircleCheck, Clock3, CreditCard, FileText, FolderClosed, FolderOpen, HardHat, LayoutDashboard, List, ListChecks, LoaderCircle, LogOut, Menu, MessageSquare, MoreHorizontal, Package, Pencil, Plus, Search, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Upload, Users, Wallet, X, Columns3, ChartNoAxesGantt, RefreshCw, ExternalLink, Paperclip } from 'lucide-react';
+import { Camera, ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, Bell, Building2, CalendarDays, Check, CheckCheck, ChevronDown, ChevronRight, CircleAlert, CircleCheck, Clock3, CreditCard, FileText, FolderClosed, FolderOpen, HardHat, LayoutDashboard, List, ListChecks, LoaderCircle, LogOut, Menu, MessageSquare, MoreHorizontal, Package, Pencil, Plus, Search, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Upload, Users, Wallet, X, Columns3, ChartNoAxesGantt, RefreshCw, ExternalLink, Paperclip } from 'lucide-react';
 import { KIND_CONFIG, PHASES, bidTotal, parseImport, scheduleWarnings, type Bootstrap, type FieldDef, type Kind, type Project, type RecordInput, type RecordRow } from '@/lib/domain';
+import CamVisits from './CamVisits';
 import PermitsView, { PermitMilestones } from './PermitsView';
 import { downloadCSV, getSupabase } from '@/lib/client';
 import { useWorkspaceRuntime, WorkspaceRuntimeProvider } from './WorkspaceRuntime';
 
-export type View = 'permit' | 'overview' | 'today' | 'plan' | 'bid' | 'contact' | 'material' | 'check' | 'document' | 'closeout' | 'activity' | 'settings';
+export type View = 'cam' | 'permit' | 'overview' | 'today' | 'plan' | 'bid' | 'contact' | 'material' | 'check' | 'document' | 'closeout' | 'activity' | 'settings';
 type Editor = { type: 'record'; kind: Kind; record?: RecordRow } | { type: 'project'; project?: Project } | { type: 'import'; kind: Kind } | { type: 'file' } | null;
 const NAV: { id: View; label: string; icon: typeof LayoutDashboard }[] = [
   { id: 'overview', label: 'Projects', icon: LayoutDashboard }, { id: 'today', label: 'Today', icon: CalendarDays }, { id: 'plan', label: 'Plan', icon: ChartNoAxesGantt },
   { id: 'bid', label: 'Bids & prices', icon: Wallet }, { id: 'contact', label: 'Contacts', icon: Users }, { id: 'material', label: 'Materials', icon: Package },
-  { id: 'permit', label: 'Permits', icon: FileText }, { id: 'check', label: 'Checks', icon: ShieldCheck }, { id: 'document', label: 'Files', icon: FolderClosed }, { id: 'closeout', label: 'Closeout', icon: CheckCheck },
+  { id: 'cam', label: 'Walkthroughs', icon: Camera }, { id: 'permit', label: 'Permits', icon: FileText }, { id: 'check', label: 'Checks', icon: ShieldCheck }, { id: 'document', label: 'Files', icon: FolderClosed }, { id: 'closeout', label: 'Closeout', icon: CheckCheck },
 ];
 const VIEW_INFO: Record<View, { title: string }> = {
-  overview: { title: 'Projects' }, today: { title: 'Today' }, plan: { title: 'Plan' },
+  cam: { title: 'Walkthroughs' }, overview: { title: 'Projects' }, today: { title: 'Today' }, plan: { title: 'Plan' },
   bid: { title: 'Bids & prices' }, contact: { title: 'Contacts' }, material: { title: 'Materials' },
   permit: { title: 'Permits' }, check: { title: 'Checks & approvals' }, document: { title: 'Files' }, closeout: { title: 'Closeout' },
   activity: { title: 'Activity' }, settings: { title: 'Settings' },
@@ -62,6 +63,7 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
   const [view, setView] = useState<View>(initialView);
   const [projectId, setProjectId] = useState(initialProjectId);
   const [search, setSearch] = useState('');
+  useEffect(() => { if (isShowcase) return; const query = new URLSearchParams(location.search); if (query.get('view') === 'cam') setView('cam'); const project = query.get('project'); if (project && /^[a-f0-9-]{36}$/i.test(project)) setProjectId(project); }, [isShowcase]);
   const [editor, setEditor] = useState<Editor>(openProjectSetup ? { type: 'project' } : null);
   const [navOpen, setNavOpen] = useState(false);
   const [closeoutKind, setCloseoutKind] = useState<Kind>('decision');
@@ -134,8 +136,9 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
       <div className="page-content">
         {isShowcase && <div className="showcase-runtime-banner"><a className="button compact" href="/"><ArrowLeft size={14} />Back to views</a><span className="showcase-reset-note">Demo</span><button className="button compact" onClick={resetShowcase}><RefreshCw size={14} />Reset</button></div>}
         {error && <div className="alert error" role="alert"><CircleAlert size={18} /><span>{error}</span><button onClick={refresh}>Retry</button></div>}
-        <div className="page-heading"><h1>{view === 'plan' && planView === 'timeline' ? 'Schedule' : VIEW_INFO[view].title}</h1><div className="heading-actions">{canWrite && view === 'overview' && <button className="button primary" onClick={() => setEditor({ type: 'project' })}><Plus size={17} />New project</button>}</div></div>
+        <div className="page-heading"><h1>{view === 'plan' && planView === 'timeline' ? 'Schedule' : VIEW_INFO[view].title}</h1><div className="heading-actions">{!isShowcase && canWrite && (!selectedProject || (!selectedProject.is_demo && selectedProject.status !== 'Archived')) && <a className="button" href={`/cam?workspace=${data.workspace.id}${selectedProject ? `&project=${selectedProject.id}` : ""}`}><Camera size={18} />Open Cam</a>}{canWrite && view === 'overview' && <button className="button primary" onClick={() => setEditor({ type: 'project' })}><Plus size={17} />New project</button>}</div></div>
         <div className="project-context"><div className="project-select"><Building2 size={17} /><select aria-label="Selected project" value={projectId} onChange={e => { setProjectId(e.target.value); setStatusFilter('all'); setPhaseFilter('all'); }}><option value="all">{isShowcase ? 'All demo projects' : 'All projects'}</option><optgroup label="Live projects">{data.projects.filter(p => !p.is_demo && p.status !== 'Past job' && p.status !== 'Archived').map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</optgroup><optgroup label="Past jobs">{data.projects.filter(p => !p.is_demo && p.status === 'Past job').map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</optgroup><optgroup label="Archived projects">{data.projects.filter(p => p.status === 'Archived').map(p => <option key={p.id} value={p.id}>{p.name} · Archived</option>)}</optgroup><optgroup label="Demo projects">{data.projects.filter(p => p.is_demo && p.status !== 'Archived').map(p => <option key={p.id} value={p.id}>{projectOptionLabel(p)}</option>)}</optgroup></select><ChevronDown size={14} /></div>{view === 'overview' && (selectedProject ? <><span className="context-address">{selectedProject.address || 'Address not added'}</span>{selectedProject.is_demo && <span className="demo-badge">DEMO</span>}{selectedProject.status === 'Past job' && <span className="subtle-badge">PAST JOB</span>}{canWrite && <button className="text-button context-edit" onClick={() => setEditor({ type: 'project', project: selectedProject })}><Pencil size={13} />Edit project</button>}</> : <span className="context-address">{isShowcase ? `${data.projects.length} demonstration projects` : `${data.projects.filter(p => !p.is_demo).length} real projects · ${data.projects.filter(p => p.is_demo).length} demos`}</span>)}{view === 'overview' && <span className="context-right">{dateLabel(todayISO(), { weekday: 'long', month: 'short', day: 'numeric' })}</span>}</div>
+        {view === 'cam' && <CamVisits key={projectId} workspaceId={data.workspace.id} projectId={projectId} projects={data.projects} canWrite={canWrite} />}
         {selectedProject?.is_demo && !isShowcase && <div className="demo-notice"><Sparkles size={15} />Demonstration project. Keep real customer data in a live project.</div>}
         {view === 'overview' && <Overview data={data} records={records} project={selectedProject} canWrite={canWrite} onNew={() => setEditor({ type: 'project' })} onProject={id => { setProjectId(id); changeView('plan'); }} onEdit={editRecord} onView={changeView} onCreate={newRecord} />}
         {view === 'permit' && <PermitsView data={data} projectId={projectId} onEdit={editRecord} onAdd={() => newRecord('permit')} canWrite={canWrite} />}

@@ -21,7 +21,11 @@
     "react-dom": "^19.2.0",
     "lucide-react": "^0.468.0",
     "zod": "^4.1.12",
-    "papaparse": "^5.5.3"
+    "papaparse": "^5.5.3",
+    "@aws-sdk/client-bedrock-runtime": "3.1151.0",
+    "@vercel/oidc-aws-credentials-provider": "3.3.13",
+    "idb-keyval": "^6.2.2",
+    "openai": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.18.0",

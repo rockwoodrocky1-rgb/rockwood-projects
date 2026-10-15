@@ -620,3 +620,5 @@ fieldset, .app-shell, .main-shell, .page-content, .panel, .panel-heading > div,
   .permit-filters { display:grid; }.permit-property>header,.permit-card-heading { flex-direction:column; gap:12px; }.permit-card { padding:14px; }.permit-children { margin-left:0; padding-left:8px; }.permit-card.subpermit { padding:12px; }
   .permit-actions { padding:12px; }.permit-action { padding:12px; }.permit-inspections button { flex-direction:column; gap:8px; }.permit-facts { display:grid; gap:8px; }.permit-history time { display:block; margin:6px 0; }.permit-property .button-row { flex-wrap:wrap; }
 }
+
+.cam-visit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;margin:20px 0}.cam-visit-card{padding:24px;display:grid;gap:14px;align-content:start}.cam-visit-card time{font-size:14px;color:var(--muted)}.cam-visit-card p{font-size:16px;line-height:1.6}.cam-visits .module-toolbar{flex-wrap:wrap;gap:20px}.cam-visits a.button{display:inline-flex;align-items:center;gap:8px;min-height:48px}
