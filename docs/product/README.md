@@ -14,7 +14,7 @@ This describes the implementation reviewed on October 14, 2026. Start with [the 
 
 The public showcase is retired. The office agent can be installed through [Office setup](../../agents/OFFICE-SETUP.md); host authentication and a saved update still need verification. A presentation is not acceptance of a real construction schedule. Public demonstrations never read the private workspace, even if the visitor is signed in elsewhere.
 
-The retained local demo fixture has **Worker**, **Project manager** and **Schedule (Gantt)** view choices. They are not security roles. Private `admin` and `manager` members can create/update workspace data; `reader` members can inspect it. Access is workspace-wide, including other projects. A contact or task assignee does not automatically get a login. An administrator provisions accounts; there is no signup or member-management screen.
+The retained local demo fixture has **Worker**, **Project manager** and **Schedule (Gantt)** view choices. They are not security roles. Private `admin` and `manager` members can create/update workspace data; `reader` members can inspect it. Access is workspace-wide, including other projects. A contact or task assignee does not automatically get a login. People can use **Create account** with email and password. Rockwood uses open enrollment: new accounts automatically join the shared workspace as managers and can view/edit every property. No invitation or manual approval is needed. Existing roles stay unchanged. **Forgot password** supports email recovery when the environment has working mail delivery. Administrative member management remains outside the app.
 
 ## Where people find things
 
@@ -207,7 +207,7 @@ The repository supplies a model-independent agent client and CLI for authorized 
 | Save fails a check or prerequisite rule | Open the linked record, collect the real result/evidence or confirm non-applicability; resolve it before retrying |
 | Another edit caused a conflict | Retain your intended notes, close the editor, refresh, inspect the latest version and reapply only the needed change |
 | A save has an uncertain outcome | Refresh and search before creating it again; there is no universal duplicate-prevention key for manual creates |
-| Login or membership is unavailable | Ask the workspace administrator to provision/repair access using Operations; the public demo cannot save real work |
+| Login or membership is unavailable | Use Create account or Forgot password. If account setup fails, retry or have the operator check registration and mail configuration in Operations |
 | Internet connection is unavailable | Keep a separate field note and enter it once connected; the live app has no offline queue |
 | A file is missing or unreadable | Confirm the correct project, retry its download/upload and preserve the original; do not claim it was saved until it appears and reopens |
 | A record appears absent | Clear search/status/phase/person filters and check All projects or the selected demo/past/archived project |

@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { isDate, KIND_CONFIG, validateRecord, validateTransition, type Kind, type RecordInput, type RecordRow } from './domain';
 
-export class ApiError extends Error { constructor(public status: number, message: string) { super(message); } }
+export class ApiError extends Error { constructor(public status: number, message: string, public code?: string) { super(message); } }
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const MAX_FILE_BYTES = 20 * 1024 * 1024;
 export type Context = { db: SupabaseClient; userId: string; workspace: { id: string; name: string; role: string } };
@@ -14,7 +14,7 @@ export function validProjectId(value: unknown): string | null { return value == 
 export function response(value: unknown, status = 200): Response { return Response.json(value, { status, headers: { 'Cache-Control': 'no-store' } }); }
 export async function endpoint(run: () => Promise<Response>): Promise<Response> {
   try { return await run(); } catch (error) {
-    if (error instanceof ApiError) return response({ error: error.message }, error.status);
+    if (error instanceof ApiError) return response({ error: error.message, ...(error.code ? { code: error.code } : {}) }, error.status);
     if (error instanceof z.ZodError) return response({ error: error.issues.map(issue => `${issue.path.join('.') || 'Input'}: ${issue.message}`).join('; ') }, 400);
     console.error('Project API failure', error instanceof Error ? error.message : 'Unknown error');
     return response({ error: 'The request could not be completed. Please try again.' }, 500);
@@ -37,7 +37,9 @@ export function databaseError(error: { code?: string; message?: string }): never
   console.error('Project database error', error.code, error.message);
   throw new ApiError(500, 'The database could not save or retrieve this request.');
 }
-export async function context(request: Request, write = false): Promise<Context> {
+// Account enrollment authenticates the person before they have a membership.
+// All project-data endpoints continue to use context(), which requires membership.
+export async function authenticatedUser(request: Request): Promise<{ db: SupabaseClient; userId: string }> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key) throw new ApiError(503, 'Project storage is not configured yet.');
   const authorization = request.headers.get('authorization');
@@ -46,16 +48,20 @@ export async function context(request: Request, write = false): Promise<Context>
   const db = createClient(url, key, { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
   const { data: auth, error: authError } = await db.auth.getUser(token);
   if (authError || !auth.user) throw new ApiError(401, 'Your session expired. Please sign in again.');
-  let membershipQuery = db.from('pm_members').select('workspace_id,role,created_at').eq('user_id', auth.user.id).order('created_at', { ascending: true }).limit(1);
+  return { db, userId: auth.user.id };
+}
+export async function context(request: Request, write = false): Promise<Context> {
+  const { db, userId } = await authenticatedUser(request);
+  let membershipQuery = db.from('pm_members').select('workspace_id,role,created_at').eq('user_id', userId).order('created_at', { ascending: true }).limit(1);
   const requestedWorkspace = request.headers.get('x-workspace-id');
   if (requestedWorkspace) membershipQuery = membershipQuery.eq('workspace_id', validId(requestedWorkspace, 'Workspace'));
   const { data: membership, error } = await membershipQuery.maybeSingle();
   if (error) databaseError(error);
-  if (!membership) throw new ApiError(403, 'This account has not been added to a project workspace.');
+  if (!membership) throw new ApiError(403, 'This account has not been added to a project workspace.', 'workspace_missing');
   if (write && !['admin', 'manager'].includes(membership.role)) throw new ApiError(403, 'Your account has read-only access.');
   const { data: workspace, error: workspaceError } = await db.from('pm_workspaces').select('id,name').eq('id', membership.workspace_id).single();
   if (workspaceError) databaseError(workspaceError);
-  return { db, userId: auth.user.id, workspace: { id: workspace.id, name: workspace.name, role: membership.role } };
+  return { db, userId, workspace: { id: workspace.id, name: workspace.name, role: membership.role } };
 }
 export async function allRows(ctx: Context, table: 'pm_records' | 'pm_projects' | 'pm_permit_monitors'): Promise<any[]> {
   const rows: any[] = [];

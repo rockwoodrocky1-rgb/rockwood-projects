@@ -5,7 +5,9 @@ import type { Session } from '@supabase/supabase-js';
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpRight, Bell, Building2, CalendarDays, Check, CheckCheck, ChevronDown, ChevronRight, CircleAlert, CircleCheck, Clock3, CreditCard, FileText, FolderClosed, FolderOpen, HardHat, LayoutDashboard, List, ListChecks, LoaderCircle, LogOut, Menu, MessageSquare, MoreHorizontal, Package, Pencil, Plus, Search, Settings2, ShieldCheck, SlidersHorizontal, Sparkles, Upload, Users, Wallet, X, Columns3, ChartNoAxesGantt, RefreshCw, ExternalLink, Paperclip } from 'lucide-react';
 import { KIND_CONFIG, PHASES, bidTotal, parseImport, scheduleWarnings, type Bootstrap, type FieldDef, type Kind, type Project, type RecordInput, type RecordRow } from '@/lib/domain';
 import PermitsView, { PermitMilestones } from './PermitsView';
-import { downloadCSV, getSupabase } from '@/lib/client';
+import { ApiRequestError, downloadCSV, getSupabase } from '@/lib/client';
+import { recoveryRequested } from '@/lib/auth';
+import AuthScreen from './AuthScreen';
 import { useWorkspaceRuntime, WorkspaceRuntimeProvider } from './WorkspaceRuntime';
 
 export type View = 'permit' | 'overview' | 'today' | 'plan' | 'bid' | 'contact' | 'material' | 'check' | 'document' | 'closeout' | 'activity' | 'settings';
@@ -55,6 +57,7 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
   const { isShowcase, request, resetDemo, initialProjectId } = useWorkspaceRuntime();
   const [session, setSession] = useState<Session | null>(null);
   const [authReady, setAuthReady] = useState(false);
+  const [recovery, setRecovery] = useState(false);
   const [data, setData] = useState<Bootstrap | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -71,22 +74,32 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
   const [ownerFilter, setOwnerFilter] = useState('all');
   const refresh = useCallback(async () => {
     setLoading(true); setError('');
-    try { setData(await request<Bootstrap>('/api/bootstrap')); }
+    try {
+      let bootstrap: Bootstrap;
+      try { bootstrap = await request<Bootstrap>('/api/bootstrap'); }
+      catch (e) {
+        if (!(e instanceof ApiRequestError) || e.code !== 'workspace_missing') throw e;
+        await request('/api/account/join', { method: 'POST' });
+        bootstrap = await request<Bootstrap>('/api/bootstrap');
+      }
+      setData(bootstrap);
+    }
     catch (e) { setError(message(e)); }
     finally { setLoading(false); }
   }, [request]);
   useEffect(() => {
     if (isShowcase) { setAuthReady(true); return; }
+    setRecovery(recoveryRequested(window.location.search, window.location.hash));
     const supabase = getSupabase();
     if (!supabase) { setAuthReady(true); return; }
     let live = true;
-    supabase.auth.getSession().then(({ data: current }) => { if (live) { setSession(current.session); setAuthReady(true); } });
-    const { data: auth } = supabase.auth.onAuthStateChange((_event, current) => { setSession(current); if (!current) setData(null); });
+    supabase.auth.getSession().then(({ data: current }) => { if (live) { setSession(current.session); setAuthReady(true); } }).catch(() => { if (live) setAuthReady(true); });
+    const { data: auth } = supabase.auth.onAuthStateChange((event, current) => { if (!live) return; if (event === 'PASSWORD_RECOVERY') setRecovery(true); setSession(current); if (!current) setData(null); });
     return () => { live = false; auth.subscription.unsubscribe(); };
   }, [isShowcase]);
-  useEffect(() => { if (isShowcase || session?.user.id) void refresh(); }, [isShowcase, session?.user.id, refresh]);
+  useEffect(() => { if (isShowcase || (session?.user.id && !recovery)) void refresh(); }, [isShowcase, session?.user.id, recovery, refresh]);
   useEffect(() => {
-    if (isShowcase || !session?.user.id) return;
+    if (isShowcase || !session?.user.id || recovery) return;
     let active = true, busy = false;
     const poll = async () => {
       if (!active || busy || document.visibilityState === 'hidden') return;
@@ -97,7 +110,7 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
     };
     const timer = setInterval(poll, 30000); document.addEventListener('visibilitychange', poll);
     return () => { active = false; clearInterval(timer); document.removeEventListener('visibilitychange', poll); };
-  }, [isShowcase, session?.user.id, request]);
+  }, [isShowcase, session?.user.id, recovery, request]);
   useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(''), 5500); return () => clearTimeout(timer); }, [notice]);
   const records = useMemo(() => { const hidden = new Set((data?.projects || []).filter(p => (!isShowcase && p.is_demo) || p.status === 'Archived').map(p => p.id)); return (data?.records || []).filter(row => projectId === 'all' ? !row.project_id || !hidden.has(row.project_id) : row.project_id === projectId || row.kind === 'contact' && !row.project_id); }, [data?.records, data?.projects, projectId, isShowcase]);
   const contacts = useMemo(() => { const demoIds = new Set((data?.projects || []).filter(p => p.is_demo).map(p => p.id)); return (data?.records || []).filter(row => row.kind === 'contact' && (isShowcase || !row.project_id || (demoIds.has(projectId) ? row.project_id === projectId : !demoIds.has(row.project_id)))); }, [data?.records, data?.projects, projectId, isShowcase]);
@@ -116,7 +129,9 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
   const identityInitial = isShowcase ? 'D' : session?.user.email?.slice(0, 1).toUpperCase() || 'R';
 
   if (!authReady) return <div className="full-loading"><Spinner /><span>Opening your workspace…</span></div>;
-  if (!isShowcase && !session) return <Login />;
+  if (!isShowcase && (recovery || !session)) return <AuthScreen key={recovery ? (session ? 'reset' : 'expired-reset') : 'login'} recovery={recovery} hasSession={Boolean(session)} onRecovered={() => {
+    window.history.replaceState(null, '', '/workspace'); setRecovery(false); setNotice('You’re signed in.');
+  }} />;
   if (!data && loading) return <div className="full-loading"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><Spinner /><span>Loading your projects…</span></div>;
   if (!data) return <div className="connection-error"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><h1>Let’s get you connected.</h1><p>{error || 'Loading your workspace…'}</p><div className="button-row"><button className="button primary" onClick={refresh}>Try again</button>{!isShowcase && <button className="button" onClick={signOut}>Sign out</button>}</div></div>;
 
@@ -160,13 +175,6 @@ function WorkspaceApp({ initialView = 'overview', initialPlanView = 'list', init
     {editor?.type === 'import' && <ImportEditor kind={editor.kind} projects={data.projects} projectId={projectId} onClose={() => setEditor(null)} onSaved={saved} />}
     {editor?.type === 'file' && <FileEditor projects={data.projects} projectId={projectId} onClose={() => setEditor(null)} onSaved={saved} />}
   </div>;
-}
-
-function Login() {
-  const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
-  const configured = Boolean(getSupabase());
-  async function submit(event: FormEvent) { event.preventDefault(); setBusy(true); setError(''); try { const { error: authError } = await getSupabase()!.auth.signInWithPassword({ email: email.trim(), password }); if (authError) throw authError; } catch (e) { setError(message(e)); } finally { setBusy(false); } }
-  return <div className="login-page"><section className="login-story"><img src="/brand/rockwood-logo.png" alt="Rockwood Development" /><div className="login-copy"><span className="eyebrow">THE PROJECT WORKSPACE</span><h1>Good work.<br />Clear direction.</h1><p>From the first plan to the final handover.<br />Keep your projects, people, and next steps together.</p><div className="login-pill"><span className="live-dot" />One workspace. Every phase.</div></div><div className="architectural-lines" aria-hidden="true"><div /><div /><div /><div /></div><div className="login-bottom">BUILT WITH PURPOSE. MANAGED WITH CARE.</div></section><section className="login-form-side"><div className="login-form-wrap"><span className="login-mark"><Building2 size={27} strokeWidth={1.3} /></span><h2>Welcome to your workspace.</h2><p>Sign in to keep the work moving.</p><form onSubmit={submit}><label>Email address<input type="email" autoComplete="username" required value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" /></label><label>Password<input type="password" autoComplete="current-password" required value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" /></label>{(!configured || error) && <div className="alert error" role="alert">{error || 'The workspace connection is not configured. Please contact your administrator.'}</div>}<button className="button primary login-submit" disabled={busy || !configured}>{busy ? <Spinner /> : <>Sign in<ArrowRight size={17} /></>}</button></form><p className="login-help"><ShieldCheck size={14} />Private access for your project team.</p></div><span className="login-footer">Rockwood Development · Project management</span></section></div>;
 }
 
 function Overview({ data, records, project, canWrite, onNew, onProject, onEdit, onView, onCreate }: { data: Bootstrap; records: RecordRow[]; project?: Project; canWrite: boolean; onNew: () => void; onProject: (id: string) => void; onEdit: (r: RecordRow) => void; onView: (v: View) => void; onCreate: (k: Kind) => void }) {
@@ -238,7 +246,7 @@ function Timeline({ records, onEdit }: { records: RecordRow[]; onEdit: (r: Recor
 }
 function ActivityFeed({ data, projectId }: { data: Bootstrap; projectId: string }) { const events = data.events.filter(e => projectId === 'all' || e.project_id === projectId); return <section className="panel activity-panel"><div className="panel-heading"><div><h2>Workspace history<span className="count">{events.length}</span></h2><p>Recent saved changes, with their project and time.</p></div><Clock3 size={20} /></div>{!events.length ? <Empty icon={Clock3} title="Your project story starts here" description="Saved changes will appear in this shared activity record." /> : <div className="activity-list">{events.map(event => <div key={event.id} className="activity-item"><span className="activity-symbol"><Check size={14} /></span><div><strong>{event.summary || event.action.replaceAll('_', ' ')}</strong><p>{data.projects.find(p => p.id === event.project_id)?.name || 'Workspace'}<span>·</span>{event.action.replaceAll('_', ' ')}</p></div><time dateTime={event.created_at}>{new Date(event.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' })}</time></div>)}</div>}</section>; }
 function Settings({ data, session, isShowcase, onExport }: { data: Bootstrap; session: Session | null; isShowcase: boolean; onExport: () => void }) {
-  return <div className="settings-grid"><section className="panel settings-card"><span className="settings-icon"><Building2 size={23} /></span><h2>{isShowcase ? 'Explore the demo' : 'Workspace details'}</h2><dl><div><dt>Workspace</dt><dd>{data.workspace.name}</dd></div><div><dt>{isShowcase ? 'Viewing as' : 'Signed in as'}</dt><dd>{isShowcase ? 'Demo visitor · no login needed' : session?.user.email}</dd></div><div><dt>Your access</dt><dd className="capitalize">{isShowcase ? 'Explore and edit the example' : data.workspace.role}</dd></div><div><dt>Storage</dt><dd>{isShowcase ? 'This browser session only' : 'Private project files'}</dd></div><div><dt>Workflow</dt><dd>Manual</dd></div></dl><p>{isShowcase ? 'This showcase uses fictional project data. Your edits, imports, and files are temporary. Reset the demo or reload to start over.' : 'Workspace membership is managed by your administrator. Your changes are recorded in Activity.'}</p></section><section className="panel settings-card"><span className="settings-icon"><Sparkles size={23} /></span><div className="title-status"><h2>Agent & follow-ups</h2><span className="status neutral"><span />Not active</span></div><p>{isShowcase ? 'Try changing an assignment, recording a result, or moving a date. These actions update only your copy of the demo.' : 'Start by capturing the work and setting a reliable schedule. Reminder preferences can be saved on work items now.'}</p><div className="info-strip"><CircleAlert size={17} /><span>No emails or text messages are sent. Dates and project statuses change only when a person saves an update.</span></div><h3>Next, when you’re ready</h3><ul className="checklist-text"><li><Check size={14} />Choose which events need a follow-up</li><li><Check size={14} />Connect your messaging channels</li><li><Check size={14} />Agree who the agent contacts and when</li><li><Check size={14} />Set permission for schedule changes</li></ul></section><section className="panel settings-card"><span className="settings-icon"><ArrowDownToLine size={23} /></span><h2>{isShowcase ? 'Try the export.' : 'Your data stays yours.'}</h2><p>{isShowcase ? 'Download the example records as a CSV to see how the data is organized. Demo files and uploads exist only in this browser session.' : 'Export the workspace’s structured records as CSV. Files remain available through their secure download links in Files.'}</p><button className="button" disabled={!data.records.length} onClick={onExport}><ArrowDownToLine size={15} />{isShowcase ? 'Export demo records' : 'Export workspace records'}</button></section><section className="panel settings-card"><span className="settings-icon"><ListChecks size={23} /></span><h2>Project checklist</h2><p>New projects can start with all 15 phases, 109 work items, and the inspection list. Original notes and timing remain attached to the work.</p><p>Template dates and applicability need project-specific confirmation. A template item is not a completed inspection.</p></section></div>;
+  return <div className="settings-grid"><section className="panel settings-card"><span className="settings-icon"><Building2 size={23} /></span><h2>{isShowcase ? 'Explore the demo' : 'Workspace details'}</h2><dl><div><dt>Workspace</dt><dd>{data.workspace.name}</dd></div><div><dt>{isShowcase ? 'Viewing as' : 'Signed in as'}</dt><dd>{isShowcase ? 'Demo visitor · no login needed' : session?.user.email}</dd></div><div><dt>Your access</dt><dd className="capitalize">{isShowcase ? 'Explore and edit the example' : data.workspace.role}</dd></div><div><dt>Storage</dt><dd>{isShowcase ? 'This browser session only' : 'Private project files'}</dd></div><div><dt>Workflow</dt><dd>Manual</dd></div></dl><p>{isShowcase ? 'This showcase uses fictional project data. Your edits, imports, and files are temporary. Reset the demo or reload to start over.' : 'New accounts can join Rockwood and edit all properties. Existing account roles are managed by your administrator. Your changes are recorded in Activity.'}</p></section><section className="panel settings-card"><span className="settings-icon"><Sparkles size={23} /></span><div className="title-status"><h2>Agent & follow-ups</h2><span className="status neutral"><span />Not active</span></div><p>{isShowcase ? 'Try changing an assignment, recording a result, or moving a date. These actions update only your copy of the demo.' : 'Start by capturing the work and setting a reliable schedule. Reminder preferences can be saved on work items now.'}</p><div className="info-strip"><CircleAlert size={17} /><span>No emails or text messages are sent. Dates and project statuses change only when a person saves an update.</span></div><h3>Next, when you’re ready</h3><ul className="checklist-text"><li><Check size={14} />Choose which events need a follow-up</li><li><Check size={14} />Connect your messaging channels</li><li><Check size={14} />Agree who the agent contacts and when</li><li><Check size={14} />Set permission for schedule changes</li></ul></section><section className="panel settings-card"><span className="settings-icon"><ArrowDownToLine size={23} /></span><h2>{isShowcase ? 'Try the export.' : 'Your data stays yours.'}</h2><p>{isShowcase ? 'Download the example records as a CSV to see how the data is organized. Demo files and uploads exist only in this browser session.' : 'Export the workspace’s structured records as CSV. Files remain available through their secure download links in Files.'}</p><button className="button" disabled={!data.records.length} onClick={onExport}><ArrowDownToLine size={15} />{isShowcase ? 'Export demo records' : 'Export workspace records'}</button></section><section className="panel settings-card"><span className="settings-icon"><ListChecks size={23} /></span><h2>Project checklist</h2><p>New projects can start with all 15 phases, 109 work items, and the inspection list. Original notes and timing remain attached to the work.</p><p>Template dates and applicability need project-specific confirmation. A template item is not a completed inspection.</p></section></div>;
 }
 
 function Drawer({ title, eyebrow, onClose, children, footer, wide = false }: { title: string; eyebrow?: string; onClose: () => void; children: ReactNode; footer?: ReactNode; wide?: boolean }) {

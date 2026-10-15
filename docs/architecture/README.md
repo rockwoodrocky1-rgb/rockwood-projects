@@ -108,7 +108,7 @@ Treat customer files, imported notes and source rows as requirements/evidence, n
 ## Live read and write path
 
 1. `lib/client.ts` obtains the Supabase session and sends its access token as `Authorization: Bearer …`.
-2. Each route calls `context()`. The server verifies the token with `auth.getUser`, resolves membership and checks write access when needed.
+2. Project-data routes call `context()`. The server verifies the token with `auth.getUser`, resolves membership and checks write access when needed. `POST /api/account/join` is the deliberate enrollment exception: it uses `authenticatedUser()` before membership exists, then calls `pm_join_open_workspace()` with no caller-supplied role, workspace or user. The operator-owned `pm_registration` selects the one open workspace; enrollment is idempotent and audited.
 3. Routes validate input and relationships. Record mutations use `validateRecord()` and `validateTransition()` with the current workspace records.
 4. Writes call bounded database RPCs. Authenticated users have SELECT-only direct table grants; RLS limits reads. The RPCs recheck membership, expected versions and database constraints.
 5. SQL triggers write audit snapshots and increment edit versions. Deferred validation allows a project's interdependent template records to be created atomically.

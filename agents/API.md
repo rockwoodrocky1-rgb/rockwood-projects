@@ -65,3 +65,7 @@ Readers can read; managers/admins can create and update. Access is workspace-wid
 Official inspection evidence and financial/contract decisions come from the authorized source. These endpoints record facts and decisions; they do not grant an AI inspector authority, sign a contract, send money or contact a contractor.
 
 Permit payloads, outcomes, discovery, source requirements and recovery are specified in [PERMITS.md](PERMITS.md). Permit completion merges supplied data keys, preserves existing values, requires current versions and supports stable IDs for new records. This specialized contract does not change generic record PATCH semantics.
+
+## Self-service account enrollment
+
+Humans can create an email/password account at `/workspace`. Rockwood’s owner selected open enrollment: new accounts may view and edit all Rockwood properties. A first authenticated visit with no workspace membership calls `POST /api/account/join`, then reloads bootstrap. This endpoint requires a valid Supabase bearer token, takes no body, and returns `{ membership }`. The database fixes the workspace and manager role; existing roles are preserved. Repeating it does not duplicate membership or audit. Other private endpoints still require membership. The office agent should keep using its existing provisioned identity and selected workspace; do not create a replacement account on login failures.

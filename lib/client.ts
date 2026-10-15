@@ -1,6 +1,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 let client: SupabaseClient | null = null;
+export class ApiRequestError extends Error {
+  constructor(message: string, public status: number, public code?: string) { super(message); }
+}
 export function getSupabase(): SupabaseClient | null {
   if (client) return client;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -21,9 +24,9 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
   const response = await fetch(path, { ...options, headers, cache: 'no-store' });
   const result = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(response.status === 409
+    throw new ApiRequestError(response.status === 409
       ? 'This item changed while you were editing. Close this panel, refresh the workspace, and review the latest version before saving.'
-      : result.error || 'Something went wrong. Your changes were not saved. Please try again.');
+      : result.error || 'Something went wrong. Your changes were not saved. Please try again.', response.status, result.code);
   }
   return result as T;
 }

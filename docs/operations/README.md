@@ -35,7 +35,18 @@ For a new private environment:
 2. Run [provision-admin.mjs](../../scripts/provision-admin.mjs) from a trusted operator process. Supply `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PM_ADMIN_EMAIL`, and `PM_ADMIN_PASSWORD` privately; `PM_WORKSPACE_NAME` is optional. The script does not load `.env.local` itself. With variables already loaded, run `node scripts/provision-admin.mjs`.
 3. Sign in at `/workspace` and confirm the workspace. Existing passwords are preserved unless the operator explicitly sets `PM_RESET_PASSWORD=true`; resetting affects that Auth account wherever it is used.
 
-There is no signup, password-recovery, or member-management screen. An administrator manages Auth accounts and `pm_members` outside this app. `admin` and `manager` can write; `reader` cannot. Access is workspace-wide, not restricted to assigned tasks or individual projects. The provisioning script grants **admin** access and is not a general worker-onboarding tool.
+The login screen includes **Create account** and **Forgot password**. Rockwood’s owner has explicitly selected open enrollment: any authenticated account may join the configured Rockwood workspace as a **manager**, with access to view and edit all projects and files. No invite or manual approval is required. Existing members retain their roles, including readers. Administrative membership management remains outside the app.
+
+Apply `202610150002_self_service_accounts.sql` after the permit migration. It configures only Rockwood workspace `80c3b3e9-025c-45e1-81fd-bfdbd2f56be2`; other environments need an explicit operator-owned `pm_registration` row. The authenticated `POST /api/account/join` calls an idempotent RPC that derives the caller from the verified session, fixes the role to manager, and records the first enrollment in Activity. It accepts no workspace, user or role parameters. Anonymous access, direct table writes, RLS and workflow gates remain unchanged.
+
+Before activating sign-up in production:
+
+1. In Supabase Authentication → Sign In / Providers, enable **Allow new users to sign up**. For the requested immediate entry, disable **Confirm email**; the UI also handles confirmation-required environments and resend errors.
+2. Set the Site URL to `https://rockwood-projects.vercel.app/workspace` and allow `https://rockwood-projects.vercel.app/workspace` and `https://rockwood-projects.vercel.app/workspace?recovery=1` as redirect URLs. Keep any other deliberately configured origins.
+3. Password reset email delivery needs a working custom SMTP provider for arbitrary team emails. Supabase’s default mail service is restricted and is not a production mail setup. Do not claim delivery has been verified by mocked browser tests.
+4. Verify the public Auth settings, database enrollment and deployed form. Any live test identity should be explicitly disposable and must not create a real project.
+
+To stop new enrollment, disable Auth signups and set `pm_registration.enabled=false` through authorized administration. Existing memberships stay intact. Account creation and workspace membership are separate, so an interrupted first visit can be retried safely without duplicate memberships or audit events.
 
 ## Deploy
 
