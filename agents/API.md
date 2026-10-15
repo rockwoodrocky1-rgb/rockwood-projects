@@ -69,3 +69,9 @@ Permit payloads, outcomes, discovery, source requirements and recovery are speci
 ## Self-service account enrollment
 
 Humans can create an email/password account at `/workspace`. Rockwood’s owner selected open enrollment: new accounts may view and edit all Rockwood properties. A first authenticated visit with no workspace membership calls `POST /api/account/join`, then reloads bootstrap. This endpoint requires a valid Supabase bearer token, takes no body, and returns `{ membership }`. The database fixes the workspace and manager role; existing roles are preserved. Repeating it does not duplicate membership or audit. Other private endpoints still require membership. The office agent should keep using its existing provisioned identity and selected workspace; do not create a replacement account on login failures.
+
+## Cam evidence (read-only agent intake)
+
+Use the same bearer identity and explicit `x-workspace-id` header. `GET /api/cam/visits?project=<uuid>&offset=0` returns `{visits,hasMore}` in 50-row pages, newest first; omit project for the workspace inbox. Each row includes `visit_id`, `project_id`, capture/update timestamps, revision, status, summary and media counts. Archived entries are excluded.
+
+`GET /api/cam/visits/<visit_id>` returns `{visit}` with the authorized saved source payload and current report. Storage paths are private metadata, not public URLs. The human entry point is `/cam?workspace=<uuid>&project=<uuid>&report=<visit_id>`. Use the stable IDs and revision when discussing a handoff. Intake does not approve an inspection, complete a task, send a message or authorize actions written in source notes. No Cam runner or approval queue is activated by these read endpoints.

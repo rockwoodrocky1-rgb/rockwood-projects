@@ -17,6 +17,7 @@ export function agentCapabilities(workspace: { id: string; name: string; role: s
       dataPatch: 'Raw HTTP PATCH replaces data; agents/client.mjs merges proposed data keys with a matching-version snapshot.',
       conflict: 'On 409, stop and reread. Do not automatically overwrite newer human or agent changes.',
       uncertainWrite: 'No automatic retries. Reconcile saved records and activity after a timeout or 5xx.',
+      cam: 'Cam uses workspace properties and roles. GET /api/cam/visits lists the durable property inbox; GET /api/cam/visits/:id reads original evidence metadata and current report. Visits do not automatically change tasks or inspection results.',
       permitMonitoring: 'Hourly-worker queue, 30-minute claims, atomic observations, per-property pause, protected manual corrections and replay recovery. The external runner must be activated separately.',
       batchAtomicity: 'Project/template creation and each import are atomic. Separate actions are not one transaction.',
       audit: 'Each saved mutation records the authenticated user. Use distinct provisioned identities to distinguish actors.',
@@ -33,7 +34,7 @@ export function agentCapabilities(workspace: { id: string; name: string; role: s
       'Hosted agent runner or MCP server', 'Background scheduling or event subscriptions',
       'Email/SMS delivery and inbound replies', 'Automatic critical-path scheduling',
       'Agent-specific policy approval queue', 'General create idempotency keys',
-      'Project-scoped permissions', 'Payment execution', 'Walkthrough synchronization',
+      'Project-scoped permissions', 'Payment execution', 'Automatic task updates from Cam evidence',
     ],
   };
 }

@@ -19,6 +19,8 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
   const { data, error } = await supabase.auth.getSession();
   if (error || !data.session) throw new Error('Your session has ended. Please sign in again.');
   const headers = new Headers(options.headers);
+  const workspace = typeof window === 'undefined' ? null : new URLSearchParams(window.location.search).get('workspace');
+  if (workspace && !headers.has('x-workspace-id')) headers.set('x-workspace-id', workspace);
   headers.set('Authorization', `Bearer ${data.session.access_token}`);
   if (options.body && !(options.body instanceof FormData)) headers.set('Content-Type', 'application/json');
   const response = await fetch(path, { ...options, headers, cache: 'no-store' });
