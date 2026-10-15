@@ -38,6 +38,7 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 | `app/workspace/page.tsx` | Private UI entry point |
 | `app/layout.tsx`, `app/globals.css` | Shared metadata, global styles, responsive application layouts |
 | `components/App.tsx` | Main client UI, auth screen, navigation, project selector, all views, drawers and CSV/file entry |
+| `components/PermitsView.tsx`, `lib/permit-presentation.ts` | Permit families, accessible status colors, filters and next-action summaries; presentation only, no automatic permit/status mutations |
 | `components/WorkspaceRuntime.tsx` | Live/showcase adapter and the private prepare/upload/complete sequence |
 | `lib/domain.ts` | Types, kind fields/statuses, phase list, scalar validation, relationship/workflow rules, CSV parsing and bid totals |
 | `lib/template.ts` | Customer rows → project-specific UUID records and explicit gate links; optional labeled private-demo records |

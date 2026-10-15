@@ -225,3 +225,13 @@ Before real-project v1, confirm the actual template/permit scope, responsibiliti
 ## Permits
 
 Each property can hold master, subpermit and standalone permit records, linked inspection checks and official evidence. The Permits view shows current statuses, next actions, deadlines, last successful verification and failed check history. New incomplete real properties automatically appear in the worker queue. Pause controls and protected manual corrections remain available to humans. Tasks can use permits as prerequisites; Gantt shows permit dates and blocked-work warnings. See [permit workflow](../../agents/PERMITS.md).
+
+### Reading the permit view
+
+Permit statuses have text and icons alongside color: yellow means unfinished (including Approved, Issued and Final inspections); red identifies corrections, holds, expiry or failed checks; green is reserved for recorded closure or a supported inspection pass; gray distinguishes unverified information from cancelled/not-required records. Rocky’s check freshness is a separate label and does not imply a permit is approved.
+
+Each property starts with **What needs to happen next**, showing blockers, missing verification, next actions, responsible contacts and dates. These suggestions summarize saved records; they do not establish which permits are legally required. Missing people/dates remain unassigned or unconfirmed. Recorded expiration dates prompt verification without automatically changing a status.
+
+Master cards contain their subpermits; independent permits retain a Standalone label and the actual trade is shown separately. Search by address, permit, trade or status. Filters include unfinished, blocked, unverified and closed permits, plus active or past properties. When only a subpermit matches, its master remains visible as context. A missing parent link shows a warning instead of hiding the record.
+
+Open **Checks & verification** for inspections, document reviews and certificates. Checks without a permit link remain visible at property level. Counts describe only recorded checks, not a complete set of jurisdiction requirements. Open **Source evidence & details** for source URLs, notes, fees and related work. Titles, checks and next-action rows open the existing editor with the same validation and conflict handling.

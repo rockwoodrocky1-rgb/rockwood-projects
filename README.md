@@ -72,6 +72,6 @@ For setup, access management, deployment and recovery, see [Operations](docs/ope
 
 ## Permit monitoring
 
-The authenticated workspace includes **Permits**: master/subpermit hierarchy, linked inspections, source evidence, upcoming dates, monitoring controls and check history. Rocky can discover due real properties and save atomic observations through the permit queue API. [Worker contract and hourly activation](agents/PERMITS.md). The hourly runner and municipal portal access are configured separately on the office Mac.
+The authenticated workspace includes **Permits**: master/subpermit hierarchy, linked inspections, source evidence, upcoming dates, monitoring controls and check history. Color and text distinguish unfinished work, blockers, verified closure and unknown information; each property lists next actions, and filters retain the master context for matching subpermits. Rocky can discover due real properties and save atomic observations through the permit queue API. [Worker contract and hourly activation](agents/PERMITS.md). The hourly runner and municipal portal access are configured separately on the office Mac.
 
 Rocky's skill also reads the [reviewed South Florida permit reference](agents/PERMITS-SOUTH-FLORIDA.md), which maps local research into the existing workspace and requires verification of authority-specific statuses, deadlines, related permits and legacy records.
