@@ -216,7 +216,7 @@ When handing work between a person and an agent, provide the environment, worksp
 
 ## Planned capabilities and current limits
 
-Agent reminders, outbound email/SMS, incoming contractor replies, event-triggered work, automatic rescheduling and AI bid/past-job evaluation are not implemented. Reminder preferences are stored only. The existing walkthrough application is separate; reports can be uploaded here, but there is no live synchronization or voice/photo extraction.
+Agent reminders, outbound email/SMS, incoming contractor replies, event-triggered work, automatic rescheduling and AI bid/past-job evaluation are not implemented. Reminder preferences are stored only. The integrated Cam uses workspace properties and accounts. Submissions appear under the selected property in Walkthroughs and Activity. Background report/PDF processing uses the separately configured AWS worker. Legacy visits stay in the original Cam database. Rocky can read the durable visit inbox, but automatic task/check changes and human approval routing are future work.
 
 Also absent are a formal weekly commitment/PPC system, pull/takt planning, a CPM engine, resource calendars, nested work packages, automatic purchase orders, financial processing, e-signatures, multi-step commercial approvals, generated closeout binders, offline synchronization and project-scoped worker permissions. Project Complete is a manual label, not an automatic certification that every task and document is accepted.
 

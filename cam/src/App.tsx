@@ -1,0 +1,828 @@
+"use client";
+import { useLanguage } from "./i18n";
+import { createId } from "./id";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  Camera,
+  ChevronRight,
+  ClipboardList,
+  FileText,
+  ImagePlus,
+  Trash2,
+} from "lucide-react";
+import {
+  projects as demoProjects,
+  type Project,
+  type Session,
+} from "../shared/model";
+import {
+  archiveCloudSession,
+  canEditSession,
+  listCloudSessions,
+  loadCloudSession,
+  mergeSessions,
+  saveCloudSession,
+  type WorkspaceAccess,
+} from "./cloud";
+import {
+  listSessions,
+  recoverSession,
+  resetData,
+  saveSession,
+  deleteSession,
+  loadSession,
+} from "./storage";
+import {
+  transcribe,
+  prepareReport,
+  translateReport,
+  getLiveConfig,
+  queueProcessing,
+} from "./api";
+import ProcessingStatusPanel from "./ProcessingStatus";
+import { Back, Header, Modal, Notice } from "./ui";
+import WalkthroughCapture from "./WalkthroughCapture";
+import SessionReview, { makeManualReport } from "./SessionReview";
+import ReportEditor from "./ReportEditor";
+import { restoreReportLink } from "./report-link";
+type Screen = "projects" | "project" | "capture" | "source" | "report";
+export async function resolveVisitForOpening(session: Session, cloud?: WorkspaceAccess, fresh = false) {
+  return cloud && (fresh || session.cloud?.mediaLoaded === false)
+    ? loadCloudSession(cloud, session.id)
+    : session;
+}
+export async function saveSourceForProcessing(session: Session, cloud: WorkspaceAccess | undefined, save: (session: Session) => Promise<Session>) {
+  const current = { ...session, error: undefined };
+  // Queue retries use the existing revision. Saving an unchanged source would
+  // bypass the database's per-revision deduplication and repeat transcription.
+  if (cloud && current.cloud?.revision && !current.cloud.pending && !current.report)
+    return current;
+  // An explicit regeneration of an existing report intentionally starts a new
+  // revision; a new capture or recovery copy still needs its first cloud save.
+  return save(current);
+}
+export default function App({
+  logoAvailable,
+  initialLiveAiEnabled,
+  cloud,
+  participant,
+  leaveParticipant,
+}: {
+  logoAvailable: boolean;
+  initialLiveAiEnabled: boolean;
+  cloud?: WorkspaceAccess;
+  participant?: import("../shared/participant").Participant;
+  leaveParticipant?: () => void;
+}) {
+  const { t, language, locale } = useLanguage();
+  const projects: Project[] = cloud?.projects ?? demoProjects;
+  const [liveAiEnabled, setLiveAiEnabled] = useState(initialLiveAiEnabled);
+  const [backgroundProcessing, setBackgroundProcessing] = useState(false);
+  const [processingRefresh, setProcessingRefresh] = useState(0);
+  const [processingState, setProcessingState] = useState<{key: string; busy: boolean} | null>(null);
+  const [sourceDirty, setSourceDirty] = useState(false);
+  const [sourceReload, setSourceReload] = useState(0);
+  const processingBusy = useCallback((key: string, busy: boolean) => setProcessingState({key, busy}), []);
+  useEffect(() => {
+    if (!cloud) return;
+    let cancelled = false;
+    void getLiveConfig().then(config => {
+      if (!cancelled) {
+        setLiveAiEnabled(config.live);
+        setBackgroundProcessing(config.processing === "background");
+      }
+    }).catch(() => {});
+    return () => {cancelled = true;};
+  }, [cloud]);
+  const [screen, setScreen] = useState<Screen>("projects");
+  const [project, setProject] = useState<Project>(projects[0]);
+  const [active, setActive] = useState<Session>();
+  const processingStatusKey = `${active?.id}:${active?.cloud?.revision ?? 0}:${processingRefresh}`;
+  const sourceProcessingLocked = !!(backgroundProcessing && cloud && active && !active.cloud?.pending &&
+    (processingState?.key !== processingStatusKey || processingState.busy));
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [error, setError] = useState("");
+  const [stage, setStage] = useState("");
+  const [about, setAbout] = useState(false);
+  const [reset, setReset] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [uploading, setUploading] = useState("");
+  const saveQueue = useRef<Promise<void>>(Promise.resolve());
+  const savedVersions = useRef(new Map<string, Session["cloud"]>());
+  const lock = useRef(false);
+  const refresh = useCallback(async () => {
+    const items = await listSessions();
+    const recovered = await Promise.all(items.map(recoverSession));
+    let result = recovered;
+    if (cloud) {
+      try {
+        result = mergeSessions(recovered, await listCloudSessions(cloud));
+      } catch (error) {
+        setError((error as Error).message);
+      }
+    }
+    setSessions(result);
+    return result;
+  }, [cloud]);
+  useEffect(() => {
+    // refresh reads IndexedDB/the API before publishing state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void refresh()
+      .then(async (items) => {
+        setSessions(items);
+        const link = restoreReportLink();
+        const parts = link
+          ? ["report", link.project, link.report]
+          : location.hash ? location.hash.slice(1).split("/") : ["project", (new URLSearchParams(location.search).get("project") ?? "")];
+        const p = projects.find((p) => p.id === parts[1]);
+        if (p) setProject(p);
+        if (parts[0] === "project" && p) setScreen("project");
+        if (["source", "report", "capture"].includes(parts[0]) && p) {
+          let s =
+            items.find((s) => s.id === parts[2]) ||
+            undefined;
+          if (!s && cloud && parts[2])
+            s = await loadCloudSession(cloud, parts[2]);
+          if (s) {
+            if (cloud && s.cloud?.mediaLoaded === false) {
+              s = await loadCloudSession(cloud, s.id);
+              savedVersions.current.set(s.id, s.cloud);
+            }
+            setActive(s);
+            setScreen(parts[0] === "report" && s.report ? "report" : "source");
+          }
+        }
+      })
+      .catch((error) =>
+        setError(
+          cloud && error instanceof Error
+            ? error.message
+            : "Device storage is unavailable. Enable browser storage to save walkthroughs.",
+        ),
+      )
+      .finally(() => setLoaded(true));
+  }, [refresh, cloud, projects]);
+  function navigate(next: Screen, p = project, s = active) {
+    setScreen(next);
+    setProject(p);
+    if (s) setActive(s);
+    const hash =
+      next === "projects"
+        ? ""
+        : `${next}/${p.id}${s && ["source", "report", "capture"].includes(next) ? `/${s.id}` : ""}`;
+    history.replaceState(null, "", `${location.pathname}${cloud ? `?workspace=${cloud.workspaceId}` : ""}#${hash}`);
+    window.scrollTo({ top: 0 });
+  }
+  function home() {
+    if (screen === "capture" || stage || uploading) {
+      setError("Finish the current walkthrough before leaving.");
+      return;
+    }
+    if (screen === "source" && sourceDirty &&
+      !window.confirm(t("Leave without saving your notes and transcript edits?"))) return;
+    if (
+      screen === "report" &&
+      !window.confirm(t("Return to projects? Save any report edits first."))
+    )
+      return;
+    navigate("projects");
+  }
+  function update(s: Session): Promise<Session> {
+    const operation = saveQueue.current.then(async () => {
+      let next = s;
+      if (cloud) {
+        const cached = await loadSession(s.id);
+        const known = savedVersions.current.get(s.id) ?? cached?.cloud;
+        const previous =
+          (known?.revision ?? 0) > (s.cloud?.revision ?? 0) ? known : s.cloud;
+        next = {
+          ...s,
+          cloud: {
+            ...previous,
+            revision: previous?.revision ?? 0,
+            pending: true,
+            mediaLoaded: true,
+            error: undefined,
+          },
+        };
+      }
+      await saveSession(next).catch(() => {
+        throw new Error(
+          "Could not save the recovery copy. Keep this page open and download your media before leaving.",
+        );
+      });
+      setActive((current) => (current?.id === next.id ? next : current));
+      if (cloud) {
+        setUploading(next.id);
+        try {
+          next = await saveCloudSession(cloud, next);
+          savedVersions.current.set(next.id, next.cloud);
+          await deleteSession(next.id);
+          setActive((current) => (current?.id === next.id ? next : current));
+        } catch (error) {
+          next = {
+            ...next,
+            cloud: {
+              ...next.cloud!,
+              pending: true,
+              error: (error as Error).message,
+            },
+          };
+          await saveSession(next);
+          setActive((current) => (current?.id === next.id ? next : current));
+          await refresh();
+          throw error;
+        } finally {
+          setUploading("");
+        }
+      }
+      await refresh();
+      return next;
+    });
+    saveQueue.current = operation.then(() => {}, () => {});
+    return operation;
+  }
+  async function openSession(s: Session, selectedProject = project, fresh = false) {
+    if (fresh && sourceDirty && !window.confirm(t("Open the saved visit? Unsaved notes and transcript edits will be discarded."))) return;
+    try {
+      setError("");
+      setStage("Opening saved visit");
+      const hydrated = await resolveVisitForOpening(s, cloud, fresh);
+      if (cloud) savedVersions.current.set(hydrated.id, hydrated.cloud);
+      else await saveSession(hydrated);
+      setSessions(items => items.map(item => item.id === hydrated.id ? hydrated : item));
+      // Only an explicit reload replaces the editor draft. Ordinary uploads
+      // must not remount it while the user has other notes in progress.
+      if (fresh) setSourceReload(value => value + 1);
+      navigate(
+        hydrated.report ? "report" : "source",
+        selectedProject,
+        hydrated,
+      );
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setStage("");
+    }
+  }
+  async function retryProcessing() {
+    if (!cloud || !active || sourceDirty || stage || uploading || lock.current) return;
+    lock.current = true;
+    setStage("Queuing report");
+    setError("");
+    try {
+      await queueProcessing(cloud.workspaceId, active.id, true);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      // A lost response may still have queued the job. Check before editing.
+      setProcessingRefresh(value => value + 1);
+      setStage("");
+      lock.current = false;
+    }
+  }
+  async function start() {
+    if (cloud?.role === "viewer" || project.stage === "Archived") { setError("Your workspace account has read-only access."); return; }
+    setError("");
+    const s: Session = {
+      id: createId(),
+      participant: cloud?.participant ?? participant,
+      language,
+      recordingLanguage: language,
+      projectId: project.id,
+      startedAt: new Date().toISOString(),
+      duration: 0,
+      status: "recording",
+      photos: [],
+      notes: "",
+      mime: "",
+    };
+    navigate("capture", project, s);
+  }
+  async function process(s: Session, retry = false) {
+    if (lock.current) return;
+    if (
+      s.report &&
+      !window.confirm(
+        t(
+          "Regenerate this report? This replaces its saved text, edits, and review status. Captured media is kept.",
+        ),
+      )
+    )
+      return;
+    lock.current = true;
+    let current: Session = { ...s, error: undefined };
+    let backgroundAttempted = false;
+    setStage("Saving walkthrough");
+    navigate("source", project, s);
+    try {
+      current = await saveSourceForProcessing(current, cloud, update);
+      setActive(current);
+      setStage("Checking AI availability");
+      const config = await getLiveConfig();
+      setLiveAiEnabled(config.live);
+      if (!config.live) {
+        setError("Automatic reports are not connected yet. Your visit is saved.");
+        return;
+      }
+      if (config.processing === "background" && cloud) {
+        backgroundAttempted = true;
+        setBackgroundProcessing(true);
+        setStage("Queuing report");
+        await queueProcessing(cloud.workspaceId, current.id, retry);
+        setProcessingRefresh(v => v + 1);
+        return;
+      }
+      if (!current.transcript?.text.trim() && current.audio?.size) {
+        setStage("Transcribing audio");
+        current = { ...current, transcript: await transcribe(current) };
+        await update(current);
+      }
+      setStage("Preparing report");
+      const content = await prepareReport(current);
+      current = {
+        ...current,
+        error: undefined,
+        report: {
+          ...content,
+          id: createId(),
+          projectId: current.projectId,
+          sessionId: current.id,
+          generatedAt: new Date().toISOString(),
+          mode: "live",
+          outputLanguage: "en",
+          reviewStatus: "draft",
+        },
+      };
+      await update(current);
+      navigate(
+        "report",
+        project,
+        cloud
+          ? { ...current, cloud: savedVersions.current.get(current.id) }
+          : current,
+      );
+    } catch (e) {
+      if (backgroundAttempted) {
+        // The saved source is already on the site. Do not replace it with a
+        // stale recovery copy when an enqueue response is lost or rejected.
+        setError(e instanceof Error ? e.message : "Could not confirm report processing. Your visit is saved. Check report progress before retrying.");
+        setProcessingRefresh(value => value + 1);
+        return;
+      }
+      current = {
+        ...current,
+        error:
+          e instanceof Error
+            ? e.message
+            : "Processing failed. Your work is preserved.",
+      };
+      setActive(current);
+      try {
+        if (cloud)
+          current = {
+            ...current,
+            cloud: {
+              ...(await loadSession(current.id))?.cloud,
+              ...savedVersions.current.get(current.id),
+              revision:
+                savedVersions.current.get(current.id)?.revision ??
+                current.cloud?.revision ??
+                0,
+              pending: true,
+            },
+          };
+        await saveSession(current);
+        await refresh();
+      } catch {
+        setError(
+          "Storage failed. Keep this page open and download your captured media.",
+        );
+      }
+    } finally {
+      setStage("");
+      lock.current = false;
+    }
+  }
+  function done(s: Session) {
+    s = {
+      ...s,
+      recordingLanguage: s.recordingLanguage ?? s.language ?? "en",
+      language: s.language === "es" || language === "es" ? "es" : "en",
+    };
+    setActive(s);
+    navigate("source", project, s);
+    if (liveAiEnabled) void process(s);
+    else void update(s).catch((e) => setError(e.message));
+  }
+  async function manual(s: Session) {
+    if (
+      s.report &&
+      !window.confirm(
+        t(
+          "Replace this report with a new manual draft? Saved report edits will be replaced.",
+        ),
+      )
+    )
+      return;
+    try {
+      setStage("Preparing English report");
+      await update(s);
+      const report = makeManualReport(s);
+      const content =
+        s.language === "es" ? await translateReport(report) : report;
+      const next = {
+        ...s,
+        error: undefined,
+        report: { ...report, ...content, outputLanguage: "en" as const },
+      };
+      await update(next);
+      navigate(
+        "report",
+        project,
+        cloud ? { ...next, cloud: savedVersions.current.get(next.id) } : next,
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setStage("");
+    }
+  }
+  async function remove(s: Session) {
+    if (cloud && (!s.cloud?.revision || s.cloud.pending)) {
+      setError(
+        "Finish uploading this visit before archiving it. Its recovery copy is still needed.",
+      );
+      return;
+    }
+    if (
+      !window.confirm(
+        cloud
+          ? t(
+              "Archive this walkthrough for the team? Its saved data is retained and an administrator can restore it.",
+            )
+          : t(
+              "Delete this walkthrough, its audio, photos and report from this device?",
+            ),
+      )
+    )
+      return;
+    try {
+      if (cloud) await archiveCloudSession(cloud, s);
+      await deleteSession(s.id);
+      await refresh();
+    } catch {
+      setError("Could not delete this walkthrough.");
+    }
+  }
+  const projectSessions = sessions.filter((s) => s.projectId === project.id);
+  return (
+    <>
+      <Header
+        logoAvailable={logoAvailable}
+        home={home}
+        storageLabel={cloud ? cloud.workspaceName : undefined}
+      />
+      {(cloud || participant) && ["projects", "project"].includes(screen) && (
+        <div className="workspace-bar no-print">
+          <span>
+            {cloud?.participant?.name ?? participant?.name ?? cloud?.email}
+          </span>
+          <button
+            className="text-button"
+            disabled={
+              !!uploading ||
+              !["projects", "project"].includes(screen) ||
+              !!stage
+            }
+            onClick={() =>
+              cloud
+                ? void cloud.signOut().catch((e) => setError(e.message))
+                : leaveParticipant?.()
+            }
+          >
+            {t("Change person")}
+          </button>
+        </div>
+      )}
+      {cloud && active && ["source", "report"].includes(screen) && (
+        <div className="global-notice no-print">
+          <Notice tone={active.cloud?.pending ? "warning" : "success"}>
+            <strong>
+              {uploading === active.id
+                ? t("Uploading to Rockwood…")
+                : active.cloud?.pending
+                  ? t("Upload pending")
+                  : active.cloud?.savedAt
+                    ? t("Saved to Rockwood")
+                    : t("Ready to save to Rockwood")}
+            </strong>
+            {(uploading === active.id || active.cloud?.pending) && <p>
+              {t(active.cloud?.error || "Keep this page open until the upload completes.")}
+            </p>}
+            {!uploading && active.cloud?.pending && (
+              <button
+                className="button"
+                onClick={() =>
+                  void update(active).catch((e) => setError(e.message))
+                }
+              >
+                {t("Retry upload")}
+              </button>
+            )}
+          </Notice>
+        </div>
+      )}
+      {stage === "Opening saved visit" && (
+        <div className="global-notice">
+          <Notice>{t("Opening saved visit…")}</Notice>
+        </div>
+      )}
+      {backgroundProcessing && cloud && active && screen === "source" && !active.cloud?.pending && (
+        <ProcessingStatusPanel
+          key={processingStatusKey}
+          workspaceId={cloud.workspaceId} visitId={active.id}
+          revision={active.cloud?.revision ?? 0}
+          statusKey={processingStatusKey}
+          onBusy={processingBusy}
+          canRetry={canEditSession(cloud, active)}
+          dirty={sourceDirty}
+          working={!!stage || !!uploading}
+          openReport={() => void openSession(active, project, true)}
+          retry={() => void retryProcessing()}
+        />
+      )}
+      {error && (
+        <div className="global-notice no-print">
+          <Notice tone="warning">
+            {t(error)}
+            <button className="text-button" onClick={() => setError("")}>
+              {t("Dismiss")}
+            </button>
+          </Notice>
+        </div>
+      )}
+      {screen === "projects" && (
+        <main className="page projects-page">
+          <div className="page-heading home-heading">
+            <h1>{t("Choose project")}</h1>
+            <a className="text-button" href="/workspace?view=cam">Workspace</a>
+          </div>
+          <div className="project-grid">
+            {projects.filter(p => p.stage !== "Archived").map((p) => (
+              <button
+                className="project-card"
+                key={p.id}
+                onClick={() => navigate("project", p)}
+                aria-label={t("Open {project}", { project: p.name })}
+              >
+                <div className="project-image cam-property-mark"><Camera size={42} aria-hidden="true" /></div>
+                <div className="project-card-content">
+                  <h2>{p.name}</h2>{p.address && <p>{p.address}</p>}
+                  <p>{t(p.stage)}</p>
+                  <div className="project-card-bottom">
+                    <span>
+                      {
+                        sessions.filter((s) => s.projectId === p.id && s.report)
+                          .length
+                      }{" "}
+                      {t("saved reports")}
+                    </span>
+                    <span className="round-arrow">
+                      <ArrowRight size={18} />
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+        </main>
+      )}
+      {screen === "project" && (
+        <main className="page">
+          <Back onClick={() => navigate("projects")}>{t("All projects")}</Back>
+          <div className="project-overview field-project">
+            <div>
+              <h1>{project.name}</h1>{project.address && <p>{project.address}</p>}<a className="text-button" href={`/workspace?view=cam&project=${project.id}`}>Open in workspace</a>
+              <div className="project-actions">
+
+                <button
+                  className="button primary large"
+                  onClick={() => void start()}
+                  disabled={!loaded || cloud?.role === "viewer" || project.stage === "Archived"}
+                >
+                  <Camera size={19} />
+                  {t("Start walkthrough")}
+                  <ArrowRight size={17} />
+                </button>
+              <button
+                className="button large upload-fallback"
+                disabled={cloud?.role === "viewer" || project.stage === "Archived"}
+                onClick={() => {
+                  const s: Session = {
+                    id: createId(),
+                    participant: cloud?.participant ?? participant,
+                    language,
+                    projectId: project.id,
+                    startedAt: new Date().toISOString(),
+                    duration: 0,
+                    status: "saved",
+                    photos: [],
+                    notes: "",
+                    mime: "",
+                  };
+                  navigate("source", project, s);
+                  void update(s).catch((e) => setError(e.message));
+                }}
+              >
+                <ImagePlus size={22} /> {t("Add photos / notes")}
+              </button>
+              </div>
+              <p className="capture-limit">{t("5 min · 12 photos per visit")}</p>
+            </div>
+          </div>
+          <section className="saved-section">
+            <div className="section-rule">
+              <h2>{t("Reports & visits")}</h2>
+              <span className="visit-count">{projectSessions.length}</span>
+            </div>
+            {projectSessions.length ? (
+              <div className="saved-list">
+                {projectSessions.map((s) => (
+                  <div className="saved-row" key={s.id}>
+                    <button
+                      disabled={!!stage || !!uploading}
+                      onClick={() => void openSession(s)}
+                    >
+                      <FileText size={22} />
+                      <div>
+                        <strong>
+                          {s.report?.mode === "sample"
+                            ? t("Sample walkthrough")
+                            : new Date(s.startedAt).toLocaleString(locale, {
+                                month: "short",
+                                day: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                              })}
+                        </strong>
+                        {s.participant?.name && <span className="visit-author">{s.participant.name}</span>}
+                        <span>
+                          {s.report
+                            ? t(
+                                s.report.reviewStatus === "reviewed"
+                                  ? "Reviewed report"
+                                  : "Draft report",
+                              )
+                            : t("Visit saved")}{" "}
+                          · {s.photos.length} {t(s.photos.length === 1 ? "photo" : "photos")}{" "}
+                          {s.status === "interrupted" ? t("· Interrupted") : ""}
+                          {cloud && s.cloud?.pending
+                            ? t(" · Upload pending")
+                            : ""}
+                        </span>
+                      </div>
+                      <ChevronRight size={19} />
+                    </button>
+                    {(!cloud || canEditSession(cloud, s)) && <button
+                      className="icon-button"
+                      aria-label={
+                        cloud
+                          ? t("Archive walkthrough")
+                          : t("Delete walkthrough")
+                      }
+                      disabled={
+                        !!uploading ||
+                        (cloud &&
+                          (!canEditSession(cloud, s) ||
+                            !!s.cloud?.pending ||
+                            !s.cloud?.revision))
+                      }
+                      onClick={() => void remove(s)}
+                    >
+                      <Trash2 size={20} />
+                    </button>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <ClipboardList size={30} />
+                <h3>{t("No visits yet")}</h3>
+              </div>
+            )}
+          </section>
+        </main>
+      )}
+      {screen === "capture" && active && (
+        <WalkthroughCapture
+          project={project}
+          initial={active}
+          done={done}
+          fallback={(s) => {
+            navigate("source", project, s);
+            void update(s).catch((e) => setError(e.message));
+          }}
+        />
+      )}
+      {screen === "source" && active && (
+        <SessionReview
+          key={`${active.id}:${sourceReload}`}
+          project={project}
+          session={active}
+          stage={stage}
+          backgroundBusy={sourceProcessingLocked}
+          onDirtyChange={setSourceDirty}
+          liveAiEnabled={liveAiEnabled}
+          cloudEnabled={!!cloud}
+          readOnly={!!cloud && !canEditSession(cloud, active)}
+          update={update}
+          process={(s) => void process(s, true)}
+          manual={(s) => void manual(s)}
+          back={() => {
+            if (!stage) navigate("project");
+          }}
+        />
+      )}{" "}
+      {screen === "report" && active?.report && (
+        <ReportEditor
+          key={active.report.id}
+          project={project}
+          initial={active}
+          logoAvailable={logoAvailable}
+          cloudEnabled={!!cloud}
+          cloud={cloud}
+          readOnly={!!cloud && !canEditSession(cloud, active)}
+          save={async (session) => { await update(session); }}
+          back={() => navigate("project")}
+          source={() => navigate("source")}
+        />
+      )}
+      {["projects", "project"].includes(screen) && <footer className="app-footer no-print">
+        <span>
+          ROCKWOOD CAM
+        </span>
+        <div>
+          <button onClick={() => setAbout(true)}>
+            {t("Help")}
+          </button>
+          {!cloud && (
+            <button
+              onClick={() => setReset(true)}
+              disabled={screen === "capture" || !!stage}
+            >
+              {t("Reset demo data")}
+            </button>
+          )}
+        </div>
+      </footer>}
+      {about && (
+        <Modal
+          title={t("Help")}
+          close={() => setAbout(false)}
+        >
+          <p>{t("Record your notes, take photos, then create a report.")}</p>
+          <p>{t("5 min · 12 photos per visit")}</p>
+          <p>{cloud ? t("Workspace members can view visits. Managers can save changes.") : t("Saved in this browser only. Clearing browser data deletes this visit.")}</p>
+
+
+
+        </Modal>
+      )}
+      {reset && (
+        <Modal
+          title={t("Reset data on this device?")}
+          close={() => setReset(false)}
+        >
+          <p>
+            {t(
+              "This permanently removes saved walkthroughs, recordings, photos, report edits, and sample reports from this browser. The three fictional projects remain.",
+            )}
+          </p>
+          <div className="button-row">
+            <button className="button" onClick={() => setReset(false)}>
+              {t("Keep my data")}
+            </button>
+            <button
+              className="button primary"
+              onClick={() =>
+                void resetData()
+                  .then(() => {
+                    setSessions([]);
+                    setActive(undefined);
+                    setReset(false);
+                    navigate("projects");
+                  })
+                  .catch(() => setError("Could not reset local data."))
+              }
+            >
+              {t("Delete all local walkthroughs")}
+            </button>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}

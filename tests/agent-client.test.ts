@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -126,7 +127,7 @@ describe('agent client uses the shared application boundary', () => {
     expect(JSON.stringify(error.toJSON())).not.toContain(signingToken); expect(fetch).toHaveBeenCalledTimes(3);
   });
   it('prints CLI help without credentials and returns structured read-only errors from stdin', () => {
-    const cli = new URL('../scripts/agent.mjs', import.meta.url).pathname;
+    const cli = fileURLToPath(new URL('../scripts/agent.mjs', import.meta.url));
     const help = spawnSync(process.execPath, [cli, '--help'], { encoding: 'utf8' });
     expect(help.status).toBe(0); expect(help.stdout).toContain('get_record');
     const run = spawnSync(process.execPath, [cli, '-'], { encoding: 'utf8', input: JSON.stringify({ operation: 'create_record', args: { record: { kind: 'contact', title: 'Example' } } }), env: { ...process.env, PM_AGENT_BASE_URL: config.baseUrl, PM_AGENT_WORKSPACE_ID: workspaceId, PM_AGENT_ACCESS_TOKEN: token, PM_AGENT_TOKEN_FILE: '' } });
