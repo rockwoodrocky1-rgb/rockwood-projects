@@ -26,7 +26,7 @@ The retained local demo fixture has **Worker**, **Project manager** and **Schedu
 | **Plan → Board** | What stage is each task in? | Same work grouped by status; open a card to change it, not drag and drop |
 | **Plan → Gantt timeline** | When is the entered work planned? | Three- or six-week windows, manual date edits, unscheduled-work list and prerequisite counts |
 | **Bids & prices** | Who can do the work, for what scope and price? | Quotes, included/excluded scope, component prices and comparison |
-| **Contacts** | Who is involved, and what do we know about them? | People/companies, trade, contact information, experience and linked bids/history |
+| **Contacts** | Who is involved, and what do we know about them? | Expandable trade/department groups with contact counts and A–Z names; status shortcuts, search, contact information and linked bids/history |
 | **Materials** | What needs selecting, ordering or delivering? | Supplier, specifications, quantity, cost and order/delivery details |
 | **Checks** | What needs verification and what result was recorded? | Applicability, inspection details, results, evidence and corrections |
 | **Files** | Where is the supporting information? | Categorized uploads and authorized downloads; open the title to edit metadata |
@@ -41,6 +41,10 @@ The schedule showcase opens with phase 7 selected to make rough-in work readable
 ## Records and statuses
 
 Every record has a title, status, optional project, responsible contact, due date and type-specific details. Contacts do not display the common responsible-person/due-date inputs. Use the project and record IDs when integrating; names can repeat or change.
+
+Contacts open as a compact directory of **Trades & departments**. Select a group to reveal its people, or **Expand all** to browse everyone. Search opens matching groups automatically; **All contacts**, **Active**, **Considering** and **Inactive** narrow the directory. Both groups and names use A–Z order, with **Uncategorized** last. A contact's **Trade / department** determines its group; if blank, its role is used, then Uncategorized. Case and spacing differences share a group without rewriting saved records.
+
+People dropdowns throughout Today and the record editors use the same trade groups and **Mechanical — Felix** labels, including responsible people, contractors and suppliers. Non-active statuses appear beside the name. A repeated trade suffix such as “Felix (Mechanical)” is omitted for display only; saved names and ID-based links stay intact. Contacts retain the existing project/demo scope.
 
 | Kind / screen | Main information | Allowed statuses |
 |---|---|---|

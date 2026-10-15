@@ -221,6 +221,56 @@ fieldset, .app-shell, .main-shell, .page-content, .panel, .panel-heading > div,
   min-height: 48px; font-size: 16px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; word-break: normal;
 }
 
+/* Contact directory: scan trades first, then open the people you need. */
+.contact-status-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.contact-status-filters > button { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 10px 16px; font-size: 16px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--muted); }
+.contact-status-filters > button.selected { background: var(--burgundy-light); border-color: var(--burgundy); color: var(--burgundy); font-weight: 650; }
+.contact-status-filters .count, .contact-directory .count { margin-left: 0; flex-shrink: 0; }
+.contact-directory-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin: 26px 0 18px; }
+.contact-directory-heading h2 { display: flex; align-items: center; gap: 10px; font-size: 22px; line-height: 1.4; }
+.contact-directory-heading p { margin-top: 6px; font-size: 14px; line-height: 1.6; color: var(--muted); }
+.contact-directory-heading > button { flex-shrink: 0; }
+.contact-groups { display: grid; gap: 12px; }
+.contact-group { overflow: hidden; }
+.contact-group-toggle { display: flex; align-items: center; gap: 16px; padding: 18px 22px; min-height: 84px; width: 100%; text-align: left; }
+.contact-group-toggle:hover { background: #faf8f4; }
+.contact-group-icon { display: grid; place-items: center; width: 48px; height: 48px; flex-shrink: 0; border-radius: 10px; color: var(--burgundy); background: var(--burgundy-light); }
+.contact-group-heading { flex: 1; min-width: 0; }
+.contact-group-title { display: flex; align-items: center; gap: 12px; font-size: 18px; line-height: 1.5; color: var(--ink); }
+.contact-group-preview { display: block; color: var(--muted); font-size: 14px; font-weight: 400; line-height: 1.5; margin-top: 3px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.contact-group-chevron { flex-shrink: 0; color: var(--muted); }
+.contact-group.is-open .contact-group-chevron { transform: rotate(180deg); }
+.contact-group-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border-top: 1px solid var(--line); background: var(--line); }
+.contact-entry { min-width: 0; background: white; padding: 18px 22px; }
+.contact-entry-main { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; text-align: left; }
+.contact-entry-main > svg { flex-shrink: 0; color: var(--muted); }
+.contact-entry-main .contact-avatar { flex-shrink: 0; }
+.contact-entry-main .status { margin-left: auto; font-size: 14px; }
+.contact-entry-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.contact-entry-name strong { display: block; color: var(--ink); font-size: 18px; line-height: 1.5; }
+.contact-entry-name small { display: block; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.contact-entry-links { display: flex; flex-wrap: wrap; column-gap: 20px; margin-top: 6px; }
+.contact-entry-links > a, .contact-entry-links > span { display: flex; align-items: center; gap: 8px; min-height: 48px; font-size: 16px; color: var(--muted); overflow-wrap: anywhere; min-width: 0; }
+.contact-entry-links svg { flex-shrink: 0; }
+.contact-entry-links > a:hover, .contact-entry-main:hover strong { color: var(--burgundy); text-decoration: underline; }
+.contact-directory button:focus-visible, .contact-directory a:focus-visible, .contact-status-filters button:focus-visible { outline: 2px solid var(--burgundy); outline-offset: -3px; }
+@media (max-width: 1200px) {
+  .contact-group-list { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 580px) {
+  .contact-status-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .contact-status-filters > button { padding: 10px 12px; justify-content: space-between; }
+  .contact-directory-heading { flex-wrap: wrap; gap: 12px; }
+  .contact-directory-heading h2 { font-size: 20px; }
+  .contact-group-toggle { padding: 16px; gap: 12px; }
+  .contact-group-icon { display: none; }
+  .contact-entry { padding: 16px; }
+  .contact-entry-main { flex-wrap: wrap; gap: 10px; }
+  .contact-entry-name { flex-basis: calc(100% - 64px); }
+  .contact-entry-main .status { margin-left: 58px; }
+  .contact-entry-main > svg { margin-left: auto; }
+}
+
 /* Timeline: preserve readable columns instead of shrinking the whole schedule. */
 .timeline-panel, .gantt-scroll { max-width: 100%; min-width: 0; }
 .timeline-toolbar { padding: 22px 24px; gap: 18px; flex-wrap: wrap; }

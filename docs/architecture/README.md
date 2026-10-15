@@ -39,6 +39,7 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 | `app/layout.tsx`, `app/globals.css` | Shared metadata, global styles, responsive application layouts |
 | `components/App.tsx` | Main client UI, auth screen, navigation, project selector, all views, drawers and CSV/file entry |
 | `components/PermitsView.tsx`, `lib/permit-presentation.ts` | Permit families, accessible status colors, filters and next-action summaries; presentation only, no automatic permit/status mutations |
+| `components/ContactDirectory.tsx`, `components/ContactOptions.tsx`, `lib/contact-presentation.ts` | Expandable contact groups and shared grouped people options; normalized trade/role grouping and A–Z display order without modifying saved records |
 | `components/WorkspaceRuntime.tsx` | Live/showcase adapter and the private prepare/upload/complete sequence |
 | `lib/domain.ts` | Types, kind fields/statuses, phase list, scalar validation, relationship/workflow rules, CSV parsing and bid totals |
 | `lib/template.ts` | Customer rows → project-specific UUID records and explicit gate links; optional labeled private-demo records |
@@ -56,7 +57,7 @@ The public fixture includes a current house and a past kitchen job. Its dates ar
 | `tests/` | Domain/template, database/security and isolated-showcase tests |
 | `scripts/` | Explicit operator utilities; some create or change persisted data |
 
-Inside `App.tsx`, `WorkspaceApp` owns the selected project/view, filters, loaded snapshot and active editor. `Overview`, `Today`, `WorkBoard`, `Timeline`, `RecordTable`, `BidSummary`, `ContactGrid`, `ActivityFeed` and `Settings` render views. `ProjectEditor`, `RecordEditor`, `ImportEditor` and `FileEditor` perform entry through the runtime. `FormField` renders `KIND_CONFIG` fields; the record editor partitions all fields into essential and expandable sections. Preserve its native-invalid and server-error section reveal behavior when rearranging forms.
+Inside `App.tsx`, `WorkspaceApp` owns the selected project/view, filters, loaded snapshot and active editor. `Overview`, `Today`, `WorkBoard`, `Timeline`, `RecordTable`, `BidSummary`, the imported `ContactDirectory`, `ActivityFeed` and `Settings` render views. `ProjectEditor`, `RecordEditor`, `ImportEditor` and `FileEditor` perform entry through the runtime. `FormField` renders `KIND_CONFIG` fields; the record editor partitions all fields into essential and expandable sections. Preserve its native-invalid and server-error section reveal behavior when rearranging forms.
 
 The view names are presentation state, not separate permissions. Worker and manager showcase cards open different views of the same app. The private UI has no per-project access control or workspace switcher; the API selects the oldest membership unless an allowed `x-workspace-id` is supplied. Cam links preserve the explicit `workspace` query parameter, which the browser client forwards as that header.
 
