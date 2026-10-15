@@ -1,6 +1,7 @@
+import { camContext } from '@/cam/server/context';
 import { z } from "zod";
 import { errorResponse, HttpError, liveEnabled, readLimited } from "@/cam/server/api";
-import { context, endpoint, response, ApiError } from "@/lib/server";
+import { endpoint, response, ApiError } from "@/lib/server";
 import { processingStatusColumns, processingStatusSchema } from "@/cam/shared/processing";
 
 export const runtime = "nodejs";
@@ -9,7 +10,7 @@ export const maxDuration = 30;
 const inputSchema = z.object({ workspaceId: z.uuid(), walkthroughId: z.string().min(1).max(100), retry: z.boolean().default(false) });
 
 export async function POST(request: Request) { return endpoint(async () => {
-  const ctx = await context(request, true);
+  const ctx = await camContext(request, true);
   try {
     if (process.env.AI_PROVIDER !== "aws" || !liveEnabled())
       throw new HttpError(503, "Automatic reports are not connected yet. Your visit is saved.");
@@ -36,7 +37,7 @@ export async function POST(request: Request) { return endpoint(async () => {
 }); }
 
 export async function GET(request: Request) { return endpoint(async () => {
-  const ctx = await context(request);
+  const ctx = await camContext(request);
   try {
     const client = ctx.db;
     const query = new URL(request.url).searchParams;

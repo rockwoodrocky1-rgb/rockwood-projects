@@ -23,8 +23,8 @@ This repository is the shared project office for workers, project managers and a
 ## Runtime boundaries
 
 - `/` and known `/showcase/[view]` links redirect to `/workspace`. The public fictional property has been retired. The isolated showcase runtime/fixtures remain for local tests; do not restore them as the production entry point.
-- `/cam`: authenticated property capture; local IndexedDB is an explicitly pending recovery copy only. A successful save is confirmed by the database RPC and property inbox, never a local-only fallback.
-- `/workspace` and `/api/*`: authenticated Supabase persistence, workspace membership/RLS and private Storage. Never fall back to local storage for real customer data.
+- `/cam`: name-and-phone field capture with an invisible, isolated browser session; no workspace login is required. Field visitors cannot enroll as workspace managers or read workspace records. local IndexedDB is an explicitly pending recovery copy only. A successful save is confirmed by the database RPC and property inbox, never a local-only fallback.
+- `/workspace` and workspace `/api/*`: authenticated Supabase persistence, workspace membership/RLS and private Storage. Never fall back to local storage for real customer data.
 - `agents/`: model-independent client, tool descriptions and operating instructions. It is not a hosted AI model, MCP server, scheduler or messaging service.
 
 ## Engineering completion

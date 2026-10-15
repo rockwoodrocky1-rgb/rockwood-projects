@@ -1,12 +1,15 @@
-import { allRows, context, endpoint, response } from '@/lib/server';
+import { databaseError, endpoint, response } from '@/lib/server';
+import { camContext } from '@/cam/server/context';
 import { liveEnabled } from '@/cam/server/api';
 
 export const dynamic = 'force-dynamic';
 export async function GET(request: Request) { return endpoint(async () => {
-  const ctx = await context(request);
-  const projects = (await allRows(ctx, 'pm_projects')).filter(p => !p.is_demo);
-  return response({ workspace: ctx.workspace, live: liveEnabled(), projects: projects.map((p, index) => ({
-    id: p.id, name: p.name, address: p.address, type: p.project_type, stage: p.status,
-    areas: p.locations, image: '', number: String(index + 1).padStart(2, '0'),
-  })) });
+  const ctx = await camContext(request);
+  const [properties, contact] = await Promise.all([
+    ctx.db.rpc('cam_property_choices', { target: ctx.workspace.id }),
+    ctx.db.from('field_contacts').select('name,phone').eq('user_id', ctx.userId).eq('workspace_id', ctx.workspace.id).maybeSingle(),
+  ]);
+  if (properties.error) databaseError(properties.error);
+  if (contact.error) databaseError(contact.error);
+  return response({ workspace: ctx.workspace, live: liveEnabled(), projects: properties.data, participant: contact.data });
 }); }

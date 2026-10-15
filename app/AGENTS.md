@@ -1,6 +1,6 @@
 # App and route instructions
 
-Root instructions apply. Public routes use the isolated showcase runtime; `/workspace` uses authenticated persistence. Never mix those runtimes.
+Root instructions apply. The retired showcase redirects to `/workspace`, which uses authenticated persistence. `/cam` is public name-and-phone entry with a separate field session; its capture/config/processing/PDF routes use `camContext`. The workspace Cam inbox routes retain `context` and pm membership. Never mix field access with workspace enrollment.
 
 For project-data API routes use `context`, `endpoint` and `response` from `lib/server.ts`. The self-service `POST /api/account/join` is an intentional exception: use `authenticatedUser` plus `endpoint`/`response` before membership exists, and only the zero-argument enrollment RPC. Reads must verify membership; writes use `context(request, true)`. Validate inputs and relationships, then call the existing narrow RPC. Do not substitute a service-role client or direct table mutation.
 

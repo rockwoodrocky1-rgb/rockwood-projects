@@ -1,11 +1,20 @@
 # Integrated Rockwood Cam
 
 Cam capture and report modules were imported from rockwood-walkthrough at 2354167.
-New visits use this app's Supabase project, authenticated pm_members and canonical
-pm_projects IDs. The older app/database remain the archive for legacy visits.
+Field entry is name + phone, with no visible signup, email, password or OTP.
+A separate anonymous Supabase session owns each browser’s field visits. Never reuse
+its token for workspace enrollment or store it in the workspace auth storage key.
+Workspace report links may reuse an already signed-in workspace member for review.
 
-Keep source evidence and stable visit/report IDs. Client writes use cam_save_visit
-and cam_archive_visit; workspace roles and source revision checks are authoritative.
-The shared AWS worker processes this database using a separate server-side connection.
-Do not put its service key in this web application. PDF links require workspace login.
-Email and automatic project/task changes remain disabled.
+Canonical pm_projects IDs connect visits to the shared property inbox. Field sessions
+receive only Cam contributor access; they can choose real non-archived properties,
+save their own visits and read their own media/report jobs. Workspace members retain
+review access through their roles. The old app/database remain the legacy archive.
+
+Keep source evidence, name/phone attribution and stable visit/report IDs. Contact
+information is self-reported, not a verified identity or cross-device lookup key.
+Client writes use cam_save_visit and cam_archive_visit; server and database checks
+and revision conflicts remain authoritative. Private media stays private.
+The shared AWS worker processes this database with a separate server connection.
+Do not put its service key in the web application. Email and automatic task changes
+remain disabled. Never remove the workspace login to fix field capture.

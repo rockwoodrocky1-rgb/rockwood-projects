@@ -1,4 +1,5 @@
-import { context, endpoint, response } from "@/lib/server";
+import { camContext } from '@/cam/server/context';
+import { endpoint, response } from "@/lib/server";
 import {
   guard,
   readLimited,
@@ -10,7 +11,7 @@ export const runtime = "nodejs";
 export const maxDuration = 180;
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) { return endpoint(async () => {
-  await context(request, true);
+  await camContext(request, true);
   try {
     await guard(request);
     const bytes = await readLimited(request);

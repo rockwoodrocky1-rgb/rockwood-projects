@@ -235,3 +235,7 @@ Each property starts with **What needs to happen next**, showing blockers, missi
 Master cards contain their subpermits; independent permits retain a Standalone label and the actual trade is shown separately. Search by address, permit, trade or status. Filters include unfinished, blocked, unverified and closed permits, plus active or past properties. When only a subpermit matches, its master remains visible as context. A missing parent link shows a warning instead of hiding the record.
 
 Open **Checks & verification** for inspections, document reviews and certificates. Checks without a permit link remain visible at property level. Counts describe only recorded checks, not a complete set of jurisdiction requirements. Open **Source evidence & details** for source URLs, notes, fees and related work. Titles, checks and next-action rows open the existing editor with the same validation and conflict handling.
+
+## Field walkthrough entry
+
+Rockwood Cam requires only the walkthrough person's name and phone number, then property selection. It has no account signup, password or OTP. It stamps those self-reported details onto each saved visit. Field visitors see their own visits on that browser; office users review all property walkthroughs after signing into the workspace. **Change person** starts a fresh field session and leaves workspace login unchanged; finish pending uploads first.

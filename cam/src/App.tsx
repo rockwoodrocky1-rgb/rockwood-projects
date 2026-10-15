@@ -68,12 +68,14 @@ export default function App({
   cloud,
   participant,
   leaveParticipant,
+  requestParticipant,
 }: {
   logoAvailable: boolean;
   initialLiveAiEnabled: boolean;
   cloud?: WorkspaceAccess;
   participant?: import("../shared/participant").Participant;
   leaveParticipant?: () => void;
+  requestParticipant?: () => void;
 }) {
   const { t, language, locale } = useLanguage();
   const projects: Project[] = cloud?.projects ?? demoProjects;
@@ -283,6 +285,7 @@ export default function App({
     }
   }
   async function start() {
+    if (cloud && !cloud.participant) { requestParticipant?.(); return; }
     if (cloud?.role === "viewer" || project.stage === "Archived") { setError("Your workspace account has read-only access."); return; }
     setError("");
     const s: Session = {
@@ -492,7 +495,7 @@ export default function App({
           <button
             className="text-button"
             disabled={
-              !!uploading ||
+              !!uploading || sessions.some(s => s.cloud?.pending) ||
               !["projects", "project"].includes(screen) ||
               !!stage
             }
@@ -502,7 +505,7 @@ export default function App({
                 : leaveParticipant?.()
             }
           >
-            {t("Sign out")}
+            {t("Change person")}
           </button>
         </div>
       )}
@@ -621,6 +624,7 @@ export default function App({
                 className="button large upload-fallback"
                 disabled={cloud?.role === "viewer" || project.stage === "Archived"}
                 onClick={() => {
+                  if (cloud && !cloud.participant) { requestParticipant?.(); return; }
                   const s: Session = {
                     id: createId(),
                     participant: cloud?.participant ?? participant,

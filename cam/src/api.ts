@@ -82,7 +82,7 @@ export async function getLiveConfig(): Promise<{ live: boolean; processing?: "ba
 async function processingHeaders() {
   const supabase = getSupabase();
   const session = supabase ? (await supabase.auth.getSession()).data.session : null;
-  if (!session) throw new Error("Sign in again to check report progress.");
+  if (!session) throw new Error("Your walkthrough session ended. Reopen Cam and enter your name and phone number.");
   const headers: Record<string, string> = { Authorization: `Bearer ${session.access_token}` };
   const workspace = new URLSearchParams(location.search).get("workspace");
   if (workspace) headers["x-workspace-id"] = workspace;
@@ -117,7 +117,7 @@ async function request(path: string, body: BodyInit, headers?: HeadersInit) {
       data: { session },
     } = await supabase.auth.getSession();
     if (!session)
-      throw new Error("Sign in again before processing this visit.");
+      throw new Error("Your walkthrough session ended. Reopen Cam and enter your name and phone number.");
     requestHeaders.set("Authorization", `Bearer ${session.access_token}`);
   }
   return serverRequest(

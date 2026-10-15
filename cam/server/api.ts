@@ -1,4 +1,5 @@
-import { ApiError, context, response } from "@/lib/server";
+import { camContext } from './context';
+import { ApiError, response } from "@/lib/server";
 import OpenAI from "openai";
 import { translateReportContent } from "./translation";
 import { zodTextFormat } from "openai/helpers/zod";
@@ -86,7 +87,7 @@ export async function guard(request: Request) {
       403,
       "This origin is not enabled for Live AI. Configure ALLOWED_ORIGINS on the trusted server.",
     );
-  const ctx = await context(request, true);
+  const ctx = await camContext(request, true);
   const budget = await ctx.db.rpc("consume_cam_ai_budget", { p_workspace: ctx.workspace.id });
   if (budget.error || budget.data !== true)
     throw new HttpError(429, "The daily processing limit has been reached. Your original visit is saved.");
