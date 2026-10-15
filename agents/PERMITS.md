@@ -4,6 +4,8 @@ The app stores durable project facts in Supabase and exposes them at https://roc
 
 The queue/API is implemented. **No scheduler is installed or activated by this release.** Activate a single hourly OpenClaw job only when the responsible human requests it. Municipalities, portal access and credentials vary; the worker uses its existing browser/search connectors. There is no universal city scraper in this repository. Do not bypass CAPTCHA or access restrictions. Record a blocked check and the concrete missing information instead.
 
+For Miami-Dade/Broward work, also read [the reviewed South Florida reference](PERMITS-SOUTH-FLORIDA.md) on each run. It maps local research to this app's statuses and records, covers multiple masters/standalone permits and legacy portals, and distinguishes verified expiration dates from estimates. It replaces the unreviewed attachment's universal workflow/180-day assumptions. Missing search pages or relevant systems require a partial result; do not claim every permit was checked from the first matching result.
+
 ## Before activation
 
 On the office Mac, review/pull `main` in `/Users/rockwood/rockwood-apps/rockwood-projects`, run `npm ci`, and upgrade the installed skill:

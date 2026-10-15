@@ -9,6 +9,7 @@ Start at [root AGENTS.md](../AGENTS.md). These guides describe the implemented a
 | Connect any authorized agent or call its tools | [Agent guide](../agents/README.md) |
 | Install the office OpenClaw agent and retire the test property | [Office setup](../agents/OFFICE-SETUP.md) |
 | Hourly permit discovery, observations and recovery | [Permit worker](../agents/PERMITS.md) |
+| Miami-Dade/Broward routing, statuses, deadlines and research coverage | [Reviewed South Florida reference](../agents/PERMITS-SOUTH-FLORIDA.md), [review findings](operations/PERMIT-REFERENCE-REVIEW.md) |
 | Exact HTTP actions and response behavior | [API reference](../agents/API.md) |
 | New project, intake, delays, checks, reconciliation | [Agent playbooks](../agents/WORKFLOWS.md) |
 | Set up, test, deploy or recover the application | [Operations](operations/README.md) |

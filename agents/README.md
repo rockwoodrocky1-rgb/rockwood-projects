@@ -94,3 +94,5 @@ Report the workspace/project, affected IDs, before/after values, successful acti
 ## Hourly permit worker
 
 Use the implemented permit tools and [PERMITS.md](PERMITS.md) for dynamic property discovery, leases, source evidence, protected corrections and recovery. The app does not install or activate the external hourly scheduler.
+
+For Miami-Dade and Broward, read [PERMITS-SOUTH-FLORIDA.md](PERMITS-SOUTH-FLORIDA.md) as well. It is the reviewed jurisdiction/status/field reference used by the installed OpenClaw skill, not a complete catalog or a source of live permit facts. [Review findings and installation verification](../docs/operations/PERMIT-REFERENCE-REVIEW.md).
