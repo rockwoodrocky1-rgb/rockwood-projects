@@ -88,6 +88,26 @@ export class RockwoodClient {
       case 'get_record': fields(args, ['id'], 'args'); return this.#request(`/api/records/${id(args.id)}`);
       case 'get_project': fields(args, ['id'], 'args'); return this.#request(`/api/projects/${id(args.id)}`);
       case 'get_file_url': fields(args, ['id'], 'args'); return this.#request(`/api/files/${id(args.id)}`);
+      case 'list_cam_visits': {
+        fields(args, ['offset'], 'args');
+        const offset = args.offset ?? 0;
+        if (!Number.isInteger(offset) || offset < 0 || offset > 100000) invalid('Use a Cam inbox offset from 0 to 100000.');
+        return this.#request(`/api/cam/visits?offset=${offset}`);
+      }
+      case 'list_cam_reports': {
+        fields(args, ['after', 'offset'], 'args');
+        const offset = args.offset ?? 0;
+        if (!Number.isInteger(offset) || offset < 0 || offset > 100000 || typeof args.after !== 'string' || !Number.isFinite(Date.parse(args.after))) invalid('Supply an ISO start time and a report offset from 0 to 100000.');
+        return this.#request(`/api/cam/reports?after=${encodeURIComponent(new Date(args.after).toISOString())}&offset=${offset}`);
+      }
+      case 'get_cam_visit':
+        fields(args, ['id'], 'args');
+        if (typeof args.id !== 'string' || !args.id.length || args.id.length > 100 || /[\x00-\x1f]/.test(args.id)) invalid('Supply the saved Cam visit ID.');
+        return this.#request(`/api/cam/visits/${encodeURIComponent(args.id)}`);
+      case 'get_cam_pdf':
+        fields(args, ['report_id'], 'args');
+        if (typeof args.report_id !== 'string' || !args.report_id.length || args.report_id.length > 100 || /[\x00-\x1f]/.test(args.report_id)) invalid('Supply the saved Cam report ID.');
+        return this.#request(`/api/cam/deliveries?report=${encodeURIComponent(args.report_id)}`);
       case 'permit_dashboard': fields(args, [], 'args'); return this.#request('/api/permits');
       case 'permit_queue': fields(args, [], 'args'); return this.#request('/api/permits/queue');
       case 'get_permit_check': fields(args, ['id'], 'args'); return this.#request(`/api/permits/checks/${id(args.id)}`);

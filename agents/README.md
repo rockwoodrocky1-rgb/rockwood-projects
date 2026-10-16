@@ -91,6 +91,10 @@ The UI remains fully usable. A person can open the affected item and correct its
 
 Report the workspace/project, affected IDs, before/after values, successful actions, failed actions and the exact next step needed. Never report “reminder sent” when you only saved a reminder preference or a draft.
 
+## Cam PDF notifications
+
+For the separately configured Cam PDF → WhatsApp pilot, use [Cam notifications](CAM-NOTIFICATIONS.md) and the [office setup prompt](ROCKY-CAM-SETUP-PROMPT.md). Its host connector reads reports, waits for the PDF, drafts a short summary/questions with a restricted reviewer, and sends to one explicit group. It makes no workspace changes; Chris/Mike approval remains a separate human reply and normal versioned data operation. The source includes the connector, not an activated office schedule.
+
 ## Hourly permit worker
 
 Use the implemented permit tools and [PERMITS.md](PERMITS.md) for dynamic property discovery, leases, source evidence, protected corrections and recovery. The app does not install or activate the external hourly scheduler.

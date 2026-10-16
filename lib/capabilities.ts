@@ -18,6 +18,7 @@ export function agentCapabilities(workspace: { id: string; name: string; role: s
       conflict: 'On 409, stop and reread. Do not automatically overwrite newer human or agent changes.',
       uncertainWrite: 'No automatic retries. Reconcile saved records and activity after a timeout or 5xx.',
       cam: 'Cam uses workspace properties and roles. GET /api/cam/visits lists the durable property inbox; GET /api/cam/visits/:id reads original evidence metadata and current report. Visits do not automatically change tasks or inspection results.',
+      camNotifications: 'GET /api/cam/reports lists durable PDF metadata since an ISO time. The separately configured office connector can send a PDF, concise summary and questions to one fixed WhatsApp group. It never edits workspace records; a later explicit human reply is required. Installing code does not activate the host schedule.',
       permitMonitoring: 'Hourly-worker queue, 30-minute claims, atomic observations, per-property pause, protected manual corrections and replay recovery. The external runner must be activated separately.',
       batchAtomicity: 'Project/template creation and each import are atomic. Separate actions are not one transaction.',
       audit: 'Each saved mutation records the authenticated user. Use distinct provisioned identities to distinguish actors.',

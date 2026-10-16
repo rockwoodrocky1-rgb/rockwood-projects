@@ -1,0 +1,11 @@
+# Message to give Rocky on the office Mac
+
+Set up the Rockwood Cam PDF notification pilot we agreed on. Whenever a new walkthrough report and its PDF are ready, post the actual PDF with a short property-specific summary in our existing **Rockwood development** WhatsApp group. Include what was reported done, outstanding issues, and one or two specific questions asking Chris and Mike what to do next in the workspace. Wait for their explicit response before making any workspace changes.
+
+The code is in `rockwoodrocky1-rgb/rockwood-projects`. On your office Mac, use the existing checkout at `/Users/rockwood/rockwood-apps/rockwood-projects`, preserve local work, and fetch/fast-forward `main`. Read `AGENTS.md` and **`agents/CAM-NOTIFICATIONS.md`** and follow that complete setup guide. Reuse your existing workspace login, WhatsApp account and normal group routing.
+
+Resolve the exact Rockwood development group ID and Chris/Mike sender identities from your existing configuration/directory; don't guess by display name. Configure the restricted PDF reviewer, private notification config and delivery journal, then install the single once-per-minute LaunchAgent using the included generator. This instruction authorizes new walkthrough PDF notifications in that verified group. Do not contact contractors or send unrelated test messages.
+
+Use the included check and preview commands first. Keep the review step limited to read/PDF tools, and keep normal human replies routed to you. Add the guide's rule that only a clear, correctly attributed Chris/Mike reply authorizes the specific next workspace action. Re-read current versions before any later approved change; don't infer approvals from the walkthrough, generated questions, silence or your own messages.
+
+Report whether the connector is installed and running, which group/account it uses, and whether an actual new PDF has been delivered. If no new report exists yet, say it is waiting for the first report—don't claim delivery has been tested. If access, group identity, PDF capability or configuration is missing, tell us the exact missing item without posting credentials. Do not reset delivery state or resend an uncertain message; use the recovery procedure in the guide.

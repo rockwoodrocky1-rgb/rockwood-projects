@@ -1,0 +1,10 @@
+{
+  "baseUrl": "https://rockwood-projects.vercel.app",
+  "workspaceId": "REPLACE_WITH_CONFIRMED_WORKSPACE_UUID",
+  "connectionFile": "/Users/rockwood/.config/rockwood-projects/connection.json",
+  "stateDir": "/Users/rockwood/.openclaw/media/rockwood-cam-review",
+  "openclawBin": "/opt/homebrew/bin/openclaw",
+  "reviewAgentId": "rocky-cam-review",
+  "accountId": "REPLACE_WITH_EXISTING_WHATSAPP_ACCOUNT_ID",
+  "groupId": "REPLACE_WITH_VERIFIED_ROCKWOOD_DEVELOPMENT_GROUP_JID"
+}

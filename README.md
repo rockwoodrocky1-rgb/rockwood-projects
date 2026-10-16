@@ -71,6 +71,10 @@ Rockwood Cam is integrated at `/cam`: enter a name and phone number, choose a re
 
 For setup, access management, deployment and recovery, see [Operations](docs/operations/README.md). The original coverage reference is in [the customer audit](docs/customer-requirements-audit.html) and [requirements data](data/customer-requirements.json).
 
+## Cam PDF notifications
+
+The optional [Cam notification connector](agents/CAM-NOTIFICATIONS.md) waits for each new PDF and sends it with a concise summary and questions for Chris and Mike to the configured Rockwood development WhatsApp group. It runs on the separately configured office Mac and never edits workspace records automatically. Use the [setup prompt for Rocky](agents/ROCKY-CAM-SETUP-PROMPT.md) to connect and verify it; a web deployment alone does not activate notifications.
+
 ## Permit monitoring
 
 The authenticated workspace includes **Permits**: master/subpermit hierarchy, linked inspections, source evidence, upcoming dates, monitoring controls and check history. Color and text distinguish unfinished work, blockers, verified closure and unknown information; each property lists next actions, and filters retain the master context for matching subpermits. Rocky can discover due real properties and save atomic observations through the permit queue API. [Worker contract and hourly activation](agents/PERMITS.md). The hourly runner and municipal portal access are configured separately on the office Mac.

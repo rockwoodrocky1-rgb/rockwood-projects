@@ -8,6 +8,7 @@ Usage: npm run agent -- [--write] [request.json|-]
 Omit the file (or use -) to read one JSON command from standard input.
 Envelope: {"operation":"get_record","args":{"id":"UUID"}}
 Reads: capabilities, snapshot, get_record, get_project, get_file_url.
+Cam reads: list_cam_visits, list_cam_reports, get_cam_visit, get_cam_pdf.
 Writes: create_record, update_record, create_project, update_project,
         import_records, upload_file. --write requires an authorized task.
 Updates require id, version and changes. data changes are merged into that version.

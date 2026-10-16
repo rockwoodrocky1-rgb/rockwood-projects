@@ -17,6 +17,17 @@ const directory = mkdtempSync(join(tmpdir(), 'rockwood-agent-test-'));
 afterAll(() => rmSync(directory, { recursive: true, force: true }));
 
 describe('agent client uses the shared application boundary', () => {
+  it('reads Cam evidence and PDF readiness through scoped existing routes with encoded IDs', async () => {
+    const fetch = vi.fn().mockImplementation(() => json({}));
+    const client = new RockwoodClient({ ...config, fetch });
+    await client.execute({ operation: 'list_cam_visits', args: { offset: 50 } });
+    await client.execute({ operation: 'get_cam_visit', args: { id: 'visit/with?symbols' } });
+    await client.execute({ operation: 'get_cam_pdf', args: { report_id: 'report/a?b' } });
+    expect(fetch.mock.calls.map(([url]) => url)).toEqual(['https://rockwood.example/api/cam/visits?offset=50', 'https://rockwood.example/api/cam/visits/visit%2Fwith%3Fsymbols', 'https://rockwood.example/api/cam/deliveries?report=report%2Fa%3Fb']);
+    for (const [, request] of fetch.mock.calls) expect(request).toMatchObject({ method: 'GET', headers: { Authorization: `Bearer ${token}`, 'x-workspace-id': workspaceId } });
+    await expect(client.execute({ operation: 'list_cam_visits', args: { offset: 100001 } })).rejects.toThrow();
+    await expect(client.execute({ operation: 'get_cam_pdf', args: { report_id: '' } })).rejects.toThrow();
+  });
   it('scopes reads with verified-token headers, a timeout and no redirects', async () => {
     const fetch = vi.fn().mockResolvedValue(json({ workspace: { id: workspaceId } }));
     const client = new RockwoodClient({ ...config, fetch });

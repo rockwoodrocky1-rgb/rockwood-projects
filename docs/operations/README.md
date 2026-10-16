@@ -137,6 +137,8 @@ For a failure report, retain the time, deployment, project/record IDs, operation
 
 ## Recovery and ownership
 
+The optional [Cam PDF notification connector](../../agents/CAM-NOTIFICATIONS.md) has a separate office setup and local delivery journal. Its new report-index route needs an app deployment, but no new migration. Deploying the app does not start the Mac's LaunchAgent. Use the [Rocky setup prompt](../../agents/ROCKY-CAM-SETUP-PROMPT.md), verify the actual group and PDF receipt, and follow that guide to pause or reconcile uncertain sends. The automatic connector never writes workspace records.
+
 Use [Human handoff](HUMAN-HANDOFF.md) to continue through the UI. The agent client can perform authorized actions, but there is no hosted runner, sending service, retry queue, or pause-automation control. Stop any connected external runner in its own platform before conflicting manual work. Reminder preferences are stored values only.
 
 Before live rollout, assign an application operator and a project decision-maker, document their contact route, and verify database backups and a restore drill. Preserve private Storage objects and their paths separately: the workspace CSV export is not a full backup. It omits file bytes, Auth accounts, memberships, and complete audit history. Activity shows the latest 250 event summaries; database audit snapshots are retained.

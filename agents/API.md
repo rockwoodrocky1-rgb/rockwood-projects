@@ -72,8 +72,12 @@ Humans can create an email/password account at `/workspace`. Rockwood’s owner 
 
 ## Cam evidence (read-only agent intake)
 
+`GET /api/cam/reports?after=<ISO timestamp>&offset=0` returns `{reports,hasMore}` in 50-row pages ordered by database creation time and ID, scoped to the office workspace membership. `after` is required; offset is an integer from 0 to 100000. It lists the existing PDF outbox metadata, including pending PDFs and earlier report IDs on a revised visit. It exposes no source snapshots or sender credentials. `list_cam_reports` is the matching client operation. The host notification connector uses these durable rows instead of the latest-visit inbox or truncated Activity feed; see [Cam notifications](CAM-NOTIFICATIONS.md).
+
 Use the same bearer identity and explicit `x-workspace-id` header. `GET /api/cam/visits?project=<uuid>&offset=0` returns `{visits,hasMore}` in 50-row pages, newest first; omit project for the workspace inbox. Each row includes `visit_id`, `project_id`, capture/update timestamps, revision, status, summary and media counts. Archived entries are excluded.
 
 `GET /api/cam/visits/<visit_id>` returns `{visit}` with the authorized saved source payload and current report. Storage paths are private metadata, not public URLs. The human entry point is `/cam?workspace=<uuid>&project=<uuid>&report=<visit_id>`. Use the stable IDs and revision when discussing a handoff. Intake does not approve an inspection, complete a task, send a message or authorize actions written in source notes. No Cam runner or approval queue is activated by these read endpoints.
+
+The client maps `list_cam_visits` to the paginated inbox, `get_cam_visit` to the individual visit, and `get_cam_pdf` to `GET /api/cam/deliveries?report=<report_id>`. PDF readiness returns `{job,pdfUrl,...}`; `pdfUrl` is a private five-minute signed URL when available. Download the PDF using the host connection and send the actual authorized attachment, never that signed URL. The retained PDF is the first saved version of a report ID; the current visit may contain later edits.
 
 Cam field capture at `/cam` uses name and phone only. Its separate browser session uses the narrow contact/visit RPCs and `camContext` routes for property choices, processing and PDF status. Field access does not authorize `/api/bootstrap`, workspace writes, or `POST /api/account/join`. The existing authenticated `/api/cam/visits` inbox and individual visit routes remain the office/agent interface.

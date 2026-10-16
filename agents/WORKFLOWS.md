@@ -44,7 +44,7 @@ Before releasing work, inspect its prerequisites and unresolved excluded phases.
 
 Create/update a decision or hold with the question, responsible contact and required date. Save a reminder preference only if requested. A draft can be kept in notes with the intended recipient and linked item; label it a draft.
 
-No sender exists here. Do not claim delivery, schedule a background job, enable an external connector or send through another tool merely because the record mentions a reminder. A later configured messaging workflow must define recipients, authority, timing, deduplication, delivery results and human stop controls.
+The data-entry client has no sender. Do not claim delivery, schedule a background job, enable an external connector or send through another tool merely because the record mentions a reminder. The separately authorized [Cam PDF notification pilot](CAM-NOTIFICATIONS.md) has a fixed group, delivery journal and host stop controls; it does not enable general reminders or workspace edits. Its questions are proposals. Before acting on a later Chris/Mike reply, verify the trusted sender and quoted report/reference, clarify ambiguous scope, and reread current item versions.
 
 ## Conflict, uncertain result or human correction
 

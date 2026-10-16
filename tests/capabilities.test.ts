@@ -8,7 +8,7 @@ describe('agent discovery contract', () => {
   it('advertises reads but never available writes for a read-only or unknown role', () => {
     for (const role of ['reader', 'unrecognized']) {
       const capabilities = agentCapabilities({ ...workspace, role });
-      expect(capabilities.tools.filter(tool => tool.available).map(tool => tool.name)).toEqual(['capabilities', 'snapshot', 'get_record', 'get_project', 'get_file_url', 'permit_dashboard', 'permit_queue', 'get_permit_check']);
+      expect(capabilities.tools.filter(tool => tool.available).map(tool => tool.name)).toEqual(['capabilities', 'snapshot', 'get_record', 'get_project', 'get_file_url', 'permit_dashboard', 'permit_queue', 'get_permit_check', 'list_cam_visits', 'get_cam_visit', 'get_cam_pdf', 'list_cam_reports']);
       expect(capabilities.tools.find(tool => tool.name === 'update_record')?.available).toBe(false);
     }
     expect(agentCapabilities({ ...workspace, role: 'manager' }).tools.every(tool => tool.available)).toBe(true);

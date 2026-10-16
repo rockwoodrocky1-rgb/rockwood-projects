@@ -13,7 +13,7 @@ The permit workflow has the specific implemented contract below. Before enabling
 | Messaging | Approved recipients/channels, templates, quiet hours, deduplication, delivery ledger and inbound-reply linking |
 | Events | Reliable notifications when tasks/checks/dates change; prevent self-triggering loops |
 | Scheduling | Explicit dependency/calendar rules, preview of affected dates, baseline preservation and conflict handling |
-| Walkthrough | Authorized connection, evidence links and duplicate matching; current app is separate |
+| Walkthrough | Cam capture and the read-only PDF/chat handoff connector are implemented; office activation and real delivery verification are separate. Automatic task changes, duplicate task matching and an approval executor remain future work. |
 | Evaluation | Test fixtures for delays, failed inspections, duplicate replies, stale edits and correct human handoff |
 
 Do not advertise an item as connected merely because its preferences or notes can be stored. Each implemented connection should update capabilities, documentation and meaningful tests, and retain manual operation.
