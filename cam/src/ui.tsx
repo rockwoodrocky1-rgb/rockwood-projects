@@ -41,7 +41,7 @@ export function Logo({ available = true }: { available?: boolean }) {
 export function CamBrand() {
   return (
     <span className="cam-brand">
-      <img src="/brand/rockwood-cam.svg" width="1280" height="172" alt="Rockwood Cam" />
+      <img src="/brand/rockwood-cam-v2.svg" width="1280" height="172" alt="Rockwood Cam" />
     </span>
   );
 }
