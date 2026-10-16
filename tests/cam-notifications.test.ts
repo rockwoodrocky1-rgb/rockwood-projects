@@ -3,7 +3,7 @@ import { mkdtemp, readFile, writeFile, rm, stat, mkdir } from 'node:fs/promises'
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
-import { deliveryReceipt, downloadPdf, formatCaption, initializeNotifications, notificationStatus, parseReview, reconcileNotification, runNotifications, validateConfig, verifyReviewAgent } from '../agents/cam-notifications.mjs';
+import { checkNotifications, deliveryReceipt, downloadPdf, formatCaption, initializeNotifications, notificationStatus, parseReview, reconcileNotification, runNotifications, validateConfig, verifyReviewAgent } from '../agents/cam-notifications.mjs';
 
 const workspaceId = '11111111-1111-4111-8111-111111111111';
 const projectId = '22222222-2222-4222-8222-222222222222';
@@ -18,7 +18,7 @@ const pdfPath = `${workspaceId}/visit/report.pdf`;
 const job = { workspace_id: workspaceId, walkthrough_id: visit.id, report_id: visit.payload.report.id, revision: 2, pdf_path: pdfPath, created_at: '2026-10-16T00:01:00Z' };
 const delivery = { job, pdfUrl: `https://db.example/storage/v1/object/sign/walkthrough-reports/${pdfPath}?token=private-signed-token` };
 
-async function setup() {
+async function setup(roster: 'entries' | 'list' = 'entries') {
   const dir = await mkdtemp(join(tmpdir(), 'rockwood-cam-notifications-')); dirs.push(dir);
   const config = { baseUrl: 'https://rockwood.example', workspaceId, connectionFile: join(dir, 'connection.json'), stateDir: join(dir, 'inbox'), openclawBin: '/usr/local/bin/openclaw', reviewAgentId: 'cam-review', accountId: 'rocky', groupId: '120363000000000@g.us' };
   await initializeNotifications(config, { now: start });
@@ -29,8 +29,9 @@ async function setup() {
     if (operation === 'get_cam_pdf') return delivery;
     throw Error(`Unexpected operation ${operation} ${JSON.stringify(args)}`);
   });
+  const agent = { workspace: config.stateDir, tools: { allow: ['read', 'pdf'], fs: { workspaceOnly: true } } };
   const command = vi.fn(async (_bin: string, args: string[], _options?: { timeoutMs?: number }): Promise<any> => {
-    if (args[0] === 'config') return [{ id: config.reviewAgentId, workspace: config.stateDir, tools: { allow: ['read', 'pdf'], fs: { workspaceOnly: true } } }];
+    if (JSON.stringify(args) === JSON.stringify(['config', 'get', 'agents', '--json'])) return roster === 'entries' ? { entries: { [config.reviewAgentId]: agent } } : { list: [{ id: config.reviewAgentId, ...agent }] };
     if (args[0] === 'agent') return { status: 'ok', result: { payloads: [{ text: JSON.stringify(review) }] } };
     if (args[0] === 'message') return { action: 'send', channel: 'whatsapp', payload: { channel: 'whatsapp', result: { messageId: 'verified-message', toJid: config.groupId } } };
     throw Error('Unexpected OpenClaw command');
@@ -38,7 +39,7 @@ async function setup() {
   const fetchImpl = vi.fn(async (_url: RequestInfo | URL, _init?: RequestInit) => new Response('%PDF-1.7\nFictional test PDF', { headers: { 'content-type': 'application/pdf' } }));
   const options = { baseUrl: config.baseUrl, workspaceId, accessToken: 'private-access-token', supabaseUrl: 'https://db.example', supabaseAnonKey: 'public-key' };
   const deps = { optionsFor: vi.fn(async () => options), clientFactory: () => ({ execute }), command, fetchImpl, now };
-  return { config, execute, command, fetchImpl, deps, options };
+  return { config, execute, command, fetchImpl, deps, options, agent };
 }
 afterEach(async () => { for (const dir of dirs.splice(0)) await rm(dir, { recursive: true, force: true }); });
 
@@ -70,8 +71,8 @@ describe('Cam PDF handoff lifecycle', () => {
     }
   });
 
-  it('sends one PDF with a concise caption and questions, then suppresses repeats across restart', async () => {
-    const { config, deps, command } = await setup();
+  it.each(['entries', 'list'] as const)('sends one PDF using the %s roster, then suppresses repeats across restart', async roster => {
+    const { config, deps, command } = await setup(roster);
     const result = await runNotifications(config, { ...deps, send: true });
     expect(result.sent).toHaveLength(1);
     const call = command.mock.calls.find(([, args]) => args[0] === 'message')!;
@@ -127,8 +128,8 @@ describe('Cam PDF handoff lifecycle', () => {
     execute.mockImplementation(async c => c.operation === 'get_cam_visit' && ++reads > 1 ? { visit: { ...visit, revision: 3 } } : original(c));
     expect((await runNotifications(config, { ...deps, send: true })).failures).toHaveLength(1);
     expect(command.mock.calls.some(([, args]) => args[0] === 'message')).toBe(false);
-    expect(() => verifyReviewAgent([{ id: config.reviewAgentId, workspace: config.stateDir, tools: { allow: ['read', 'pdf', 'exec'], fs: { workspaceOnly: true } } }], config.reviewAgentId, config.stateDir)).toThrow();
-    expect(() => verifyReviewAgent([{ id: config.reviewAgentId, workspace: config.stateDir, tools: { allow: ['read', 'pdf'] } }], config.reviewAgentId, config.stateDir)).toThrow();
+    expect(() => verifyReviewAgent({ list: [{ id: config.reviewAgentId, workspace: config.stateDir, tools: { allow: ['read', 'pdf', 'exec'], fs: { workspaceOnly: true } } }] }, config.reviewAgentId, config.stateDir)).toThrow();
+    expect(() => verifyReviewAgent({ list: [{ id: config.reviewAgentId, workspace: config.stateDir, tools: { allow: ['read', 'pdf'] } }] }, config.reviewAgentId, config.stateDir)).toThrow();
   });
 
   it('backs off failed reviews without sending or repeatedly invoking the model each minute', async () => {
@@ -162,6 +163,43 @@ describe('Cam PDF handoff lifecycle', () => {
 });
 
 describe('Cam notification boundaries', () => {
+  it.each(['entries', 'list'] as const)('checks the %s config without a send or resetting the journal', async roster => {
+    const { config, options, command } = await setup(roster);
+    const before = await notificationStatus(config);
+    const fetch = vi.fn(async (url: RequestInfo | URL) => {
+      if (String(url).endsWith('/api/capabilities')) return Response.json({ workspace: { id: workspaceId } });
+      if (String(url).includes('/api/cam/reports?')) return Response.json({ reports: [], hasMore: false });
+      throw Error('Unexpected request');
+    });
+    await expect(checkNotifications(config, { optionsFor: async () => ({ ...options, fetch }), command })).resolves.toMatchObject({ readOnlyReview: true, chatDeliveryTested: false });
+    expect(command.mock.calls.map(([, args]) => args)).toEqual([['config', 'get', 'agents', '--json']]);
+    expect(await notificationStatus(config)).toEqual(before);
+  });
+
+  it('never accepts summaries or falls back to a safe legacy entry over an unsafe keyed reviewer', async () => {
+    const { config, agent, deps, command } = await setup();
+    const safeLegacy = { id: config.reviewAgentId, ...agent };
+    const summary = { id: config.reviewAgentId, workspace: config.stateDir, bindings: 0 };
+    const unsafeAgents = [
+      null, [], [summary], { list: [summary] }, { list: [safeLegacy, safeLegacy] },
+      { entries: null, list: [safeLegacy] }, { entries: [], list: [safeLegacy] },
+      { entries: {}, list: [safeLegacy] },
+      ...[
+        { ...agent, tools: undefined },
+        { ...agent, workspace: '/unrelated/workspace' },
+        { ...agent, tools: { ...agent.tools, allow: ['read', 'pdf', 'exec'] } },
+        { ...agent, tools: { ...agent.tools, alsoAllow: ['message'] } },
+        { ...agent, tools: { ...agent.tools, alsoAllow: {} } },
+        { ...agent, tools: { ...agent.tools, fs: { workspaceOnly: false } } },
+      ].map(entry => ({ entries: { [config.reviewAgentId]: entry }, list: [safeLegacy] })),
+    ];
+    for (const agents of unsafeAgents) expect(() => verifyReviewAgent(agents, config.reviewAgentId, config.stateDir)).toThrow();
+    command.mockResolvedValue({ entries: { [config.reviewAgentId]: summary } });
+    expect((await runNotifications(config, { ...deps, send: true })).failures).toHaveLength(1);
+    expect(command.mock.calls.map(([, args]) => args[0])).toEqual(['config']);
+    expect((await notificationStatus(config)).startedAt).toBe(start().toISOString());
+  });
+
   it('provides offline CLI help and a reviewable, non-activated LaunchAgent without overwriting files', async () => {
     const { config } = await setup();
     expect(spawnSync(process.execPath, ['scripts/cam-notify.mjs', '--help'], { encoding: 'utf8' }).stdout).toContain('No command writes workspace records');

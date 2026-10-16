@@ -143,10 +143,20 @@ export function openclawCommand(binary, args, { timeoutMs = 300000 } = {}) {
 }
 
 export function verifyReviewAgent(agents, agentId, stateDir) {
-  if (!Array.isArray(agents)) error('Could not verify OpenClaw agent configuration.');
-  const agent = agents.find(item => item.id === agentId);
+  // 2026.9 uses keyed entries; older versions serialize a list. Agent summaries
+  // from `agents list --json` omit tool policy and cannot establish isolation.
+  if (!agents || typeof agents !== 'object' || Array.isArray(agents)) error('Could not verify OpenClaw agent configuration.');
+  let agent;
+  if (Object.hasOwn(agents, 'entries')) {
+    const entries = agents.entries;
+    if (!entries || typeof entries !== 'object' || Array.isArray(entries)) error('Could not verify OpenClaw agent configuration.');
+    agent = Object.hasOwn(entries, agentId) ? entries[agentId] : undefined;
+  } else if (Array.isArray(agents.list)) {
+    const matches = agents.list.filter(item => item?.id === agentId);
+    if (matches.length === 1) agent = matches[0];
+  }
   const allow = agent?.tools?.allow, extra = agent?.tools?.alsoAllow ?? [];
-  if (!Array.isArray(allow) || !allow.includes('read') || !allow.includes('pdf') || [...allow, ...extra].some(tool => !['read', 'pdf'].includes(tool)) || agent.workspace !== stateDir || agent.tools?.fs?.workspaceOnly !== true) error('Configure the review agent with this state directory as its workspace, workspace-only file access, and only read/pdf tools. It must not have workspace-write, exec or messaging tools.');
+  if (!Array.isArray(allow) || !Array.isArray(extra) || !allow.includes('read') || !allow.includes('pdf') || [...allow, ...extra].some(tool => !['read', 'pdf'].includes(tool)) || (agent.id != null && agent.id !== agentId) || agent.workspace !== stateDir || agent.tools?.fs?.workspaceOnly !== true) error('Configure the review agent with this state directory as its workspace, workspace-only file access, and only read/pdf tools. It must not have workspace-write, exec or messaging tools.');
 }
 
 export function reviewPrompt(packetPath, pdfPath) {
@@ -195,7 +205,7 @@ export async function checkNotifications(input, { optionsFor = savedClientOption
   const capabilities = await new RockwoodClient({ ...options, allowWrites: false }).execute({ operation: 'capabilities' });
   if (capabilities.workspace?.id !== config.workspaceId) error('Live workspace mismatch.');
   await new RockwoodClient({ ...options, allowWrites: false }).execute({ operation: 'list_cam_reports', args: { after: new Date().toISOString(), offset: 0 } });
-  verifyReviewAgent(await command(config.openclawBin, ['config', 'get', 'agents.list', '--json']), config.reviewAgentId, config.stateDir);
+  verifyReviewAgent(await command(config.openclawBin, ['config', 'get', 'agents', '--json']), config.reviewAgentId, config.stateDir);
   return { workspaceId: config.workspaceId, reviewAgentId: config.reviewAgentId, readOnlyReview: true, chatDeliveryTested: false };
 }
 
@@ -254,7 +264,7 @@ export async function runNotifications(input, { send = false, optionsFor = saved
           await saveState(config, state);
           if (!send) { result.prepared.push({ key, packetPath, pdfPath }); continue; }
           if (!reviewVerified) {
-            verifyReviewAgent(await command(config.openclawBin, ['config', 'get', 'agents.list', '--json']), config.reviewAgentId, config.stateDir);
+            verifyReviewAgent(await command(config.openclawBin, ['config', 'get', 'agents', '--json']), config.reviewAgentId, config.stateDir);
             reviewVerified = true;
           }
           reviewAttempted = true;
