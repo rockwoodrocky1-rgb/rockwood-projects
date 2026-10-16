@@ -1,0 +1,32 @@
+{
+  "id": "/cam",
+  "name": "Rockwood Cam",
+  "short_name": "Rockwood Cam",
+  "description": "Site photos, notes and reports for Rockwood.",
+  "start_url": "/cam",
+  "scope": "/cam",
+  "display": "standalone",
+  "background_color": "#F3F0E8",
+  "theme_color": "#F3F0E8",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/brand/cam/v2/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/cam/v2/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/cam/v2/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

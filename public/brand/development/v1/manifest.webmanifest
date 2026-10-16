@@ -1,0 +1,32 @@
+{
+  "id": "/workspace",
+  "name": "Rockwood Projects",
+  "short_name": "Rockwood Projects",
+  "description": "Rockwood Development project workspace.",
+  "start_url": "/workspace",
+  "scope": "/workspace",
+  "display": "standalone",
+  "background_color": "#F3F0E8",
+  "theme_color": "#F3F0E8",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/brand/development/v1/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/development/v1/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/development/v1/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
