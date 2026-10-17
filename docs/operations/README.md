@@ -172,6 +172,17 @@ Apply `supabase/migrations/202610150001_permit_monitoring.sql` after the two exi
 3. Verify that `select position('other_contractor_ids' in prosrc)>0 from pg_proc where proname='pm_validate_links';` returns `true`. Then save a work item with two or more subs in the app and confirm it saves.
 4. Record the migration as applied. `tests/subs-backend.test.ts` checks the rule locally in PGlite. That is not a hosted Supabase check.
 
+**Applied** to the Projects database (`ftjeccpjebhvrxrfrdtn`, main/production) in the SQL Editor on October 17, 2026, around 4:40 PM ET. Do not replay.
+
+- **Before applying:** the live `pm_validate_links` matched `202610130001_pm.sql` exactly (body md5 `26893127ba5843e4a3e36e76309f0e4f`, 12,041 characters), so nothing hand-edited was overwritten. The pre-check returned no rows.
+- **How it was run:** the editor auto-indents typed lines, so the file was entered without leading indentation. The text was confirmed identical to the file apart from that indentation (whitespace-normalized SHA-256 `6d625478…`) before it ran.
+- **After applying:**
+  - The check is present.
+  - The body matches the file apart from indentation (whitespace-normalized md5 `715441a55199cd4df552877521c60d30`, 12,626 characters).
+  - The function is still `security definer` with `search_path=public, pg_temp`, and one trigger uses it.
+  - Re-saving "Trusses measurement — Cesar & Ricardo", which has two subs, from the app succeeded.
+- **Undo, if ever needed:** in one transaction, recreate `pm_validate_links` exactly as written in `202610130001_pm.sql`, then run `revoke all on function public.pm_validate_links() from public;`.
+
 ## Cam release wiring
 
 The two Cam migrations were applied together in the Projects SQL Editor on October 15, 2026. Read-only verification confirmed 11/11 mirrored properties, 1/1 mirrored memberships, private media/report buckets, inbox RLS, the authenticated save RPC, and denied direct source INSERT. No field-test visits were created. Frontend release `ea8765f` was verified as a successful Production deployment with the AWS processing settings active. The signed-in hosted Cam loaded real properties and opened the matching property’s Walkthroughs view; desktop/390px rendering was checked without creating visits. With the user's approval, the existing worker secret now includes the Projects connection, the Vercel role trusts both exact Production subjects, and Lambda was refreshed after saving the secret. Report/PDF processing is configured; a new workspace recording has not been submitted through the full pipeline because the user deferred field acceptance. Target Projects Supabase `ftjeccpjebhvrxrfrdtn`; never apply these two migrations to legacy Cam `vyvwqullxdyeympptyix` (it already has those tables). Existing legacy records are not moved or assigned to guessed properties.
