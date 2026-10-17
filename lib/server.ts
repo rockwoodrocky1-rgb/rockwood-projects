@@ -105,6 +105,11 @@ export function validateRelationships(input: RecordInput, records: RecordRow[], 
     const owner = records.find(r => r.id === validId(d[key], key));
     if (!owner || owner.workspace_id !== workspaceId || owner.kind !== 'contact') throw new ApiError(400, 'Choose a contact in this workspace.');
   }
+  // Other subs working with the lead sub are contacts too, from anywhere in the workspace.
+  for (const id of d.other_contractor_ids || []) {
+    const sub = records.find(r => r.id === validId(id, 'other_contractor_ids'));
+    if (!sub || sub.workspace_id !== workspaceId || sub.kind !== 'contact') throw new ApiError(400, 'Choose a contact in this workspace for each other sub.');
+  }
   for (const key of ['contract_id', 'bid_id', 'task_id', 'material_id', 'related_record_id', 'linked_record_id']) linked(d[key], key, true, key === 'contract_id' ? 'contract' : undefined);
   for (const key of ['prerequisite_ids', 'check_ids', 'corrective_action_ids', 'document_ids', 'linked_task_ids', 'related_record_ids']) {
     if (d[key] == null) continue;

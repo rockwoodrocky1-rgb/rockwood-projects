@@ -199,6 +199,7 @@ export function createShowcaseClient() {
     };
     check(input.owner_id, 'contact', true, true);
     for (const key of ['contractor_id', 'supplier_id', 'contact_id']) check(data[key], 'contact', true, true);
+    for (const id of data.other_contractor_ids || []) check(id, 'contact', true, true);
     for (const key of ['related_record_id', 'linked_record_id', 'contract_id', 'bid_id', 'material_id', 'task_id']) check(data[key], key === 'contract_id' ? 'contract' : undefined);
     for (const key of ['prerequisite_ids', 'check_ids', 'corrective_action_ids', 'document_ids', 'linked_task_ids', 'related_record_ids']) for (const id of data[key] || []) check(id, key === 'check_ids' ? 'check' : key === 'document_ids' ? 'document' : undefined, ['document_ids', 'related_record_ids'].includes(key));
   }

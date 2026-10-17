@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { KIND_CONFIG, scheduleWarnings, validateTransition, type RecordRow } from '../lib/domain';
-import { ALL, UNASSIGNED, awaitsApplicability, isTeamMember, leadLoads, matchesPeople, person, subLoads } from '../lib/team';
+import { KIND_CONFIG, scheduleWarnings, validateRecord, validateTransition, type RecordRow } from '../lib/domain';
+import { validateRelationships } from '../lib/server';
+import { createShowcaseClient } from '../lib/showcase';
+import { ALL, UNASSIGNED, awaitsApplicability, isTeamMember, leadLoads, matchesPeople, otherSubs, person, subKeys, subLoads } from '../lib/team';
 
 function row(id: string, kind: RecordRow['kind'], title: string, extra: Partial<RecordRow> = {}): RecordRow {
   return { id, kind, title, status: kind === 'contact' ? 'Active' : 'Ready', workspace_id: 'w', project_id: kind === 'contact' ? null : 'p', owner_id: null, due_date: null, data: {}, version: 1, created_at: '', updated_at: '', ...extra };
@@ -66,6 +68,54 @@ describe('office team view', () => {
     expect(tasks.filter(task => matchesPeople(task, contacts, 'chris', 'carlos')).map(task => task.id)).toEqual(['t2', 't3']);
     expect(tasks.filter(task => matchesPeople(task, contacts, ALL, UNASSIGNED)).map(task => task.id)).toEqual(['t5']);
     expect(tasks.filter(task => matchesPeople(task, contacts, ALL, ALL))).toHaveLength(5);
+  });
+
+  it('counts a shared job for the lead sub and every other sub, and finds it under any of them', () => {
+    const cesar = row('cesar', 'contact', 'Cesar (Shell)', { data: { trade: 'Shell' } });
+    const ricardo = row('ricardo', 'contact', 'Ricardo Diaz', { data: { trade: 'Trusses' } });
+    const people = [...contacts, cesar, ricardo];
+    const tasks = [
+      row('t1', 'task', 'Trusses measurement', { owner_id: 'chris', data: { contractor_id: 'cesar', other_contractor_ids: ['ricardo', 'cesar', 'ricardo', 'gone'] } }),
+      row('t2', 'task', 'Truss delivery', { owner_id: 'chris', data: { contractor_id: 'ricardo' } }),
+      row('t3', 'task', 'Finished crew job', { status: 'Done', data: { contractor_id: 'cesar', other_contractor_ids: ['ricardo'] } }),
+    ];
+    // Repeats, the lead sub and unknown contacts are skipped.
+    expect(otherSubs(tasks[0], people)).toEqual([{ id: 'ricardo', name: 'Ricardo Diaz', group: 'Trusses' }]);
+    expect(subKeys(tasks[0], people)).toEqual(['cesar', 'ricardo']);
+    expect(subLoads(tasks, people, today).map(load => [load.id, load.open])).toEqual([['cesar', 1], ['ricardo', 2]]);
+    expect(tasks.filter(task => matchesPeople(task, people, 'chris', 'ricardo')).map(task => task.id)).toEqual(['t1', 't2']);
+    expect(tasks.filter(task => matchesPeople(task, people, ALL, 'cesar')).map(task => task.id)).toEqual(['t1', 't3']);
+    // A lead sub that no longer exists leaves the others in place; a job with no subs is "No sub yet".
+    expect(subKeys(row('t4', 'task', 'Orphan', { data: { contractor_id: 'gone', other_contractor_ids: ['ricardo'] } }), people)).toEqual(['ricardo']);
+    expect(subKeys(row('t5', 'task', 'Nobody', { data: { other_contractor_ids: [] } }), people)).toEqual([UNASSIGNED]);
+  });
+
+  it('accepts other subs only as a short list of workspace contacts', async () => {
+    const base = { kind: 'task' as const, title: 'Trusses measurement' };
+    const one = crypto.randomUUID();
+    expect(validateRecord({ ...base, data: { other_contractor_ids: [one] } }).data?.other_contractor_ids).toEqual([one]);
+    expect(() => validateRecord({ ...base, data: { other_contractor_ids: 'Ricardo' } })).toThrow(/record IDs/);
+    expect(() => validateRecord({ ...base, data: { other_contractor_ids: ['Ricardo'] } })).toThrow(/record IDs/);
+    expect(() => validateRecord({ ...base, data: { other_contractor_ids: Array.from({ length: 21 }, () => crypto.randomUUID()) } })).toThrow(/at most 20/);
+
+    const workspace = crypto.randomUUID(), sub = crypto.randomUUID(), task = crypto.randomUUID(), outsider = crypto.randomUUID();
+    const records = [
+      { id: sub, workspace_id: workspace, project_id: null, kind: 'contact' },
+      { id: task, workspace_id: workspace, project_id: null, kind: 'task' },
+      { id: outsider, workspace_id: crypto.randomUUID(), project_id: null, kind: 'contact' },
+    ] as RecordRow[];
+    const input = (ids: string[]) => ({ ...base, data: { other_contractor_ids: ids } });
+    expect(() => validateRelationships(input([sub]), records, workspace)).not.toThrow();
+    for (const bad of [task, outsider, crypto.randomUUID()]) expect(() => validateRelationships(input([bad]), records, workspace)).toThrow(/each other sub/);
+
+    // The demo runtime applies the same rule.
+    const client = createShowcaseClient(), snapshot = client.snapshot();
+    const [lead, other] = snapshot.records.filter(r => r.kind === 'contact');
+    const waiting = snapshot.records.find(r => r.kind === 'task' && r.status === 'Waiting')!;
+    const save = (data: Record<string, unknown>) => client.request(`/api/records/${waiting.id}`, { method: 'PATCH', body: JSON.stringify({ version: waiting.version, data: { ...waiting.data, ...data } }) });
+    await expect(save({ contractor_id: lead.id, other_contractor_ids: [waiting.id] })).rejects.toThrow();
+    await save({ contractor_id: lead.id, other_contractor_ids: [other.id] });
+    expect(client.snapshot().records.find(r => r.id === waiting.id)?.data.other_contractor_ids).toEqual([other.id]);
   });
 
   it('resolves people without inventing names or categories, and recognizes team members by role or department', () => {

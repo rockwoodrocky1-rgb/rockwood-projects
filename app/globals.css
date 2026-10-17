@@ -719,5 +719,10 @@ fieldset, .app-shell, .main-shell, .page-content, .panel, .panel-heading > div,
 .work-people strong{font-size:16px;font-weight:600;color:var(--ink);overflow-wrap:anywhere}
 .work-people em{font-size:14px;font-style:normal;color:var(--muted);overflow-wrap:anywhere}
 .work-people + .work-card-footer{margin-top:12px}
+.sub-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.sub-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:52px;padding:2px 2px 2px 14px;border:1.5px solid var(--line);border-radius:8px;background:#fff}
+.sub-list li > span{display:flex;flex-direction:column;min-width:0}
+.sub-list strong{font-size:16px;font-weight:600;color:var(--ink);overflow-wrap:anywhere}
+.sub-list small{font-size:14px;font-weight:400;color:var(--muted)}
 @media(max-width:700px){.team-cards{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(168px,72%);overflow-x:auto;overscroll-behavior-x:contain;padding:6px;margin:-6px}.team-card{padding:12px}.team-card[aria-pressed="true"]{padding:10.5px}.team-heading p{display:none}.sub-filter{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding:6px;margin:8px -6px -6px}.sub-filter button{flex:none;max-width:min(280px,80vw)}}
 @media(forced-colors:active){.team-card[aria-pressed="true"],.sub-filter button[aria-pressed="true"]{border:3px solid Highlight}}

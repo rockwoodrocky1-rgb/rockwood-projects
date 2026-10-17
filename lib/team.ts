@@ -1,9 +1,10 @@
 import { contactName } from './contact-presentation';
 import type { RecordRow } from './domain';
 
-// Office leads are the task's "Person responsible" (owner_id). The sub or crew
-// doing the work is the task's existing "Contractor" (data.contractor_id).
-// Both point to contact records; neither needs a login.
+// Office leads are the task's "Person responsible" (owner_id). The lead sub
+// doing the work is the task's existing "Contractor" (data.contractor_id), and
+// any other subs working with them are listed in data.other_contractor_ids.
+// All of them point to contact records; none needs a login.
 export const UNASSIGNED = 'unassigned';
 export const ALL = 'all';
 
@@ -38,11 +39,27 @@ export function leadKey(row: RecordRow, contacts: readonly RecordRow[]): string 
   return person(contacts, row.owner_id)?.id || UNASSIGNED;
 }
 
-export function subKey(row: RecordRow, contacts: readonly RecordRow[]): string {
-  return person(contacts, row.data.contractor_id)?.id || UNASSIGNED;
+/** Other subs working with the lead sub, in the order they were added. Unknown ids, repeats and the lead sub itself are skipped. */
+export function otherSubs(row: RecordRow, contacts: readonly RecordRow[]): Person[] {
+  const lead = person(contacts, row.data.contractor_id)?.id;
+  const ids: unknown[] = Array.isArray(row.data.other_contractor_ids) ? row.data.other_contractor_ids : [];
+  const seen = new Set(lead ? [lead] : []);
+  return ids.flatMap(id => {
+    const found = person(contacts, id);
+    if (!found || seen.has(found.id)) return [];
+    seen.add(found.id);
+    return [found];
+  });
 }
 
-function summarize(tasks: readonly RecordRow[], contacts: readonly RecordRow[], today: string, keyOf: (row: RecordRow) => string, includeTeam: boolean): Load[] {
+/** Every sub on the job, lead sub first. A job with none counts as unassigned ("No sub yet"). */
+export function subKeys(row: RecordRow, contacts: readonly RecordRow[]): string[] {
+  const lead = person(contacts, row.data.contractor_id)?.id;
+  const keys = [...(lead ? [lead] : []), ...otherSubs(row, contacts).map(sub => sub.id)];
+  return keys.length ? keys : [UNASSIGNED];
+}
+
+function summarize(tasks: readonly RecordRow[], contacts: readonly RecordRow[], today: string, keysOf: (row: RecordRow) => string[], includeTeam: boolean): Load[] {
   const loads = new Map<string, Load>();
   const ensure = (id: string): Load => {
     const existing = loads.get(id);
@@ -56,12 +73,15 @@ function summarize(tasks: readonly RecordRow[], contacts: readonly RecordRow[], 
   if (includeTeam) contacts.filter(c => c.kind === 'contact' && c.status === 'Active' && isTeamMember(c)).forEach(c => ensure(c.id));
   for (const row of tasks) {
     if (!isOpenTask(row)) continue;
-    const load = ensure(keyOf(row));
-    load.open += 1;
-    if (awaitsApplicability(row)) load.needsAnswer += 1;
-    if (row.due_date && row.due_date < today) load.overdue += 1;
-    // Past dates are already counted as overdue; "next due" looks forward only.
-    else if (row.due_date && (!load.nextDue || row.due_date < load.nextDue)) load.nextDue = row.due_date;
+    // A job shared by several subs counts once for each of them.
+    for (const key of keysOf(row)) {
+      const load = ensure(key);
+      load.open += 1;
+      if (awaitsApplicability(row)) load.needsAnswer += 1;
+      if (row.due_date && row.due_date < today) load.overdue += 1;
+      // Past dates are already counted as overdue; "next due" looks forward only.
+      else if (row.due_date && (!load.nextDue || row.due_date < load.nextDue)) load.nextDue = row.due_date;
+    }
   }
   const names = new Intl.Collator('en-US', { numeric: true, sensitivity: 'base' });
   return [...loads.values()].sort((a, b) => {
@@ -73,14 +93,14 @@ function summarize(tasks: readonly RecordRow[], contacts: readonly RecordRow[], 
 
 /** Open work per office lead. Active team members always appear, even with nothing open; "Unassigned" appears only when it has work. */
 export function leadLoads(tasks: readonly RecordRow[], contacts: readonly RecordRow[], today: string): Load[] {
-  return summarize(tasks, contacts, today, row => leadKey(row, contacts), true).filter(load => load.id !== UNASSIGNED || load.open > 0);
+  return summarize(tasks, contacts, today, row => [leadKey(row, contacts)], true).filter(load => load.id !== UNASSIGNED || load.open > 0);
 }
 
-/** Open work per sub or crew, for "this sub has three of my jobs". The unassigned bucket ("No sub yet") comes last. */
+/** Open work per sub or crew, for "this sub has three of my jobs". Lead and other subs both count. The unassigned bucket ("No sub yet") comes last. */
 export function subLoads(tasks: readonly RecordRow[], contacts: readonly RecordRow[], today: string): Load[] {
-  return summarize(tasks, contacts, today, row => subKey(row, contacts), false);
+  return summarize(tasks, contacts, today, row => subKeys(row, contacts), false);
 }
 
 export function matchesPeople(row: RecordRow, contacts: readonly RecordRow[], lead: string, sub: string): boolean {
-  return (lead === ALL || leadKey(row, contacts) === lead) && (sub === ALL || subKey(row, contacts) === sub);
+  return (lead === ALL || leadKey(row, contacts) === lead) && (sub === ALL || subKeys(row, contacts).includes(sub));
 }
