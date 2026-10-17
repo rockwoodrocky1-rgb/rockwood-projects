@@ -6,7 +6,7 @@ People use the UI; authorized agents can use the [client/CLI](../../agents/READM
 
 - **Real saved work:** sign into `/workspace`, then select the project. On a phone, use **Today**, **Plan**, and **More**. On desktop, use the sidebar.
 - **Old showcase links:** redirect to the authenticated workspace. The fictional example is retained only in local test fixtures.
-- **Today** shows released work, blocked work, near-term waiting work, and work ready to check. Use **Plan → List** to find other work; clear status, phase, person, or search filters if an item appears missing.
+- **Today** shows released work, blocked work, near-term waiting work, and work ready to check, with office lead cards and sub/crew chips. Choose **Everyone** and **All** subs to see everything; the choice is remembered on that device. Use **Plan → List** to find other work; clear status, phase, or search filters if an item appears missing.
 
 ## Take over an unfinished action
 
@@ -22,7 +22,7 @@ If live access is unavailable, keep a temporary note through your team's approve
 
 | Need | What to do |
 |---|---|
-| Assign work | Open its card or Plan row. Set **Person responsible** and **Due date**, then save. Add the person through **More → Contacts** first if needed. |
+| Assign work | Open its card or Plan row. Set **Lead (office)**, **Sub or crew doing the work** and **Due date**, then save. Add the person through **More → Contacts** first if needed; give office staff the role **Team member**. |
 | Move work forward | Review **What needs to happen first?** and **Checks required to finish**. Set the appropriate status: Waiting, Ready, Working, Ready to check, or Done. Save after the actual work or review supports that status. |
 | Work cannot proceed | Set **Blocked** and fill **What is stopping the work?**. Keep an owner and realistic date. For a separate shared obstacle, use **More → Closeout → Holds** and link it as a prerequisite where relevant. |
 | Move a date | Change **Planned start** and **Due date** on the work item. **More dates & reminders** contains original planned dates and actual dates; retain the original plan when revising current dates. Record why in Notes. |

@@ -55,9 +55,9 @@ function seed(): { state: Bootstrap; files: Map<string, Blob> } {
     const task = source(id); task.status = status; task.owner_id = owner; task.due_date = day(finish);
     Object.assign(task.data, { start_date: day(start), baseline_start: day(start), baseline_finish: day(finish), applicability: 'Required', ...details });
   };
-  updateWork('P3-24', 'Working', electrical.id, -1, 2, { location: 'Kitchen / Living room', trade: 'Electrical', actual_start: day(-1), completion_criteria: 'Rough electrical installation ready for its separate inspection.' });
-  updateWork('P3-20', 'Ready', hvac.id, 0, 2, { location: 'Whole house', trade: 'Mechanical', completion_criteria: 'Install the rough ductwork and request the separate HVAC inspection.' });
-  updateWork('P3-22', 'Blocked', plumber.id, -1, 2, { location: 'Kitchen / Bathroom', trade: 'Plumbing', priority: 'High', blocker_reason: `Sample delivery delay: rough-in fittings arrive ${day(2)}. Confirm receipt before restarting.`, completion_criteria: 'Rough plumbing complete and ready for its separate inspection.' });
+  updateWork('P3-24', 'Working', lead.id, -1, 2, { contractor_id: electrical.id, location: 'Kitchen / Living room', trade: 'Electrical', actual_start: day(-1), completion_criteria: 'Rough electrical installation ready for its separate inspection.' });
+  updateWork('P3-20', 'Ready', lead.id, 0, 2, { contractor_id: hvac.id, location: 'Whole house', trade: 'Mechanical', completion_criteria: 'Install the rough ductwork and request the separate HVAC inspection.' });
+  updateWork('P3-22', 'Blocked', lead.id, -1, 2, { contractor_id: plumber.id, location: 'Kitchen / Bathroom', trade: 'Plumbing', priority: 'High', blocker_reason: `Sample delivery delay: rough-in fittings arrive ${day(2)}. Confirm receipt before restarting.`, completion_criteria: 'Rough plumbing complete and ready for its separate inspection.' });
   updateWork('P2-21', 'Ready to check', lead.id, -1, 0, { actual_start: day(-1), actual_finish: null, completion_criteria: 'Review scope, exclusions and totals for the remaining interior package.', notes: `${source('P2-21').data.source_notes || ''}\nShowcase context: early structural and rough-in packages were already awarded. This current comparison covers the remaining interior finishes.` });
   for (const [index, id] of ['P2-22', 'P2-23', 'P2-24'].entries()) updateWork(id, 'Waiting', lead.id, index + 1, index + 1, { actual_start: null, actual_finish: null, notes: `${source(id).data.source_notes || ''}\nShowcase context: arrange the remaining interior package while rough-in work proceeds under existing agreements.` });
   // Give the visible rough-in-to-finishes demonstration an explicit, coherent handoff sequence.
@@ -66,8 +66,8 @@ function seed(): { state: Bootstrap; files: Map<string, Blob> } {
     ['P3-27', 4, 5], ['P3-28', 6, 6], ['P3-29', 7, 9],
     ['P3-30', 10, 10], ['P3-31', 11, 14], ['P3-32', 15, 17],
     ['P3-33', 15, 18], ['P3-34', 19, 22], ['P4-07', 19, 20],
-  ] as [string, number, number][]) updateWork(id, 'Waiting', ['P3-29', 'P3-30', 'P3-31'].includes(id) ? drywall.id : lead.id, start, finish);
-  for (const id of ['P3-29', 'P3-30', 'P3-31']) { source(id).owner_id = drywall.id; source(id).data.trade = 'Drywall'; }
+  ] as [string, number, number][]) updateWork(id, 'Waiting', lead.id, start, finish);
+  for (const id of ['P3-29', 'P3-30', 'P3-31']) { source(id).data.contractor_id = drywall.id; source(id).data.trade = 'Drywall'; }
   const lowVoltage = source('P3-26'); lowVoltage.status = 'Not applicable'; Object.assign(lowVoltage.data, { applicability: 'Not applicable', applicability_reason: 'Fictional scope: low-voltage/security installation is not included.' });
   const material = records.find(r => r.kind === 'material')!;
   material.title = 'Rough-in plumbing fittings'; material.status = 'Delayed'; material.due_date = day(2);

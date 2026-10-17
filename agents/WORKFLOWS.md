@@ -21,7 +21,7 @@ For every workflow: read capabilities and the exact workspace/project, inspect e
 ## Report a delay and revise the plan
 
 1. Read the affected task, its linked prerequisites/checks, related materials/holds, current dates and versions.
-2. Record the actual blocker/revised delivery facts. Set `Blocked` and a useful `blocker_reason` when appropriate; assign a responsible contact if confirmed.
+2. Record the actual blocker/revised delivery facts. Set `Blocked` and a useful `blocker_reason` when appropriate. If confirmed, set `owner_id` to the office lead (a Team member contact) and `data.contractor_id` to the sub or crew doing the work (a contact; no login). Today shows these as **Lead** and **Sub**.
 3. Identify affected work. Propose specific start/due-date changes and preserve baseline dates. There is no CPM engine or automatic cascading shift.
 4. Apply only the authorized changes one record at a time with reviewed versions. If any call fails, stop that sequence and report the successful and failed items. Do not represent a multi-record change as atomic.
 5. Reread the records. A human can adjust dates in Plan and open the same blockers in Today.
