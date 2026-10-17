@@ -84,8 +84,8 @@ A record has `id`, `workspace_id`, nullable `project_id`, `kind`, `title`, `stat
 | Key | Meaning and current boundary |
 |---|---|
 | `owner_id` | Responsible contact anywhere in the same workspace |
-| `data.contractor_id`, `supplier_id`, `contact_id` | Contact references; may cross projects within the workspace. On work items `contractor_id` is the lead sub |
-| `data.other_contractor_ids` | Work items only: other subs working with the lead sub. Workspace contacts, at most 20. Checked by the API and the demo runtime; the database trigger does not check this list yet |
+| `data.contractor_id`, `supplier_id`, `contact_id` | Contact references; may cross projects within the workspace. On work items `contractor_id` holds the first sub |
+| `data.other_contractor_ids` | Work items only: any further subs on the job. All subs are equal; there is no lead sub. Workspace contacts, at most 20. Checked by the API and the demo runtime; the database trigger does not check this list yet |
 | `data.prerequisite_ids` | Same-project records that must be resolved before release/pass; explicit schedule edges |
 | `data.check_ids` | Same-project authoritative check records required for task completion |
 | `data.corrective_action_ids` | Same-project corrective work that must be `Done` before a check passes; the UI offers tasks |

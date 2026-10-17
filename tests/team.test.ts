@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { KIND_CONFIG, scheduleWarnings, validateRecord, validateTransition, type RecordRow } from '../lib/domain';
 import { validateRelationships } from '../lib/server';
 import { createShowcaseClient } from '../lib/showcase';
-import { ALL, UNASSIGNED, awaitsApplicability, isTeamMember, leadLoads, matchesPeople, otherSubs, person, subKeys, subLoads } from '../lib/team';
+import { ALL, UNASSIGNED, awaitsApplicability, isTeamMember, leadLoads, matchesPeople, person, subKeys, subLoads, subsOf } from '../lib/team';
 
 function row(id: string, kind: RecordRow['kind'], title: string, extra: Partial<RecordRow> = {}): RecordRow {
   return { id, kind, title, status: kind === 'contact' ? 'Active' : 'Ready', workspace_id: 'w', project_id: kind === 'contact' ? null : 'p', owner_id: null, due_date: null, data: {}, version: 1, created_at: '', updated_at: '', ...extra };
@@ -70,7 +70,7 @@ describe('office team view', () => {
     expect(tasks.filter(task => matchesPeople(task, contacts, ALL, ALL))).toHaveLength(5);
   });
 
-  it('counts a shared job for the lead sub and every other sub, and finds it under any of them', () => {
+  it('counts a shared job once for every sub on it, all equal, and finds it under any of them', () => {
     const cesar = row('cesar', 'contact', 'Cesar (Shell)', { data: { trade: 'Shell' } });
     const ricardo = row('ricardo', 'contact', 'Ricardo Diaz', { data: { trade: 'Trusses' } });
     const people = [...contacts, cesar, ricardo];
@@ -79,18 +79,18 @@ describe('office team view', () => {
       row('t2', 'task', 'Truss delivery', { owner_id: 'chris', data: { contractor_id: 'ricardo' } }),
       row('t3', 'task', 'Finished crew job', { status: 'Done', data: { contractor_id: 'cesar', other_contractor_ids: ['ricardo'] } }),
     ];
-    // Repeats, the lead sub and unknown contacts are skipped.
-    expect(otherSubs(tasks[0], people)).toEqual([{ id: 'ricardo', name: 'Ricardo Diaz', group: 'Trusses' }]);
+    // Repeats and unknown contacts are skipped.
+    expect(subsOf(tasks[0], people)).toEqual([{ id: 'cesar', name: 'Cesar', group: 'Shell' }, { id: 'ricardo', name: 'Ricardo Diaz', group: 'Trusses' }]);
     expect(subKeys(tasks[0], people)).toEqual(['cesar', 'ricardo']);
     expect(subLoads(tasks, people, today).map(load => [load.id, load.open])).toEqual([['cesar', 1], ['ricardo', 2]]);
     expect(tasks.filter(task => matchesPeople(task, people, 'chris', 'ricardo')).map(task => task.id)).toEqual(['t1', 't2']);
     expect(tasks.filter(task => matchesPeople(task, people, ALL, 'cesar')).map(task => task.id)).toEqual(['t1', 't3']);
-    // A lead sub that no longer exists leaves the others in place; a job with no subs is "No sub yet".
+    // A first sub that no longer exists leaves the others in place; a job with no subs is "No sub yet".
     expect(subKeys(row('t4', 'task', 'Orphan', { data: { contractor_id: 'gone', other_contractor_ids: ['ricardo'] } }), people)).toEqual(['ricardo']);
     expect(subKeys(row('t5', 'task', 'Nobody', { data: { other_contractor_ids: [] } }), people)).toEqual([UNASSIGNED]);
   });
 
-  it('accepts other subs only as a short list of workspace contacts', async () => {
+  it('accepts extra subs only as a short list of workspace contacts', async () => {
     const base = { kind: 'task' as const, title: 'Trusses measurement' };
     const one = crypto.randomUUID();
     expect(validateRecord({ ...base, data: { other_contractor_ids: [one] } }).data?.other_contractor_ids).toEqual([one]);
@@ -106,7 +106,7 @@ describe('office team view', () => {
     ] as RecordRow[];
     const input = (ids: string[]) => ({ ...base, data: { other_contractor_ids: ids } });
     expect(() => validateRelationships(input([sub]), records, workspace)).not.toThrow();
-    for (const bad of [task, outsider, crypto.randomUUID()]) expect(() => validateRelationships(input([bad]), records, workspace)).toThrow(/each other sub/);
+    for (const bad of [task, outsider, crypto.randomUUID()]) expect(() => validateRelationships(input([bad]), records, workspace)).toThrow(/for each sub/);
 
     // The demo runtime applies the same rule.
     const client = createShowcaseClient(), snapshot = client.snapshot();

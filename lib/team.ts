@@ -1,9 +1,9 @@
 import { contactName } from './contact-presentation';
 import type { RecordRow } from './domain';
 
-// Office leads are the task's "Person responsible" (owner_id). The lead sub
-// doing the work is the task's existing "Contractor" (data.contractor_id), and
-// any other subs working with them are listed in data.other_contractor_ids.
+// Office leads are the task's "Person responsible" (owner_id). The subs doing
+// the work are equal: the first is the task's existing "Contractor"
+// (data.contractor_id) and any others are listed in data.other_contractor_ids.
 // All of them point to contact records; none needs a login.
 export const UNASSIGNED = 'unassigned';
 export const ALL = 'all';
@@ -39,12 +39,11 @@ export function leadKey(row: RecordRow, contacts: readonly RecordRow[]): string 
   return person(contacts, row.owner_id)?.id || UNASSIGNED;
 }
 
-/** Other subs working with the lead sub, in the order they were added. Unknown ids, repeats and the lead sub itself are skipped. */
-export function otherSubs(row: RecordRow, contacts: readonly RecordRow[]): Person[] {
-  const lead = person(contacts, row.data.contractor_id)?.id;
-  const ids: unknown[] = Array.isArray(row.data.other_contractor_ids) ? row.data.other_contractor_ids : [];
-  const seen = new Set(lead ? [lead] : []);
-  return ids.flatMap(id => {
+/** Every sub on the job, all equal, in the order they were added. Unknown ids and repeats are skipped. */
+export function subsOf(row: RecordRow, contacts: readonly RecordRow[]): Person[] {
+  const others: unknown[] = Array.isArray(row.data.other_contractor_ids) ? row.data.other_contractor_ids : [];
+  const seen = new Set<string>();
+  return [row.data.contractor_id, ...others].flatMap(id => {
     const found = person(contacts, id);
     if (!found || seen.has(found.id)) return [];
     seen.add(found.id);
@@ -52,10 +51,9 @@ export function otherSubs(row: RecordRow, contacts: readonly RecordRow[]): Perso
   });
 }
 
-/** Every sub on the job, lead sub first. A job with none counts as unassigned ("No sub yet"). */
+/** The ids the job counts under. A job with no subs counts as unassigned ("No sub yet"). */
 export function subKeys(row: RecordRow, contacts: readonly RecordRow[]): string[] {
-  const lead = person(contacts, row.data.contractor_id)?.id;
-  const keys = [...(lead ? [lead] : []), ...otherSubs(row, contacts).map(sub => sub.id)];
+  const keys = subsOf(row, contacts).map(sub => sub.id);
   return keys.length ? keys : [UNASSIGNED];
 }
 
@@ -96,7 +94,7 @@ export function leadLoads(tasks: readonly RecordRow[], contacts: readonly Record
   return summarize(tasks, contacts, today, row => [leadKey(row, contacts)], true).filter(load => load.id !== UNASSIGNED || load.open > 0);
 }
 
-/** Open work per sub or crew, for "this sub has three of my jobs". Lead and other subs both count. The unassigned bucket ("No sub yet") comes last. */
+/** Open work per sub or crew, for "this sub has three of my jobs". A shared job counts for every sub on it. The unassigned bucket ("No sub yet") comes last. */
 export function subLoads(tasks: readonly RecordRow[], contacts: readonly RecordRow[], today: string): Load[] {
   return summarize(tasks, contacts, today, row => subKeys(row, contacts), false);
 }
