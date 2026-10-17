@@ -22,7 +22,7 @@ If live access is unavailable, keep a temporary note through your team's approve
 
 | Need | What to do |
 |---|---|
-| Assign work | Open its card or Plan row. Set **Lead (office)**, **Sub or crew doing the work** and **Due date**, then save. Add the person through **More → Contacts** first if needed; give office staff the role **Team member**. |
+| Assign work | Open its card or Plan row. Set **Lead (office)** and **Due date**, and add each sub under **Subs doing the work**. Add more than one when several subs work the job together. Then save. Add the person through **More → Contacts** first if needed; give office staff the role **Team member**. |
 | Move work forward | Review **What needs to happen first?** and **Checks required to finish**. Set the appropriate status: Waiting, Ready, Working, Ready to check, or Done. Save after the actual work or review supports that status. |
 | Work cannot proceed | Set **Blocked** and fill **What is stopping the work?**. Keep an owner and realistic date. For a separate shared obstacle, use **More → Closeout → Holds** and link it as a prerequisite where relevant. |
 | Move a date | Change **Planned start** and **Due date** on the work item. **More dates & reminders** contains original planned dates and actual dates; retain the original plan when revising current dates. Record why in Notes. |
