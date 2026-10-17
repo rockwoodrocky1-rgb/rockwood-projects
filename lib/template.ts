@@ -80,7 +80,7 @@ export function createProjectRecords(projectId:string,options:{selectedPhases?:n
    {id:crypto.randomUUID(),kind:'bid',project_id:projectId,title:'Kitchen and bathroom plumbing — sample bid',status:'Received',owner_id:plumber,data:{contractor_id:plumber,contractor_name:'Sample Plumbing Crew',trade:'Plumbing',scope:'Fictional rough-in and trim for kitchen and one bathroom.',labor_cost:4200,material_cost:1800,tax_amount:126,other_cost:0,equipment_cost:0,exclusions:'Permit fees and owner-selected fixtures',scope_gaps:'Confirm water heater scope',currency:'USD',is_demo:true}},
    {id:crypto.randomUUID(),kind:'material',project_id:projectId,title:'Kitchen sink — sample order',status:'Delayed',due_date:day(5),data:{supplier_id:supplier,supplier_name:'Sample Supply House',location:'Kitchen',quantity:1,unit:'each',unit_cost:450,total_cost:450,expected_date:day(5),notes:'Fictional example: supplier confirmation pending.',is_demo:true}},
    {id:crypto.randomUUID(),kind:'hold',project_id:projectId,title:'Confirm kitchen sink delivery — example',status:'Open',owner_id:supplier,due_date:day(2),data:{hold_type:'Material',reason:'Sample delivery needs confirmation.',responsible_role:'Project lead',is_demo:true}});
-  const rough=tasks.find(t=>t.data!.source_id==='P3-22');if(rough)rough.owner_id=plumber;
+  const rough=tasks.find(t=>t.data!.source_id==='P3-22');if(rough)rough.data!.contractor_id=plumber;
  }
  return records;
 }

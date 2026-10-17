@@ -28,9 +28,9 @@ const hvac = await contact('Sample HVAC Crew', 'Mechanical / HVAC');
 const plumber = await contact('Sample Plumbing Crew', 'Plumbing');
 const lead = await contact('Sample Site Lead', 'Project coordination', 'Team member');
 const updates = [
-  { source: 'P3-24', status: 'Working', owner: electrical.id, offset: 0, finish: 3, extra: { actual_start: start, location: 'Kitchen', completion_criteria: 'Rough electrical work ready for the separately recorded official inspection.' } },
-  { source: 'P3-20', status: 'Ready', owner: hvac.id, offset: 1, finish: 3, extra: { location: 'Living room', completion_criteria: 'Rough HVAC installation ready for its separately recorded inspection.' } },
-  { source: 'P3-22', status: 'Blocked', owner: plumber.id, offset: 0, finish: 2, extra: { location: 'Kitchen / Bathroom', blocker_reason: `Fictional demo: the plumbing fittings delivery moved to ${day(2)}. The crew is waiting for those materials.` } },
+  { source: 'P3-24', status: 'Working', owner: lead.id, offset: 0, finish: 3, extra: { contractor_id: electrical.id, actual_start: start, location: 'Kitchen', completion_criteria: 'Rough electrical work ready for the separately recorded official inspection.' } },
+  { source: 'P3-20', status: 'Ready', owner: lead.id, offset: 1, finish: 3, extra: { contractor_id: hvac.id, location: 'Living room', completion_criteria: 'Rough HVAC installation ready for its separately recorded inspection.' } },
+  { source: 'P3-22', status: 'Blocked', owner: lead.id, offset: 0, finish: 2, extra: { contractor_id: plumber.id, location: 'Kitchen / Bathroom', blocker_reason: `Fictional demo: the plumbing fittings delivery moved to ${day(2)}. The crew is waiting for those materials.` } },
   { source: 'P2-01', status: 'Done', owner: lead.id, offset: 0, finish: 0, extra: { actual_start: start, actual_finish: start, completion_criteria: 'Fictional demo: approved plan set received and filed; this is not an inspection pass.' } },
   { source: 'P2-04', status: 'Ready to check', owner: lead.id, offset: 0, finish: 0, extra: { actual_start: start, completion_criteria: 'Site lead reviews the scope by trade and confirms that no work is missing.' } },
 ];

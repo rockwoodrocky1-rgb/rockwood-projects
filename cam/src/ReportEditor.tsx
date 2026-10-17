@@ -419,7 +419,9 @@ export default function ReportEditor({
             {t("Report")}
           </h1>
           <p className="report-project">{project.name}</p>
-          <span className="sample-label">{t("Fictional sample project")}</span>
+          {report.mode === "sample" && (
+            <span className="sample-label">{t("Fictional sample project")}</span>
+          )}
         </div>
         {initial.participant && (
           <div className="participant-summary">

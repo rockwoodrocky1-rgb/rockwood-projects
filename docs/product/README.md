@@ -21,7 +21,7 @@ The retained local demo fixture has **Worker**, **Project manager** and **Schedu
 | Screen | Question it answers | Current behavior |
 |---|---|---|
 | **Projects** | Which job needs attention? | Project cards, task counts, blocked/overdue work and upcoming checks. Select a project here to edit its details. |
-| **Today** | What can we work on? | Ready/working, blocked or near-term waiting work, and work ready for review; filter by responsible person. It is not an attendance sheet or daily log. |
+| **Today** | What can we work on, and who has it? | Office lead cards show everyone’s open work by default, with counts per lead, work that needs an answer, overdue work and the next due date; choose a lead or a sub/crew chip to focus. Each card shows the property (when viewing all projects), the **Lead** (Person responsible) and the **Sub** (Contractor). The chosen filters are remembered on that device. It is not an attendance sheet or daily log. |
 | **Plan → List** | What is in the job? | All work, ordered by phase/source row, with search and phase/status filters |
 | **Plan → Board** | What stage is each task in? | Same work grouped by status; open a card to change it, not drag and drop |
 | **Plan → Gantt timeline** | When is the entered work planned? | Three- or six-week windows, manual date edits, unscheduled-work list and prerequisite counts |
@@ -44,7 +44,7 @@ Every record has a title, status, optional project, responsible contact, due dat
 
 Contacts open as a compact directory of **Trades & departments**. Select a group to reveal its people, or **Expand all** to browse everyone. Search opens matching groups automatically; **All contacts**, **Active**, **Considering** and **Inactive** narrow the directory. Both groups and names use A–Z order, with **Uncategorized** last. A contact's **Trade / department** determines its group; if blank, its role is used, then Uncategorized. Case and spacing differences share a group without rewriting saved records.
 
-People dropdowns throughout Today and the record editors use the same trade groups and **Mechanical — Felix** labels, including responsible people, contractors and suppliers. Non-active statuses appear beside the name. A repeated trade suffix such as “Felix (Mechanical)” is omitted for display only; saved names and ID-based links stay intact. Contacts retain the existing project/demo scope.
+People dropdowns in the record editors use the same trade groups and **Mechanical — Felix** labels, including responsible people, contractors and suppliers. Non-active statuses appear beside the name. A repeated trade suffix such as “Felix (Mechanical)” is omitted for display only; saved names and ID-based links stay intact. Contacts retain the existing project/demo scope.
 
 | Kind / screen | Main information | Allowed statuses |
 |---|---|---|
@@ -68,7 +68,7 @@ Phase, trade and area are separate dimensions. A phase groups work; a trade iden
 
 1. In **Projects**, choose **New project**. Enter its name, address, type, lead, planned start, target finish, rooms/areas and scope notes. For a real job, leave the demonstration option off.
 2. Choose **Project checklist** and the applicable phases, or **Start empty**. Review and create. An empty job is useful for initial intake or past-job records.
-3. Add shared or project-specific contacts before assigning people. **Person responsible** means who follows through; **Contractor** identifies who performs the quoted/contracted work. They may be different people.
+3. Add shared or project-specific contacts before assigning people. **Person responsible** means who follows through; **Contractor** identifies who performs the quoted/contracted work. They may be different people. On work items the editor labels these **Lead (office)** and **Sub or crew doing the work**; subs and crews are contacts and need no login. Give office staff the contact role **Team member** so Today lists them as office leads. The project's free-text **Project lead** is separate and is not used by Today.
 4. Upload plans, permit information and existing proposals into **Files**. Use clear names/categories and retain their versions. Uploading them does not automatically extract or interpret the content.
 5. Review scope and permit applicability with the project lead. Confirm check names, local codes and permit numbers in **Checks**. Project-level jurisdiction and permit scope currently go in project scope notes; structured jurisdiction/code fields are on each check.
 6. Collect bids and materials, resolve missing information, assign the work, enter dates and add project-specific dependencies. Leave unknown details blank or explicitly unconfirmed; do not invent them to make a chart look complete.
