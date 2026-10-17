@@ -149,6 +149,40 @@ There is no general delete/undo/restore UI or automatic orphan-file cleanup. Arc
 
 Apply `supabase/migrations/202610150001_permit_monitoring.sql` after the two existing migrations, before deploying permit routes. It is an additive transactional migration; existing projects and records are retained. Verify the explicit Supabase project, RLS, RPC grants and production commit. Run `npm test` and `npm run build`; the permit tests exercise claims, expiration, replay, conflicts, audit rollback, permissions, hierarchy and work gates locally in PGlite. Then verify hosted `/api/permits`, queue and capabilities through an ordinary workspace user. Do not fabricate official permit facts for production testing. Scheduling on the Mac remains a separate activation step in [PERMITS.md](../../agents/PERMITS.md).
 
+## Other subs check migration
+
+`supabase/migrations/202610170001_other_subs_check.sql` makes the database refuse a record whose `data.other_contractor_ids` is not a list, has more than 20 entries, or lists anything other than a contact in the same workspace. The API already refuses these. The migration also covers direct RPC and SQL writes. It recreates `pm_validate_links` with one added block. Tables, rows, grants, RPCs and the trigger itself are unchanged. No app code depends on it, so it can be applied before or after a deploy. Until it is applied, the database does not check this list.
+
+1. In the Projects SQL Editor, run this read-only query first. It lists rows the new rule would refuse on their next save. It should return no rows. If it returns any, correct each list through the app before applying.
+
+   ```sql
+   select r.id, r.title, r.data->'other_contractor_ids' as other_subs
+   from public.pm_records r
+   where r.data ? 'other_contractor_ids' and r.data->'other_contractor_ids'<>'null'::jsonb
+     and case
+       when jsonb_typeof(r.data->'other_contractor_ids')<>'array' then true
+       when jsonb_array_length(r.data->'other_contractor_ids')>20 then true
+       else exists(select 1 from jsonb_array_elements_text(r.data->'other_contractor_ids') v(id)
+         where v.id is null or not exists(select 1 from public.pm_records c
+           where c.id::text=lower(v.id) and c.workspace_id=r.workspace_id and c.kind='contact'))
+     end;
+   ```
+
+2. Paste and run the whole migration file. It runs in one transaction.
+3. Verify that `select position('other_contractor_ids' in prosrc)>0 from pg_proc where proname='pm_validate_links';` returns `true`. Then save a work item with two or more subs in the app and confirm it saves.
+4. Record the migration as applied. `tests/subs-backend.test.ts` checks the rule locally in PGlite. That is not a hosted Supabase check.
+
+**Applied** to the Projects database (`ftjeccpjebhvrxrfrdtn`, main/production) in the SQL Editor on October 17, 2026, around 4:40 PM ET. Do not replay.
+
+- **Before applying:** the live `pm_validate_links` matched `202610130001_pm.sql` exactly (body md5 `26893127ba5843e4a3e36e76309f0e4f`, 12,041 characters), so nothing hand-edited was overwritten. The pre-check returned no rows.
+- **How it was run:** the editor auto-indents typed lines, so the file was entered without leading indentation. The text was confirmed identical to the file apart from that indentation (whitespace-normalized SHA-256 `6d625478…`) before it ran.
+- **After applying:**
+  - The check is present.
+  - The body matches the file apart from indentation (whitespace-normalized md5 `715441a55199cd4df552877521c60d30`, 12,626 characters).
+  - The function is still `security definer` with `search_path=public, pg_temp`, and one trigger uses it.
+  - Re-saving "Trusses measurement — Cesar & Ricardo", which has two subs, from the app succeeded.
+- **Undo, if ever needed:** in one transaction, recreate `pm_validate_links` exactly as written in `202610130001_pm.sql`, then run `revoke all on function public.pm_validate_links() from public;`.
+
 ## Cam release wiring
 
 The two Cam migrations were applied together in the Projects SQL Editor on October 15, 2026. Read-only verification confirmed 11/11 mirrored properties, 1/1 mirrored memberships, private media/report buckets, inbox RLS, the authenticated save RPC, and denied direct source INSERT. No field-test visits were created. Frontend release `ea8765f` was verified as a successful Production deployment with the AWS processing settings active. The signed-in hosted Cam loaded real properties and opened the matching property’s Walkthroughs view; desktop/390px rendering was checked without creating visits. With the user's approval, the existing worker secret now includes the Projects connection, the Vercel role trusts both exact Production subjects, and Lambda was refreshed after saving the secret. Report/PDF processing is configured; a new workspace recording has not been submitted through the full pipeline because the user deferred field acceptance. Target Projects Supabase `ftjeccpjebhvrxrfrdtn`; never apply these two migrations to legacy Cam `vyvwqullxdyeympptyix` (it already has those tables). Existing legacy records are not moved or assigned to guessed properties.
